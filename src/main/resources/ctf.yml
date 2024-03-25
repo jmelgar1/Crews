@@ -1,0 +1,23 @@
+#ctf1
+participants:
+
+#is event happening
+event: false
+
+#team info
+teams:
+  red:
+    captures: 0
+    kills: 0
+    crew:
+    players:
+    flagholder:
+  blue:
+    captures: 0
+    kills: 0
+    crew:
+    players:
+    flagholder:
+
+#countdown info (DO NOT EDIT)
+current-countdown: 0

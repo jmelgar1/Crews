@@ -1,0 +1,18 @@
+#crew Prices
+
+#Price to create a crew
+create: 0
+
+#Price to set a crew warp
+setwarp: 50
+
+#Price to warp
+gotowarp: 0
+
+#Change crew name
+changename: 50
+
+upgrades:
+  mail: 150
+  chat: 250
+  discord: 500
