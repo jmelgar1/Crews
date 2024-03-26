@@ -5,7 +5,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.diffvanilla.crews.Crews;
 import org.diffvanilla.crews.commands.SubCommand;
 
-import net.md_5.bungee.api.ChatColor;
 import org.diffvanilla.crews.exceptions.NotInCrew;
 import org.diffvanilla.crews.managers.ConfigManager;
 import org.diffvanilla.crews.object.Crew;
@@ -41,8 +40,8 @@ public class CompoundCommand implements SubCommand {
             p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
             return;
         }
-        if (playerCrew.getVault() < ConfigManager.WARP_PRICE) {
-            p.sendMessage(ConfigManager.NOT_ENOUGH_SPONGE);
+        if (playerCrew.getVault() < ConfigManager.WARP_COST) {
+            p.sendMessage(ConfigManager.NOT_ENOUGH_IN_VAULT);
             return;
         }
         if (!playerCrew.hasCompound()) {

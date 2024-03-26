@@ -7,6 +7,10 @@ import org.diffvanilla.crews.commands.SubCommand;
 
 import net.md_5.bungee.api.ChatColor;
 import org.diffvanilla.crews.exceptions.NotInCrew;
+import org.diffvanilla.crews.managers.ConfigManager;
+import org.diffvanilla.crews.object.Crew;
+import org.diffvanilla.crews.object.PlayerData;
+import org.diffvanilla.crews.utilities.ChatUtilities;
 
 public class DisbandCommand implements SubCommand {
 
@@ -29,29 +33,25 @@ public class DisbandCommand implements SubCommand {
 
     @Override
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
-        String playerCrew = crewManager.getPlayercrew(p);
-        if (!playerCrew.equals("none")) {
-            if (args.length == 2) {
-                String deletedcrew = args[1];
-                if (crewManager.CheckForChief(playerCrew, p)) {
-                    if (deletedcrew.equalsIgnoreCase(playerCrew)) {
-                        String crewName = crewManager.getPlayercrew(p);
-                        JsonObject crewsJson = crewsClass.getcrewsJson();
-                        crewManager.sendMessageToMembers(crewName, ChatColor.RED.toString() + ChatColor.BOLD + "The crew has been deleted!");
-
-                        crewsJson.remove(crewName);
-                        crewsClass.savecrewsFileJson();
-                    } else {
-                        p.sendMessage(chatUtil.errorIcon + ChatColor.RED + "You are not in that crew!");
-                    }
-                } else {
-                    p.sendMessage(chatUtil.errorIcon + ChatColor.RED + "You are not the chief!");
-                }
-            } else {
-                chatUtil.CorrectUsage(p, getSyntax());
-            }
-        } else {
-            chatUtil.crewMembershipRequirement(p, getSyntax());
+        PlayerData data = plugin.getData();
+        Crew pCrew = data.getCrew(p);
+        String targetCrew = args[1];
+        if (args.length != 2) {
+            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            return;
         }
+        if(pCrew == null) {
+            p.sendMessage(ConfigManager.NOT_IN_CREW);
+            return;
+        }
+        if(data.getCrew(targetCrew) != pCrew){
+            p.sendMessage(ConfigManager.NOT_YOUR_CREW);
+            return;
+        }
+        if(!pCrew.isBoss(p)) {
+            p.sendMessage(ConfigManager.MUST_BE_BOSS);
+            return;
+        }
+        pCrew.disband();
     }
 }

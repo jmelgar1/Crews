@@ -16,8 +16,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.diffvanilla.crews.Crews;
 import org.diffvanilla.crews.commands.SubCommand;
+import org.diffvanilla.crews.exceptions.NotInCrew;
+import org.diffvanilla.crews.managers.ConfigManager;
 import org.diffvanilla.crews.managers.CrewManager;
+import org.diffvanilla.crews.object.Crew;
+import org.diffvanilla.crews.object.PlayerData;
 import org.diffvanilla.crews.utilities.ChatUtilities;
+import org.diffvanilla.crews.utilities.UnicodeCharacters;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,7 +30,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ShopCommand implements SubCommand {
-	
+
 	private static Inventory inv;
 	public static Map<UUID, Inventory> inventories = new HashMap<UUID, Inventory>();
 
@@ -40,57 +45,64 @@ public class ShopCommand implements SubCommand {
 		return "View crew upgrade shop.";
 	}
 
-	@Override
-	public void perform(Player p, String[] args) {
-		String playerCrew = crewManager.getPlayercrew(p);
+    @Override
+    public String getSyntax() {
+        return "/crews shop";
+    }
 
-		//player's crew
-		if(args.length == 1) {
-			if (!playerCrew.equals("none")) {
+    @Override
+    public String getPermission() {
+        return "crews.player.shop";
+    }
 
-				inv = Bukkit.createInventory(null, 27, ChatColor.YELLOW.toString() + ChatColor.BOLD + "\uD83D\uDCB2 crew UPGRADE SHOP \uD83D\uDCB2");
-				UUID playerUUID = p.getUniqueId();
-				inventories.put(playerUUID, inv);
-				initializeItems(playerCrew);
-				openInventory(p, inventories.get(playerUUID));
+    @Override
+    public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
+        PlayerData data = plugin.getData();
+        Crew pCrew = data.getCrew(p);
+        if (args.length != 1) {
+            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            return;
+        }
+        if (pCrew == null) {
+            p.sendMessage(ConfigManager.NOT_IN_CREW);
+            return;
+        }
 
-			} else {
-				p.sendMessage(org.bukkit.ChatColor.DARK_RED + "[✖] " + ChatColor.RED + "You are not in a crew! " +
-						"Receive an invite from a crew or create your own: " + ChatColor.YELLOW + "/crews create [crew]");
-			}
-		} else {
-			ChatUtilities.CorrectUsage(p, getSyntax());
-		}
-	}
+        inv = Bukkit.createInventory(null, 27, ChatColor.YELLOW.toString() + ChatColor.BOLD + "\uD83D\uDCB2 crew UPGRADE SHOP \uD83D\uDCB2");
+        UUID playerUUID = p.getUniqueId();
+        inventories.put(playerUUID, inv);
+        initializeItems(pCrew);
+        openInventory(p, inventories.get(playerUUID));
+    }
 
-	public void initializeItems(String playerCrew) {
+	public void initializeItems(Crew pCrew) {
 		inv.setItem(14, createGuiItem(Material.BAMBOO_SIGN, ChatColor.DARK_GREEN + "Private crew Chat",
 				ChatColor.GRAY + "crew members will have access to /crew chat",
 				"",
-				ChatColor.GRAY + "Cost: " + chatUtil.spongeColor + unicode.sponge + crewsClass.getPrices().getConfigurationSection("upgrades").getInt("chat"),
+				ChatColor.GRAY + "Cost: " + ChatUtilities.spongeColor + UnicodeCharacters.sponge + ConfigManager.UPGRADE_CHAT_COST,
 				"",
-				ChatColor.GRAY + "Purchased: " + ((upgradeManager.checkForUpgrade(playerCrew, "chat")) ? ChatColor.GREEN + "true" : ChatColor.RED + "false")));
+				ChatColor.GRAY + "Purchased: " + ((pCrew.getUnlockedUpgrades().contains("chat")) ? ChatColor.GREEN + "true" : ChatColor.RED + "false")));
 
 		inv.setItem(16, createGuiItem(Material.LAPIS_BLOCK, ChatColor.BLUE + "Discord (Voice & Text) Channels",
 				ChatColor.GRAY + "Two private crew channels on the discord server.",
 				ChatColor.GRAY + "Useful to have a place of gathering outside the server.",
 				"",
-				ChatColor.GRAY + "Cost: " + chatUtil.spongeColor + unicode.sponge + crewsClass.getPrices().getConfigurationSection("upgrades").getInt("discord"),
+				ChatColor.GRAY + "Cost: " + ChatUtilities.spongeColor + UnicodeCharacters.sponge + ConfigManager.UPGRADE_DISCORD_COST,
 				"",
-				ChatColor.GRAY + "Purchased: " + ((upgradeManager.checkForUpgrade(playerCrew, "discord")) ? ChatColor.GREEN + "true" : ChatColor.RED + "false")));
+				ChatColor.GRAY + "Purchased: " + ((pCrew.getUnlockedUpgrades().contains("discord")) ? ChatColor.GREEN + "true" : ChatColor.RED + "false")));
 
 		inv.setItem(12, createGuiItem(Material.FILLED_MAP, ChatColor.YELLOW + "crew Mail",
 				ChatColor.GRAY + "Send messages to offline crew members.",
 				ChatColor.GRAY + "Good for offline communication.",
 				"",
-				ChatColor.GRAY + "Cost: " + chatUtil.spongeColor + unicode.sponge + crewsClass.getPrices().getConfigurationSection("upgrades").getInt("mail"),
+				ChatColor.GRAY + "Cost: " + ChatUtilities.spongeColor + UnicodeCharacters.sponge + ConfigManager.UPGRADE_MAIL_COST,
 				"",
-				ChatColor.GRAY + "Purchased: " + ((upgradeManager.checkForUpgrade(playerCrew, "mail")) ? ChatColor.GREEN + "true" : ChatColor.RED + "false")));
+				ChatColor.GRAY + "Purchased: " + ((pCrew.getUnlockedUpgrades().contains("mail")) ? ChatColor.GREEN + "true" : ChatColor.RED + "false")));
 
 		inv.setItem(10, createGuiItem(Material.NAME_TAG, ChatColor.DARK_AQUA + "Change crew Name",
 				ChatColor.GRAY + "Change your crew's name.",
 				"",
-				ChatColor.GRAY + "Cost: " + chatUtil.spongeColor + unicode.sponge + crewsClass.getPrices().getInt("changename")));
+				ChatColor.GRAY + "Cost: " + ChatUtilities.spongeColor + UnicodeCharacters.sponge + ConfigManager.RENAME_COST));
 	}
 	
 	protected static ItemStack createGuiItem(final Material material, final String name, final String... lore) {
@@ -126,7 +138,7 @@ public class ShopCommand implements SubCommand {
 		if (clickedItem == null || clickedItem.getType().isAir()) return;
 
 		if (clickedItem.getType() == Material.LAPIS_BLOCK) {
-			String playerCrew = crewManager.getPlayercrew(p);
+			Crew pCrew = crewManager.getPlayercrew(p);
 			if (!upgradeManager.checkForUpgrade(playerCrew, "discord")) {
 				if (crewManager.CheckForChief(playerCrew, p)) {
 					int purchasePrice = crewsClass.getPrices().getConfigurationSection("upgrades").getInt("discord");
@@ -135,13 +147,13 @@ public class ShopCommand implements SubCommand {
 						p.sendMessage(ChatColor.DARK_BLUE + "[\uD83C\uDFA7]" + ChatColor.BLUE + " Please type/enter your discord username: ");
 						p.closeInventory();
 					} else {
-						chatUtil.NeedMoreSponges(p);
+                        ChatUtilities.NeedMoreSponges(p);
 					}
 				} else {
-					chatUtil.MustBeChief(p);
+                    ChatUtilities.MustBeChief(p);
 				}
 			} else {
-				chatUtil.UpgradeAlreadyUnlocked(p);
+                ChatUtilities.UpgradeAlreadyUnlocked(p);
 			}
 		}
 
@@ -152,17 +164,17 @@ public class ShopCommand implements SubCommand {
 					int purchasePrice = crewsClass.getPrices().getConfigurationSection("upgrades").getInt("chat");
 					if(crewManager.getVault(playerCrew) >= purchasePrice) {
 						crewManager.removeFromVault(playerCrew, purchasePrice, p);
-						chatUtil.UpgradeSuccessful(playerCrew, "chat");
+                        ChatUtilities.UpgradeSuccessful(playerCrew, "chat");
 						upgradeManager.editUpgrade(playerCrew, "chat", true);
 						p.closeInventory();
 					} else {
-						chatUtil.NeedMoreSponges(p);
+                        ChatUtilities.NeedMoreSponges(p);
 					}
 				} else {
-					chatUtil.MustBeChiefOrElder(p);
+                    ChatUtilities.MustBeChiefOrElder(p);
 				}
 			} else {
-				chatUtil.UpgradeAlreadyUnlocked(p);
+                ChatUtilities.UpgradeAlreadyUnlocked(p);
 			}
 		}
 
@@ -175,17 +187,17 @@ public class ShopCommand implements SubCommand {
 					int purchasePrice = crewsClass.getPrices().getConfigurationSection("upgrades").getInt("mail");
 					if(crewManager.getVault(playerCrew) >= purchasePrice) {
 						crewManager.removeFromVault(playerCrew, purchasePrice, p);
-						chatUtil.UpgradeSuccessful(playerCrew, "mail");
+                        ChatUtilities.UpgradeSuccessful(playerCrew, "mail");
 						upgradeManager.editUpgrade(playerCrew, "mail", true);
 						p.closeInventory();
 					} else {
-						chatUtil.NeedMoreSponges(p);
+                        ChatUtilities.NeedMoreSponges(p);
 					}
 				} else {
-					chatUtil.MustBeChiefOrElder(p);
+                    ChatUtilities.MustBeChiefOrElder(p);
 				}
 			} else {
-				chatUtil.UpgradeAlreadyUnlocked(p);
+                ChatUtilities.UpgradeAlreadyUnlocked(p);
 			}
 		}
 
@@ -198,10 +210,10 @@ public class ShopCommand implements SubCommand {
 					p.sendMessage(ChatColor.YELLOW + "[\uD83D\uDD8A]" + ChatColor.GOLD + " Please type/enter your new crew name: ");
 					p.closeInventory();
 				} else {
-					chatUtil.NeedMoreSponges(p);
+                    ChatUtilities.NeedMoreSponges(p);
 				}
 			} else {
-				chatUtil.MustBeChief(p);
+                ChatUtilities.MustBeChief(p);
 			}
 
 		}

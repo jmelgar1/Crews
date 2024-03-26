@@ -20,7 +20,7 @@ import org.diffvanilla.crews.managers.ConfigManager;
 public class CommandManager implements CommandExecutor {
 //
     private final Map<String, SubCommand> subCommands = new LinkedHashMap<>();
-	public final Map<String, SubCommand> underBossCommands = new LinkedHashMap<>();
+	public final Map<String, SubCommand> enforcerCommands = new LinkedHashMap<>();
 	public final Map<String, SubCommand> bossCommands = new LinkedHashMap<>();
     public final Map<String, SubCommand> allCommands = new LinkedHashMap<>();
 
@@ -81,20 +81,20 @@ public class CommandManager implements CommandExecutor {
 		subCommands.put("leave", new LeaveCommand());
 		subCommands.put("mail", new MailCommand());
 		subCommands.put("boss", new BossCommand());
-		subCommands.put("underboss", new UnderBossCommand());
-		underBossCommands.put("withdraw", new WithdrawCommand());
-		underBossCommands.put("invite", new InviteCommand());
-		underBossCommands.put("kick", new KickCommand());
-		underBossCommands.put("setcompound", new SetCompoundCommand());
-		underBossCommands.put("delcompound", new DelCompoundCommand());
-		underBossCommands.put("rename", new RenameCommand());
+		subCommands.put("enforcer", new EnforcerCommand());
+		enforcerCommands.put("withdraw", new WithdrawCommand());
+		enforcerCommands.put("invite", new InviteCommand());
+		enforcerCommands.put("kick", new KickCommand());
+		enforcerCommands.put("setcompound", new SetCompoundCommand());
+		enforcerCommands.put("delcompound", new DelCompoundCommand());
+		enforcerCommands.put("rename", new RenameCommand());
 		bossCommands.put("promote", new PromoteCommand());
 		bossCommands.put("demote", new DemoteCommand());
 		bossCommands.put("ownership", new OnwershipCommand());
 		bossCommands.put("disband", new DisbandCommand());
 		bossCommands.put("upgrade", new UpgradeCommand());
         allCommands.putAll(subCommands);
-        allCommands.putAll(underBossCommands);
+        allCommands.putAll(enforcerCommands);
         allCommands.putAll(bossCommands);
 	}
 	
@@ -122,41 +122,7 @@ public class CommandManager implements CommandExecutor {
     } catch (NotInCrew ignored) {}
     return true;
   }
-//
-//		if(sender instanceof Player p) {
-//      if(args.length == 0) {
-//				sendHelp(p, this.getSubCommands());
-//			} else {
-//				for(int i = 0; i < this.getSubCommands().size(); i++) {
-//					if(args[0].equalsIgnoreCase(this.getSubCommands().get(i).getName())) {
-//						this.getSubCommands().get(i).perform(p, args);
-//
-//						return true;
-//					}
-//				}
-//
-//				for(int i = 0; i < this.getBossCommands().size(); i++) {
-//					if (args[0].equalsIgnoreCase(this.getBossCommands().get(i).getName())) {
-//						this.getBossCommands().get(i).perform(p, args);
-//
-//						return true;
-//					}
-//				}
-//
-//				for(int i = 0; i < this.getUnderBossCommands().size(); i++) {
-//					if (args[0].equalsIgnoreCase(this.getUnderBossCommands().get(i).getName())) {
-//						this.getUnderBossCommands().get(i).perform(p, args);
-//
-//						return true;
-//					}
-//				}
-//
-//				p.sendMessage(ChatColor.WHITE + "Unknown command. Type " + "\"" + "/crews" + "\"" + " for help.");
-//			}
-//		}
-//
-//		return true;
-	
+
 	public Map<String, SubCommand> getSubCommands() {
 		return subCommands;
 	}
@@ -165,7 +131,7 @@ public class CommandManager implements CommandExecutor {
 		return bossCommands;
 	}
 
-	public Map<String, SubCommand> getUnderBossCommands() {
-		return underBossCommands;
+	public Map<String, SubCommand> getEnforcerCommands() {
+		return enforcerCommands;
 	}
 }

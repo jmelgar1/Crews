@@ -45,30 +45,11 @@ public class CreateCommand implements SubCommand {
 
         //this should be in a seperate class. For all the checks.
         String proposedCrewName = args[1];
-        if (isValidCrewName(p, proposedCrewName, data)) {
+        if (data.isValidCrewName(p, proposedCrewName)) {
             Crew newCrew = new Crew(args[0], p, plugin);
             data.addCrew(newCrew);
             Bukkit.broadcast(LegacyComponentSerializer.legacyAmpersand().deserialize((ConfigManager.CREW_FOUNDED.replaceAll("\\{sector}", args[0]))));
         }
-    }
-
-    private boolean isValidCrewName(Player p, String crewName, PlayerData data) {
-        if (!crewName.matches("[a-zA-Z]+")) {
-            p.sendMessage(ConfigManager.CREW_NAME_ONLY_ALPHABETICAL);
-            return false;
-        }
-
-        if (crewName.length() > 16 || crewName.length() < 4) {
-            p.sendMessage(ConfigManager.CREW_NAME_BETWEEN_4_AND_16);
-            return false;
-        }
-
-        if(data.getCrewRawName(crewName) != null) {
-            p.sendMessage(ConfigManager.NAME_TAKEN);
-            return false;
-        }
-
-        return true;
     }
 }
 

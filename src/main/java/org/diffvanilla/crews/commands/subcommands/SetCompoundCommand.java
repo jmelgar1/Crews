@@ -4,8 +4,11 @@ import org.bukkit.entity.Player;
 import org.diffvanilla.crews.Crews;
 import org.diffvanilla.crews.commands.SubCommand;
 
-import net.md_5.bungee.api.ChatColor;
 import org.diffvanilla.crews.exceptions.NotInCrew;
+import org.diffvanilla.crews.managers.ConfigManager;
+import org.diffvanilla.crews.object.Crew;
+import org.diffvanilla.crews.object.PlayerData;
+import org.diffvanilla.crews.utilities.ChatUtilities;
 
 public class SetCompoundCommand implements SubCommand {
 
@@ -28,31 +31,30 @@ public class SetCompoundCommand implements SubCommand {
 
     @Override
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
-        String playerCrew = crewManager.getPlayercrew(p);
-        if (!playerCrew.equals("none")) {
-            int priceToSetCompound = crewsClass.getPrices().getInt("setwarp");
-            if (args.length == 1) {
-                if (crewManager.CheckForElder(playerCrew, p) || crewManager.CheckForChief(playerCrew, p)) {
-                    if (!warpManager.compoundExists(playerCrew)) {
-                        int vault = crewManager.getVault(playerCrew);
-                        if (vault >= priceToSetCompound) {
-                            crewManager.removeFromVault(playerCrew, priceToSetCompound, p);
-                            warpManager.setCompound(playerCrew, p);
-                            crewManager.generateScorePercrew(playerCrew);
-                        } else {
-                            p.sendMessage(chatUtil.errorIcon + ChatColor.RED + "You need at least " + priceToSetCompound + " sponges in the crew vault to set the crew compound!");
-                        }
-                    } else {
-                        p.sendMessage(chatUtil.errorIcon + ChatColor.RED + "The crew's compound is already set!");
-                    }
-                } else {
-                    p.sendMessage(chatUtil.errorIcon + ChatColor.RED + "Only chiefs and elders can set the compound!");
-                }
-            } else {
-                chatUtil.CorrectUsage(p, getSyntax());
-            }
-        } else {
-            chatUtil.crewMembershipRequirement(p, getSyntax());
+        PlayerData data = plugin.getData();
+        Crew pCrew = data.getCrew(p);
+        int cost = ConfigManager.SET_COMPOUND_COST;
+        if (args.length != 1) {
+            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            return;
         }
+        if (pCrew == null) {
+            p.sendMessage(ConfigManager.NOT_IN_CREW);
+            return;
+        }
+        if (!pCrew.isHigherup(p)) {
+            p.sendMessage(ConfigManager.MUST_BE_HIGHERUP);
+            return;
+        }
+        if (pCrew.hasCompound()) {
+            p.sendMessage(ConfigManager.COMPOUND_EXISTS);
+            return;
+        }
+        if (pCrew.getVault() >= cost) {
+            p.sendMessage(ConfigManager.NOT_ENOUGH_IN_VAULT);
+            return;
+        }
+        pCrew.setCompound(p);
+        pCrew.removeFromVault(cost, p);
     }
 }

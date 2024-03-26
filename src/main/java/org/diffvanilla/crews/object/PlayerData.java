@@ -1,5 +1,6 @@
 package org.diffvanilla.crews.object;
 
+import com.google.gson.JsonObject;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
@@ -7,11 +8,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.diffvanilla.crews.exceptions.NotInCrew;
 import org.diffvanilla.crews.managers.ConfigManager;
+import org.diffvanilla.crews.utilities.GeneralUtilities;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerData {
     public PlayerData(){
@@ -144,5 +143,50 @@ public class PlayerData {
                 p.sendMessage(Component.text("You do not have an invitation from this crew!"));
             }
         }
+    }
+
+    /* Crew Naming */
+    public boolean isValidCrewName(Player p, String crewName) {
+        if (!crewName.matches("[a-zA-Z]+")) {
+            p.sendMessage(ConfigManager.CREW_NAME_ONLY_ALPHABETICAL);
+            return false;
+        }
+
+        if (crewName.length() > 16 || crewName.length() < 4) {
+            p.sendMessage(ConfigManager.CREW_NAME_BETWEEN_4_AND_16);
+            return false;
+        }
+
+        if(getCrewRawName(crewName) != null) {
+            p.sendMessage(ConfigManager.NAME_TAKEN);
+            return false;
+        }
+
+        return true;
+    }
+
+
+    /* Crew Influence */
+//    public void generateEconomy() {
+//        for(Crew crew : crews) {
+//            int totalSponges;
+////            if(crewObject.get("totalSponges") == null){
+////                crewObject.addProperty("totalSponges", 0);
+////            }
+////
+////            totalSponges = crewObject.get("totalSponges").getAsInt();
+//
+//            crewObject.addProperty("economyScore", (double)totalSponges);
+//            crewsClass.savecrewsFileJson();
+//        }
+//    }
+
+    public Map<String, Double> generateLeaderboardJson() {
+        HashMap<String, Double> crewAndScore = new HashMap<>();
+        for(Crew crew : crews) {
+            double influence = crew.getInfluence();
+            crewAndScore.put(crew.getName(), influence);
+        }
+        return GeneralUtilities.sortByComparator(crewAndScore, false);
     }
 }

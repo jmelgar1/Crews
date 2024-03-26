@@ -6,11 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -95,15 +90,14 @@ public class InfoCommand implements SubCommand {
 		
 		String boss = Bukkit.getServer().getOfflinePlayer(crew.getBoss()).getName();
 
-        //fix this underboss multiple
-		String underBoss = "";
-		if(crew.getBoss() != null) {
-			underBoss = Bukkit.getServer().getOfflinePlayer(crew.getUnderBoss()).getName();
-		} else {
-			underBoss = "NONE";
-		}
-
-		List<UUID> crewMembers = crew.getMembers();
+//        List<UUID> enforceres = crew.getEnforceres();
+//        //fix this enforcer multiple
+//		String enforcer = "";
+//		if(crew.getBoss() != null) {
+//			enforcer = Bukkit.getServer().getOfflinePlayer(crew.getEnforcer()).getName();
+//		} else {
+//			enforcer = "NONE";
+//		}
 		
 		Material[] levelItems = {Material.COAL, Material.COPPER_INGOT, Material.IRON_INGOT, Material.GOLD_INGOT, Material.REDSTONE
 				, Material.LAPIS_LAZULI, Material.EMERALD, Material.DIAMOND, Material.NETHERITE_INGOT, Material.NETHER_STAR};
@@ -151,7 +145,7 @@ public class InfoCommand implements SubCommand {
 		
 		inv.setItem(21, createGuiItem(Material.DIAMOND_HELMET, ChatColor.GOLD.toString() + ChatColor.BOLD + "CREW LEADERSHIP",
 				ChatColor.DARK_GRAY + UnicodeCharacters.chiefCrown + ChatColor.GRAY + " Boss: " + ChatColor.DARK_RED + boss,
-				ChatColor.DARK_GRAY + UnicodeCharacters.elderFace + ChatColor.GRAY + " Underboss: " + ChatColor.DARK_PURPLE + underBoss));
+				ChatColor.DARK_GRAY + UnicodeCharacters.elderFace + ChatColor.GRAY + " Enforcer: " + ChatColor.DARK_PURPLE + "enforcer"));
 		
 		inv.setItem(23, createGuiItem(Material.SLIME_BALL, ChatUtilities.tribalGames.toString() + ChatColor.BOLD + "CREW GAMES",
 				ChatColor.YELLOW.toString() + ChatColor.UNDERLINE + "Wins:",
@@ -166,7 +160,8 @@ public class InfoCommand implements SubCommand {
 		
 		inv.setItem(8, createGuiItem(Material.BARRIER, ChatColor.RED.toString() + ChatColor.BOLD + "EXIT", 
 				ChatColor.GRAY + "Click to exit"));
-		
+
+        List<UUID> crewMembers = crew.getMembers();
 		String[] memberArray = crewMembers.toArray(new String[0]);
 		
 		getcrewMemberSkull(38, boss, ChatColor.GOLD + boss);

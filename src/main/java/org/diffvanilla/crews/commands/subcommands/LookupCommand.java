@@ -1,11 +1,12 @@
 package org.diffvanilla.crews.commands.subcommands;
 
-import com.google.gson.JsonObject;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.diffvanilla.crews.Crews;
 import org.diffvanilla.crews.commands.SubCommand;
 import org.diffvanilla.crews.exceptions.NotInCrew;
+import org.diffvanilla.crews.managers.ConfigManager;
+import org.diffvanilla.crews.object.Crew;
+import org.diffvanilla.crews.object.PlayerData;
 import org.diffvanilla.crews.utilities.ChatUtilities;
 
 public class LookupCommand implements SubCommand {
@@ -27,16 +28,17 @@ public class LookupCommand implements SubCommand {
     }
 
     @Override
-	public void perform(Player p, String[] args, Crews crews) throws NotInCrew {
-		JsonObject crewsFile = crews.getcrewsJson();
-
-		if (args.length == 2) {
-			String otherCrew = args[1];
-
-			JsonObject crewSection = crewsFile.getAsJsonObject(otherCrew.toLowerCase());
-			crewManager.getcrewInfo(crewsFile, crewSection, otherCrew, p, true);
-		} else {
-			ChatUtilities.CorrectUsage(p);
-		}
+	public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
+        PlayerData data = plugin.getData();
+        Crew tCrew = data.getCrew(args[1]);
+        if (args.length != 2) {
+            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            return;
+        }
+        if(tCrew == null) {
+            p.sendMessage(ConfigManager.CREW_NOT_FOUND);
+            return;
+        }
+        tCrew.showInfo(p);
 	}
 }

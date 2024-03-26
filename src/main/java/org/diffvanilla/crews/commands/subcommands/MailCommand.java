@@ -7,13 +7,18 @@ import org.bukkit.entity.Player;
 import org.diffvanilla.crews.Crews;
 import org.diffvanilla.crews.commands.SubCommand;
 import org.diffvanilla.crews.exceptions.NotInCrew;
+import org.diffvanilla.crews.managers.ConfigManager;
 import org.diffvanilla.crews.managers.MailManager;
+import org.diffvanilla.crews.object.Crew;
+import org.diffvanilla.crews.object.PlayerData;
+import org.diffvanilla.crews.utilities.ChatUtilities;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class MailCommand implements SubCommand {
 
@@ -26,7 +31,7 @@ public class MailCommand implements SubCommand {
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/crews mail [message]";
+		return "/crews mail send/open [message]";
 	}
 
     @Override
@@ -36,54 +41,34 @@ public class MailCommand implements SubCommand {
 
     @Override
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
-        String playerCrew = crewManager.getPlayercrew(p);
-        if (!playerCrew.equals("none")) {
-            if(upgradeManager.checkForUpgrade(playerCrew, "mail")) {
-                if (args.length >= 2) {
-                    if(!Objects.equals(args[1], "open")) {
-                        LocalDateTime currentDateTime = LocalDateTime.now();
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-                        String dateString = currentDateTime.format(formatter);
-
-                        String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-                        String mailMessage = "[" + dateString + "] " + p.getName() + ": " + message;
-
-                        JsonObject crewsJson = crewsClass.getcrewsJson();
-                        JsonObject crewObject = crewsJson.getAsJsonObject(playerCrew);
-
-                        //add messages if it is null
-                        if (crewObject.getAsJsonObject("mailMessages") == null) {
-                            JsonObject mailMessages = new JsonObject();
-                            crewObject.add("mailMessages", mailMessages);
-                            crewsClass.savecrewsFileJson();
-                        }
-
-                        List<String> crewMembers = crewManager.getcrewMembers(playerCrew);
-                        JsonObject mailMessages = crewObject.getAsJsonObject("mailMessages");
-
-                        //remove sender from list of receivers
-                        crewMembers.remove(p.getUniqueId().toString());
-
-                        if (crewMembers.size() != 0) {
-                            Gson gson = new Gson();
-                            mailMessages.add(mailMessage, gson.toJsonTree(crewMembers).getAsJsonArray());
-                            p.sendMessage(chatUtil.successIcon + ChatColor.GREEN + "Mail sent to " + crewMembers.size() + " crew members!");
-                            crewsClass.savecrewsFileJson();
-                        } else {
-                            p.sendMessage(chatUtil.errorIcon + ChatColor.RED + "You can not send mail to yourself!");
-                        }
-                    } else {
-                        MailManager mailManager = new MailManager();
-                        mailManager.opencrewMail(p);
-                    }
-                } else {
-                    chatUtil.CorrectUsage(p, getSyntax());
-                }
-            } else {
-                chatUtil.UpgradeNotUnlocked(p);
-            }
+        PlayerData data = plugin.getData();
+        Crew pCrew = data.getCrew(p);
+        if (args.length < 2) {
+            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            return;
+        }
+        if(pCrew == null) {
+            p.sendMessage(ConfigManager.NOT_IN_CREW);
+            return;
+        }
+        if(!pCrew.getUnlockedUpgrades().contains("mail")) {
+            p.sendMessage(ConfigManager.UPGRADE_NOT_UNLOCKED);
+            return;
+        }
+        if(args[1].equalsIgnoreCase("open")) {
+            MailManager mailManager = new MailManager();
+            mailManager.opencrewMail(p);
         } else {
-            chatUtil.crewMembershipRequirement(p, getSyntax());
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+            String dateString = currentDateTime.format(formatter);
+
+            String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+            String mailMessage = "[" + dateString + "] " + p.getName() + ": " + message;
+
+            List<UUID> crewMembers = pCrew.getMembers();
+            crewMembers.remove(p.getUniqueId());
+            pCrew.addToMail(mailMessage);
         }
     }
 }

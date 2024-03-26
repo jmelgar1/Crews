@@ -28,12 +28,12 @@ public class GUIUtilities {
 
         String boss = Bukkit.getServer().getOfflinePlayer(crew.getBoss()).getName();
 
-        String underBoss = "";
-        if(crew.getBoss() != null) {
-            underBoss = Bukkit.getServer().getOfflinePlayer(crew.getUnderBoss()).getName();
-        } else {
-            underBoss = "NONE";
-        }
+//        String enforcer = "";
+//        if(crew.getBoss() != null) {
+//            enforcer = Bukkit.getServer().getOfflinePlayer(crew.getEnforcer()).getName();
+//        } else {
+//            enforcer = "NONE";
+//        }
 
         List<UUID> crewMembers = crew.getMembers();
 
@@ -83,7 +83,7 @@ public class GUIUtilities {
 
         inv.setItem(21, createGuiItem(Material.DIAMOND_HELMET, net.md_5.bungee.api.ChatColor.GOLD.toString() + net.md_5.bungee.api.ChatColor.BOLD + "CREW LEADERSHIP",
             net.md_5.bungee.api.ChatColor.DARK_GRAY + UnicodeCharacters.chiefCrown + net.md_5.bungee.api.ChatColor.GRAY + " Boss: " + net.md_5.bungee.api.ChatColor.DARK_RED + boss,
-            net.md_5.bungee.api.ChatColor.DARK_GRAY + UnicodeCharacters.elderFace + net.md_5.bungee.api.ChatColor.GRAY + " Underboss: " + net.md_5.bungee.api.ChatColor.DARK_PURPLE + underBoss));
+            net.md_5.bungee.api.ChatColor.DARK_GRAY + UnicodeCharacters.elderFace + net.md_5.bungee.api.ChatColor.GRAY + " Enforcer: " + net.md_5.bungee.api.ChatColor.DARK_PURPLE + "enforcer"));
 
         inv.setItem(23, createGuiItem(Material.SLIME_BALL, ChatUtilities.tribalGames.toString() + net.md_5.bungee.api.ChatColor.BOLD + "CREW GAMES",
             net.md_5.bungee.api.ChatColor.YELLOW.toString() + net.md_5.bungee.api.ChatColor.UNDERLINE + "Wins:",

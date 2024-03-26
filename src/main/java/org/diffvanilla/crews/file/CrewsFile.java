@@ -3,6 +3,7 @@ package org.diffvanilla.crews.file;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.diffvanilla.crews.Crews;
+import org.diffvanilla.crews.object.Crew;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,49 +17,49 @@ public class CrewsFile {
         this.plugin = plugin;
     }
 
-    private File sectorsFile;
-    private FileConfiguration sectorsData;
-    public void loadSectors(){
-        sectorsFile = new File(plugin.getDataFolder(),"sectors.yml");
-        if(!sectorsFile.exists()){
-            sectorsFile.getParentFile().mkdir();
+    private File crewsFile;
+    private FileConfiguration crewsData;
+    public void loadCrews(){
+        crewsFile = new File(plugin.getDataFolder(),"crews.yml");
+        if(!crewsFile.exists()){
+            crewsFile.getParentFile().mkdir();
             try{
-                sectorsFile.createNewFile();
+                crewsFile.createNewFile();
             } catch(IOException e){
                 e.printStackTrace();
             }
         }
-        sectorsData = YamlConfiguration.loadConfiguration(sectorsFile);
-        if(!sectorsData.getKeys(false).isEmpty()){
-            for(String key : sectorsData.getKeys(false)){
-                Sector loadedSec = Sector.deserialize(sectorsData.getConfigurationSection(key).getValues(false), plugin);
-                plugin.getData().addSector(loadedSec);
+        crewsData = YamlConfiguration.loadConfiguration(crewsFile);
+        if(!crewsData.getKeys(false).isEmpty()){
+            for(String key : crewsData.getKeys(false)){
+                Crew loadedCrew = Crew.deserialize(crewsData.getConfigurationSection(key).getValues(false), plugin);
+                plugin.getData().addCrew(loadedCrew);
             }
         }
     }
 
-    public void saveSectors(){
-        System.out.println("Saving Sectors");
-        List<String> savedSecs = new ArrayList<>();
+    public void saveCrews(){
+        System.out.println("Saving Crews");
+        List<String> savedCrews = new ArrayList<>();
 
-        for(Sector s : plugin.getData().getSectors()){
-            sectorsData.set(s.getName(), s.serialize());
-            savedSecs.add(s.getName());
+        for(Crew c : plugin.getData().getCrews()){
+            crewsData.set(c.getName(), c.serialize());
+            savedCrews.add(c.getName());
         }
         try {
-            sectorsData.save(sectorsFile);
+            crewsData.save(crewsFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        for(String key : sectorsData.getKeys(false)){
-            if(!savedSecs.contains(key)){
-                sectorsData.set(key, null);
+        for(String key : crewsData.getKeys(false)){
+            if(!savedCrews.contains(key)){
+                crewsData.set(key, null);
             }
         }
 
         try {
-            sectorsData.save(sectorsFile);
+            crewsData.save(crewsFile);
         } catch (IOException e) {
             e.printStackTrace();
         }

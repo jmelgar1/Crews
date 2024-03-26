@@ -1,13 +1,14 @@
 package org.diffvanilla.crews.commands.subcommands;
 
-import java.util.List;
-
 import org.bukkit.entity.Player;
 import org.diffvanilla.crews.Crews;
 import org.diffvanilla.crews.commands.SubCommand;
 
-import net.md_5.bungee.api.ChatColor;
 import org.diffvanilla.crews.exceptions.NotInCrew;
+import org.diffvanilla.crews.managers.ConfigManager;
+import org.diffvanilla.crews.object.Crew;
+import org.diffvanilla.crews.object.PlayerData;
+import org.diffvanilla.crews.utilities.ChatUtilities;
 
 public class LeaveCommand implements SubCommand {
 
@@ -30,33 +31,31 @@ public class LeaveCommand implements SubCommand {
 
     @Override
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
-        String playerCrew = crewManager.getPlayercrew(p);
-        if (!playerCrew.equals("none")) {
-            if (args.length == 2) {
-                String leftcrew = args[1];
-                if (!crewManager.CheckForChief(playerCrew, p)) {
-                    if (leftcrew.equalsIgnoreCase(playerCrew)) {
-
-                        List<String> members = crewManager.getcrewMembers(playerCrew);
-                        members.remove(p.getUniqueId().toString());
-                        crewManager.setcrewMembers(playerCrew, members);
-
-                        crewManager.generateScorePercrew(playerCrew);
-
-                        if (crewManager.CheckForElder(playerCrew, p)) {
-                            crewManager.removeElder(playerCrew);
-                        }
-
-                        p.sendMessage(chatUtil.successIcon + ChatColor.GREEN + "You have left " + playerCrew + "!");
-                    }
-                } else {
-                    p.sendMessage(chatUtil.errorIcon + ChatColor.RED + "Please use /crews delete");
-                }
-            } else {
-                chatUtil.CorrectUsage(p, getSyntax());
-            }
-        } else {
-            chatUtil.crewMembershipRequirement(p, getSyntax());
+        PlayerData data = plugin.getData();
+        Crew pCrew = data.getCrew(p);
+        Crew tCrew = data.getCrew(args[1]);
+        if (args.length != 2) {
+            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            return;
         }
+        if(pCrew == null) {
+            p.sendMessage(ConfigManager.NOT_IN_CREW);
+            return;
+        }
+        if(!pCrew.equals(tCrew)) {
+            p.sendMessage(ConfigManager.INCORRECT_CREW);
+            return;
+        }
+        if (pCrew.isBoss(p)) {
+            if (pCrew.getMembers().size() == 1) {
+                pCrew.removePlayer(p.getUniqueId(), false);
+                pCrew.disband();
+                return;
+            } else {
+                p.sendMessage(ConfigManager.TRANSFER_OWNERSHIP);
+            }
+            return;
+        }
+        pCrew.removePlayer(p.getUniqueId(), false);
     }
 }

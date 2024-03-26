@@ -44,7 +44,7 @@ public class InviteCommand implements SubCommand {
                 p.sendMessage(ConfigManager.NOT_IN_CREW);
                 return;
             }
-            if (!crew.isBoss(p) || !crew.isUnderboss(p)) {
+            if (!crew.isBoss(p) || !crew.isEnforcer(p)) {
                 p.sendMessage(ConfigManager.MUST_BE_HIGHERUP);
                 return;
             }

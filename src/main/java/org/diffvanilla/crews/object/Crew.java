@@ -1,5 +1,6 @@
 package org.diffvanilla.crews.object;
 
+import com.google.gson.JsonObject;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
@@ -25,7 +26,7 @@ public class Crew implements ConfigurationSerializable {
     private final Crews plugin;
 
     //name
-    private final String name;
+    private String name;
     public String getName() {return this.name;}
 
     private Location compound;
@@ -71,14 +72,18 @@ public class Crew implements ConfigurationSerializable {
         return this.kills;
     }
 
+    //mail
+    private ArrayList<String> sentMail;
+    public ArrayList<String> getSentMail() { return this.sentMail; }
+
     //crew elites
     private UUID boss;
     public UUID getBoss() {
         return this.boss;
     }
-    private ArrayList<UUID> underBosses;
-    public ArrayList<UUID> getUnderBosses() {
-        return this.underBosses;
+    private ArrayList<UUID> enforcers;
+    public ArrayList<UUID> getEnforcers() {
+        return this.enforcers;
     }
 
     //members
@@ -99,8 +104,8 @@ public class Crew implements ConfigurationSerializable {
     public int getLevelUpCost() { return this.levelUpCost; }
     private int memberLimit;
     public int getMemberLimit() { return this.memberLimit; }
-    private int underBossLimit;
-    public int getUnderBossLimit() { return this.underBossLimit; }
+    private int enforcerLimit;
+    public int getEnforcerLimit() { return this.enforcerLimit; }
 
     //warp stuff
     private final List<Player> inWarp = new ArrayList<Player>();
@@ -134,8 +139,8 @@ public class Crew implements ConfigurationSerializable {
                     // Teleport player
                     p.teleport(compound, PlayerTeleportEvent.TeleportCause.COMMAND);
 
-                    int amount = ConfigManager.WARP_PRICE;
-                    plugin.getData().getCrew(p).removeFromVault(amount);
+                    int amount = ConfigManager.WARP_COST;
+                    plugin.getData().getCrew(p).removeFromVault(amount, p);
 
                     p.sendMessage(ChatUtilities.successIcon + ChatColor.GREEN + "Warp successful!");
                     inWarp.remove(p);
@@ -223,7 +228,11 @@ public class Crew implements ConfigurationSerializable {
     }
 
     //vault
-    public void removeFromVault(int amount){
+    public void addToVault(int amount, Player p){
+        this.vault = vault + amount;
+    }
+    public void removeFromVault(int amount, Player p){
+        //takes player to put in the custom message (Player) removed vault blah
         this.vault = vault - amount;
     }
 
@@ -250,26 +259,26 @@ public class Crew implements ConfigurationSerializable {
         }
     }
 
-    public void setUnderboss(final UUID id) {
-        if(underBosses.size() < underBossLimit) {
-            underBosses.add(id);
+    public void addEnforcer(final UUID id) {
+        if(enforcers.size() < enforcerLimit) {
+            enforcers.add(id);
 
             Player p = Bukkit.getPlayer(id);
             if(p != null) {
-                p.sendMessage(ConfigManager.UNDERBOSS_PROMOTE);
+                p.sendMessage(ConfigManager.ENFORCER_PROMOTE);
             }
-            broadcast(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.NEW_UNDERBOSS));
+            broadcast(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.NEW_ENFORCER));
         }
     }
 
-    public void removeUnderboss(final UUID id) {
-        underBosses.remove(id);
+    public void removeEnforcer(final UUID id) {
+        enforcers.remove(id);
 
         Player p = Bukkit.getPlayer(id);
         if(p != null) {
-            p.sendMessage(ConfigManager.UNDERBOSS_DEMOTE);
+            p.sendMessage(ConfigManager.ENFORCER_DEMOTE);
         }
-        broadcast(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.PLAYER_UNDERBOSS_DEMOTE));
+        broadcast(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.PLAYER_ENFORCER_DEMOTE));
     }
 
     public void showInfo(final Player p) {
@@ -289,19 +298,19 @@ public class Crew implements ConfigurationSerializable {
             sendInfoMessage(p, "Boss: ", boss, leaderColor);
         }
 
-        StringBuilder underBossesList = new StringBuilder();
-        if(!this.underBosses.isEmpty()) {
-            for (UUID id : this.underBosses) {
+        StringBuilder enforceresList = new StringBuilder();
+        if(!this.enforcers.isEmpty()) {
+            for (UUID id : this.enforcers) {
                 String playerName = getOnlinePlayerName(id);
                 if (playerName != null) {
-                    if (underBossesList.length() > 0) {
-                        underBossesList.append(", ");
+                    if (enforceresList.length() > 0) {
+                        enforceresList.append(", ");
                     }
-                    underBossesList.append(playerName);
+                    enforceresList.append(playerName);
                 }
             }
         }
-        sendInfoMessage(p, "Underbosses: ", underBossesList.toString(), membersColor);
+        sendInfoMessage(p, "Enforceres: ", enforceresList.toString(), membersColor);
 
         StringBuilder membersList = new StringBuilder();
         for (UUID id : this.members) {
@@ -315,6 +324,11 @@ public class Crew implements ConfigurationSerializable {
         }
         sendInfoMessage(p, "Members: ", membersList.toString(), membersColor);
         p.sendMessage(Component.text("└───────────────────◒").color(headerColor));
+    }
+
+    /* CREW LEVEL */
+    public boolean isMaxLevel() {
+        return this.level == 10;
     }
 
     //Disband crew and delete all SPlayers
@@ -369,22 +383,17 @@ public class Crew implements ConfigurationSerializable {
     }
 
     //Remove player from crew, whether they left or were kicked. Returns true if player was in the crew, false if player was not.
-    public boolean removePlayer(final UUID p, boolean wasKicked) {
-        if (p.equals(this.boss)) {
-            this.disband();
-            return true;
-        }
-        if (this.members.remove(p)) {
-            plugin.getData().removeCPlayer(Bukkit.getPlayer(p));
-            String pName = Bukkit.getOfflinePlayer(p).getName();
+    public void removePlayer(final UUID pUUID, boolean wasKicked) {
+        this.enforcers.remove(pUUID);
+        if (this.members.remove(pUUID)) {
+            plugin.getData().removeCPlayer(Bukkit.getPlayer(pUUID));
+            String pName = Bukkit.getOfflinePlayer(pUUID).getName();
             if(wasKicked){
                 this.broadcast(MessageUtilities.createKickIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.KICKED_FROM_CREW.replace("{player}", pName))));
             } else {
                 this.broadcast(MessageUtilities.createLeaveIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.LEAVE_CREW.replace("{player}", pName))));
             }
-            return true;
         }
-        return false;
     }
 
     //Add player to crew, player must be online to join so we use Player
@@ -399,14 +408,24 @@ public class Crew implements ConfigurationSerializable {
         return pUUID.equals(this.boss);
     }
 
-    public boolean isUnderboss(Player p) {
+    public boolean isEnforcer(Player p) {
         UUID pUUID = p.getUniqueId();
-        return this.underBosses.contains(pUUID);
+        return this.enforcers.contains(pUUID);
     }
 
     public boolean isHigherup(Player p) {
         UUID pUUID = p.getUniqueId();
-        return isBoss(p) || isUnderboss(p);
+        return isBoss(p) || isEnforcer(p);
+    }
+
+    /* Mail */
+    public void addToMail(String message) {
+        this.sentMail.add(message);
+    }
+
+    /* Naming */
+    public void changeName(String newName) {
+        this.name = newName;
     }
 
     public static Crew deserialize(Map<String, Object> map, Crews data) {

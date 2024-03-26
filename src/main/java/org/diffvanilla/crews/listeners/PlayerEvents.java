@@ -75,7 +75,7 @@ public class PlayerEvents implements Listener {
                         // Reset the waiting state
                         ShopCommand.waitingForInputPlayer = null;
                     }
-                }.runTask(Crews.getInstance());
+                }.runTask(plugin);
             }
 
             //logic for getting discord name
@@ -92,7 +92,7 @@ public class PlayerEvents implements Listener {
                         // Reset the waiting state
                         ShopCommand.getDiscordName = null;
                     }
-                }.runTask(Crews.getInstance());
+                }.runTask(plugin);
             }
         }
     }

@@ -5,6 +5,7 @@ author: DiffVanilla
 website: www.diffvanilla.org
 main: org.diffvanilla.crews.Crews
 description: Crews plugin for DiffVanilla
+depend: [ Vault ]
 commands:
   crews:
     description: Create crews

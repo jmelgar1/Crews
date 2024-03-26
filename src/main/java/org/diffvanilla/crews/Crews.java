@@ -6,7 +6,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.diffvanilla.crews.commands.CommandManager;
 //import org.thefruitbox.fbcrews.commands.beginCTF;
@@ -16,10 +18,13 @@ import org.diffvanilla.crews.commands.subcommands.admin.addspongesCommand;
 import org.diffvanilla.crews.commands.subcommands.admin.setspongesCommand;
 import org.diffvanilla.crews.commands.subcommands.ShopCommand;
 import org.diffvanilla.crews.commands.subcommands.admin.updateCrewsCommand;
+import org.diffvanilla.crews.file.CrewsFile;
 import org.diffvanilla.crews.listeners.BreakRareOre;
 import org.diffvanilla.crews.listeners.CatchTreasure;
 import org.diffvanilla.crews.listeners.KillEvent;
 import org.diffvanilla.crews.listeners.PlayerEvents;
+import org.diffvanilla.crews.managers.ConfigManager;
+import org.diffvanilla.crews.object.Crew;
 import org.diffvanilla.crews.object.PlayerData;
 import org.diffvanilla.crews.runnables.CheckForUnclaimed;
 //import org.thefruitbox.fbcrews.tribalgames.events.ProtectionEvents;
@@ -28,15 +33,14 @@ import org.diffvanilla.crews.runnables.CheckForUnclaimed;
 import com.google.gson.*;
 
 public final class Crews extends JavaPlugin implements Listener {
-
     private PlayerData playerData;
     public PlayerData getData(){
         return this.playerData;
     }
 
-    private SectorsFile sectorsFile;
-    public SectorsFile getSectorsFile(){
-        return sectorsFile;
+    private CrewsFile crewsFile;
+    public CrewsFile getCrewsFile(){
+        return crewsFile;
     }
 
     //private JDA jda;
@@ -63,8 +67,20 @@ public final class Crews extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        /* Crews Startup */
         System.out.println("Crews Enabled!");
-        getCommand("crews").setExecutor(new CommandManager());
+        getCommand("crews").setExecutor(new CommandManager(this));
+
+        crewsFile = new CrewsFile(this);
+        crewsFile.loadCrews();
+        ConfigurationSerialization.registerClass(Crew.class);
+
+        saveDefaultConfig();
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+        ConfigManager.loadConfig(this.getConfig());
+
+        /* Old Stuff Needs Updating */
         getCommand("claimsponges").setExecutor(new claimspongesCommand());
         getCommand("setsponges").setExecutor(new setspongesCommand());
         getCommand("addsponges").setExecutor(new addspongesCommand());
@@ -82,9 +98,9 @@ public final class Crews extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new BreakRareOre(), this);
         getServer().getPluginManager().registerEvents(new CatchTreasure(), this);
         getServer().getPluginManager().registerEvents(new KillEvent(), this);
-        getServer().getPluginManager().registerEvents(new PlayerEvents(), this);
-        getServer().getPluginManager().registerEvents(new InfoCommand(), this);
-        getServer().getPluginManager().registerEvents(new ShopCommand(), this);
+        getServer().getPluginManager().registerEvents(new PlayerEvents(this), this);
+//        getServer().getPluginManager().registerEvents(new InfoCommand(), this);
+//        getServer().getPluginManager().registerEvents(new ShopCommand(), this);
 
         //getServer().getPluginManager().registerEvents(new CTF1Countdown(), this);
         //getServer().getPluginManager().registerEvents(new ProtectionEvents(), this);
@@ -103,6 +119,7 @@ public final class Crews extends JavaPlugin implements Listener {
 
     public void onDisable() {
         System.out.println("Crews Disabled!");
+        crewsFile.saveCrews();
         //jda.shutdown();
 
         // Allow at most 10 seconds for remaining requests to finish
@@ -114,10 +131,6 @@ public final class Crews extends JavaPlugin implements Listener {
 //        } catch (InterruptedException e) {
 //            throw new RuntimeException(e);
 //        }
-    }
-
-    public static Crews getInstance() {
-        return instance;
     }
 
 //    public JDA getJda(){

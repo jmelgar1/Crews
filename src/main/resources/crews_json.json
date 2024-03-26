@@ -1,0 +1,1142 @@
+{
+    "thefellowship": {
+        "level": 10,
+        "chief": "b8c2b9ae-fc81-4f3b-9c39-6a6e5a745e41",
+        "elder": "706b389b-6afc-482c-971c-d8bc8231d5aa",
+        "vault": 5400,
+        "showname": "TheFellowship",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 12,
+        "totalSponges": 12766,
+        "requiredSponges": -1,
+        "dateCreated": "10-24-2022",
+        "members": [
+            "b8c2b9ae-fc81-4f3b-9c39-6a6e5a745e41",
+            "706b389b-6afc-482c-971c-d8bc8231d5aa",
+            "1ea46a83-cd13-446e-bcad-0a1a01da463e"
+        ],
+        "economyScore": 17343.942062475162,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 17343.9,
+        "compound": {
+            "world": "world",
+            "x": "24748.400493139965",
+            "y": "67.0",
+            "z": "-11413.591461955311",
+            "yaw": "178.91571",
+            "pitch": "4.4113092"
+        }
+    },
+    "formosa": {
+        "level": 10,
+        "chief": "edadab85-1f81-4f6f-8a52-5c59b9be8b9c",
+        "elder": "5832abcc-acd4-4c19-a11f-9f5c51cf85c2",
+        "vault": 266,
+        "showname": "Formosa",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 12,
+        "requiredSponges": -1,
+        "dateCreated": "10-26-2022",
+        "members": [
+            "edadab85-1f81-4f6f-8a52-5c59b9be8b9c",
+            "5832abcc-acd4-4c19-a11f-9f5c51cf85c2"
+        ],
+        "economyScore": 6562.801954060185,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 6562.8,
+        "totalSponges": 5409,
+        "compound": {
+            "world": "world",
+            "x": "-221338.49227682754",
+            "y": "103.0",
+            "z": "206651.60726089918",
+            "yaw": "1.5100111",
+            "pitch": "30.251738"
+        }
+    },
+    "baggers": {
+        "level": 10,
+        "chief": "202049f2-42f1-4b00-ae18-1cd9b3859a22",
+        "elder": "537e74fd-e076-464b-ba17-59def1cbf038",
+        "vault": 4589,
+        "showname": "Baggers",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 12,
+        "totalSponges": 18067,
+        "requiredSponges": -1,
+        "compound": {
+            "world": "world",
+            "x": "-200464.70839865052",
+            "y": "152.0",
+            "z": "-15894.166273847339",
+            "yaw": "-104.48187",
+            "pitch": "6.0199447"
+        },
+        "dateCreated": "10-24-2022",
+        "members": [
+            "7f3a2e58-f893-4bd4-aec8-a619039fe396",
+            "e69e6e3d-7288-4789-b628-d6bc9d7190d0",
+            "537e74fd-e076-464b-ba17-59def1cbf038",
+            "8d8a0aa6-a23a-4676-bdb0-783c72959dd7",
+            "202049f2-42f1-4b00-ae18-1cd9b3859a22",
+            "38814016-6902-48f4-bf8a-65b4d9fb7477"
+        ],
+        "economyScore": 29781.82695412586,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 29781.8
+    },
+    "horse": {
+        "level": 10,
+        "chief": "55139c81-80e5-411e-9890-b9e1ab348505",
+        "elder": "",
+        "vault": 3457,
+        "showname": "Horse",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 12,
+        "totalSponges": 8586,
+        "requiredSponges": -1,
+        "compound": {
+            "world": "world",
+            "x": "786.038151713184",
+            "y": "90.0",
+            "z": "1110.6900293796764",
+            "yaw": "85.19824",
+            "pitch": "9.897862"
+        },
+        "dateCreated": "10-27-2022",
+        "members": [
+            "55139c81-80e5-411e-9890-b9e1ab348505"
+        ],
+        "economyScore": 8586.0,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 8586.0
+    },
+    "taiwandiyi": {
+        "level": 1,
+        "chief": "568de16e-784e-4b1e-83d0-dcc7d4d66163",
+        "elder": "",
+        "vault": 0,
+        "showname": "taiwandiyi",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 25,
+        "compound": {
+            "world": "world",
+            "x": "24163.39340611929",
+            "y": "64.0",
+            "z": "-40005.783071075355",
+            "yaw": "86.91699",
+            "pitch": "19.221067"
+        },
+        "dateCreated": "10-29-2022",
+        "members": [
+            "568de16e-784e-4b1e-83d0-dcc7d4d66163",
+            "6be14735-832d-4abc-bb39-51323abfc77b",
+            "43c79463-2e14-4e3e-a837-5acc473c5505"
+        ],
+        "economyScore": 0.0,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 0.0
+    },
+    "condomnation": {
+        "level": 4,
+        "chief": "0ae8ba14-497a-4dc3-ba59-fb33a3c06ef6",
+        "elder": "4acb98b2-5d56-4063-94e9-ec9b7143093b",
+        "vault": 357,
+        "showname": "CondomNation",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 6,
+        "totalSponges": 1091,
+        "requiredSponges": 200,
+        "compound": {
+            "world": "world",
+            "x": "6608.724325946537",
+            "y": "107.0",
+            "z": "24836.176083909435",
+            "yaw": "-117.771835",
+            "pitch": "22.650026"
+        },
+        "dateCreated": "10-30-2022",
+        "members": [
+            "0ae8ba14-497a-4dc3-ba59-fb33a3c06ef6",
+            "4acb98b2-5d56-4063-94e9-ec9b7143093b"
+        ],
+        "economyScore": 1323.7228566980334,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 1323.7
+    },
+    "bonergang": {
+        "level": 1,
+        "chief": "6b6c0e8b-eca3-49d1-8bf1-4a2bf7d6a011",
+        "elder": "",
+        "vault": 5,
+        "showname": "BonerGang",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "totalSponges": 5,
+        "requiredSponges": 25,
+        "warps": {},
+        "dateCreated": "11-02-2022",
+        "members": [
+            "6b6c0e8b-eca3-49d1-8bf1-4a2bf7d6a011"
+        ],
+        "economyScore": 5.0,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 5.0
+    },
+    "water": {
+        "level": 10,
+        "chief": "09de7988-aa33-413a-bc9e-76adbd4e1a0b",
+        "elder": "",
+        "vault": 747,
+        "showname": "water",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 12,
+        "totalSponges": 1923,
+        "requiredSponges": -1,
+        "compound": {
+            "world": "world",
+            "x": "-344.60082933866016",
+            "y": "67.0",
+            "z": "-161798.328683364",
+            "yaw": "178.20004",
+            "pitch": "12.899887"
+        },
+        "dateCreated": "11-04-2022",
+        "members": [
+            "09de7988-aa33-413a-bc9e-76adbd4e1a0b",
+            "bec225a3-e1c3-4dfd-bb39-8c5841dfbb93"
+        ],
+        "economyScore": 2333.1980324750853,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 2333.2
+    },
+    "eirwen": {
+        "level": 5,
+        "chief": "c290170f-9aba-4f55-99d7-43a945e998da",
+        "elder": "0398012d-369c-4889-a60a-be11d6d007d9",
+        "vault": 1900,
+        "showname": "Eirwen",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 7,
+        "totalSponges": 2280,
+        "requiredSponges": 300,
+        "compound": {
+            "world": "world",
+            "x": "655929.5944960071",
+            "y": "145.0",
+            "z": "-654461.3339328818",
+            "yaw": "128.71094",
+            "pitch": "23.47446"
+        },
+        "dateCreated": "11-05-2022",
+        "members": [
+            "c290170f-9aba-4f55-99d7-43a945e998da",
+            "0398012d-369c-4889-a60a-be11d6d007d9",
+            "0ae934c7-980a-40cc-b2c9-b06d311ac476",
+            "fa073e7f-32dc-4ccb-b14d-ee485bffda8d",
+            "5951e72a-e04c-499b-9578-207fab15bcdc"
+        ],
+        "economyScore": 3572.0088786656383,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 3572.0
+    },
+    "pistacius": {
+        "level": 3,
+        "chief": "63c810a8-8ea5-459a-ad1a-fc0aae4460eb",
+        "elder": "",
+        "vault": 274,
+        "showname": "Pistacius",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 5,
+        "totalSponges": 349,
+        "requiredSponges": 100,
+        "compound": {
+            "world": "world",
+            "x": "-1.8034098396589375",
+            "y": "110.0",
+            "z": "2.1619554682198183",
+            "yaw": "3.1378174",
+            "pitch": "20.170338"
+        },
+        "dateCreated": "11-08-2022",
+        "members": [
+            "63c810a8-8ea5-459a-ad1a-fc0aae4460eb"
+        ],
+        "economyScore": 349.0,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 349.0
+    },
+    "theniggacrew": {
+        "level": 1,
+        "chief": "f76f8814-eb16-4ff4-b538-651ea009406c",
+        "elder": "5bfa37c5-f7e9-4d30-a6fa-dd659bba4cea",
+        "vault": 27,
+        "showname": "TheNiggacrew",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "totalSponges": 27,
+        "requiredSponges": 25,
+        "warps": {},
+        "dateCreated": "11-13-2022",
+        "members": [
+            "f76f8814-eb16-4ff4-b538-651ea009406c",
+            "5bfa37c5-f7e9-4d30-a6fa-dd659bba4cea"
+        ],
+        "economyScore": 32.75941075238029,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 32.8
+    },
+    "astroknights": {
+        "level": 1,
+        "chief": "d90e9134-ab83-4ccd-bc64-5ef40d3dc730",
+        "elder": "",
+        "vault": 0,
+        "showname": "Astroknights",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 25,
+        "warps": {},
+        "dateCreated": "11-16-2022",
+        "members": [
+            "d90e9134-ab83-4ccd-bc64-5ef40d3dc730"
+        ],
+        "economyScore": 0.0,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 0.0
+    },
+    "holler": {
+        "level": 9,
+        "chief": "860c8357-3a12-4a28-8586-205f72f1cf5a",
+        "elder": "",
+        "vault": 703,
+        "showname": "holler",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 11,
+        "totalSponges": 5009,
+        "requiredSponges": 1500,
+        "dateCreated": "11-21-2022",
+        "members": [
+            "e2aface5-7969-429f-91d2-c4156e0edf93",
+            "8af1aed1-79d8-4151-9094-51bb695365eb",
+            "fe8bd219-36a1-4a15-af4b-f40e6ec3b711",
+            "860c8357-3a12-4a28-8586-205f72f1cf5a",
+            "cb8ef27a-1db5-4df7-9b79-16078814674e",
+            "3f89cb63-da34-4c27-ba39-0753fc12773d"
+        ],
+        "economyScore": 8256.886655959286,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 8256.9,
+        "compound": {
+            "world": "world_nether",
+            "x": "-3749993.2516176626",
+            "y": "128.0",
+            "z": "-3749997.573968819",
+            "yaw": "90.63849",
+            "pitch": "11.808199"
+        }
+    },
+    "pipikakaland": {
+        "level": 2,
+        "chief": "8f171b30-c261-4b70-b610-57c55bdd16f3",
+        "elder": "",
+        "vault": 506,
+        "showname": "PipiKakaLand",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 4,
+        "totalSponges": 531,
+        "requiredSponges": 50,
+        "warps": {},
+        "dateCreated": "11-24-2022",
+        "members": [
+            "9b5240f9-d166-4fda-a209-356f08c47941",
+            "8f171b30-c261-4b70-b610-57c55bdd16f3"
+        ],
+        "economyScore": 644.2684114634791,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 644.3
+    },
+    "beekeepers": {
+        "level": 1,
+        "chief": "6c3b6822-f3ad-411a-94b8-73ec7a3e7313",
+        "elder": "",
+        "vault": 10,
+        "showname": "Beekeepers",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "totalSponges": 10,
+        "requiredSponges": 25,
+        "warps": {},
+        "dateCreated": "11-26-2022",
+        "members": [
+            "6c3b6822-f3ad-411a-94b8-73ec7a3e7313",
+            "6e9ac07a-f8c0-47a6-a6be-6556abf30adf"
+        ],
+        "economyScore": 12.133115093474183,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 12.1
+    },
+    "thewalkingcrew": {
+        "level": 8,
+        "chief": "7a459784-b8e3-45e7-8368-de28c21068d8",
+        "elder": "",
+        "vault": 19,
+        "showname": "TheWalkingcrew",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 10,
+        "totalSponges": 8883,
+        "requiredSponges": 1100,
+        "dateCreated": "12-03-2022",
+        "members": [
+            "7a459784-b8e3-45e7-8368-de28c21068d8",
+            "91f094c9-23e6-4f78-bff0-52e8c900742a"
+        ],
+        "economyScore": 10777.846137533117,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 10777.8,
+        "compound": {
+            "world": "world",
+            "x": "-4195.283142214227",
+            "y": "102.875",
+            "z": "-11699.763406936063",
+            "yaw": "-86.72699",
+            "pitch": "24.271717"
+        }
+    },
+    "wubbox": {
+        "level": 1,
+        "chief": "e5569c8c-da1f-4d34-b399-749197c907ab",
+        "elder": "",
+        "vault": 77,
+        "showname": "Wubbox",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "totalSponges": 77,
+        "requiredSponges": 25,
+        "warps": {},
+        "dateCreated": "01-02-2023",
+        "members": [
+            "e5569c8c-da1f-4d34-b399-749197c907ab"
+        ],
+        "economyScore": 77.0,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 77.0
+    },
+    "toiletmonster": {
+        "level": 1,
+        "chief": "2e08d654-a79b-4423-9744-ad745ce23b50",
+        "elder": "",
+        "vault": 36,
+        "showname": "ToiletMonster",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "totalSponges": 36,
+        "requiredSponges": 25,
+        "warps": {},
+        "dateCreated": "01-02-2023",
+        "members": [
+            "2e08d654-a79b-4423-9744-ad745ce23b50"
+        ],
+        "economyScore": 36.0,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 36.0
+    },
+    "xboxwarrier": {
+        "level": 1,
+        "chief": "c3a4737b-ac9c-4b76-bfb6-3ad808346fb7",
+        "elder": "",
+        "vault": 0,
+        "showname": "xboxwarrier",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 25,
+        "warps": {},
+        "dateCreated": "01-04-2023",
+        "members": [
+            "c3a4737b-ac9c-4b76-bfb6-3ad808346fb7"
+        ],
+        "economyScore": 0.0,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 0.0
+    },
+    "crewskreed": {
+        "level": 1,
+        "chief": "e1351681-9303-4673-b371-74247eed98d7",
+        "elder": "",
+        "vault": 0,
+        "showname": "crewskreed",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 25,
+        "warps": {},
+        "dateCreated": "01-05-2023",
+        "members": [
+            "e1351681-9303-4673-b371-74247eed98d7"
+        ],
+        "economyScore": 0.0,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 0.0
+    },
+    "the-coalition": {
+        "level": 10,
+        "chief": "89c582de-de96-4752-a8a8-d98e75bd6114",
+        "elder": "",
+        "vault": 256,
+        "showname": "The-Coalition",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 12,
+        "totalSponges": 5566,
+        "requiredSponges": -1,
+        "compound": {
+            "world": "world_the_end",
+            "x": "-229.69999998807907",
+            "y": "1.0",
+            "z": "24.719040816569883",
+            "yaw": "-63.69345",
+            "pitch": "10.017263"
+        },
+        "dateCreated": "11-18-2022",
+        "members": [
+            "89c582de-de96-4752-a8a8-d98e75bd6114",
+            "843e29b5-225e-4748-b677-9f01f858d40f"
+        ],
+        "economyScore": 6753.29186102773,
+        "tribalgameswins": {},
+        "rating": 0,
+        "powerScore": 6753.3
+    },
+    "nightwitches": {
+        "level": 1,
+        "chief": "26a7c9ea-557a-4bf9-a278-1be490cb42b9",
+        "elder": "",
+        "vault": 0,
+        "showname": "nightwitches",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 50,
+        "totalSponges": 0,
+        "economyScore": 0.0,
+        "warps": {},
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "01-14-2023",
+        "members": [
+            "26a7c9ea-557a-4bf9-a278-1be490cb42b9"
+        ],
+        "rating": 0,
+        "powerScore": 0.0
+    },
+    "dabestcrew": {
+        "level": 1,
+        "chief": "d164090e-d85c-485d-9970-baf94b55a48b",
+        "elder": "",
+        "vault": 0,
+        "showname": "DaBestcrew",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 50,
+        "totalSponges": 0,
+        "economyScore": 0.0,
+        "warps": {},
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "02-18-2023",
+        "members": [
+            "d164090e-d85c-485d-9970-baf94b55a48b"
+        ],
+        "rating": 0,
+        "powerScore": 0.0
+    },
+    "bonkednoabear": {
+        "level": 1,
+        "chief": "88f8e2b4-149b-4288-889d-0bd7deb3d80d",
+        "elder": "",
+        "vault": 0,
+        "showname": "BonkedNoaBear",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 50,
+        "totalSponges": 0,
+        "economyScore": 0.0,
+        "warps": {},
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "02-19-2023",
+        "members": [
+            "88f8e2b4-149b-4288-889d-0bd7deb3d80d"
+        ],
+        "rating": 0,
+        "powerScore": 0.0
+    },
+    "lolz": {
+        "level": 1,
+        "chief": "5128d956-0660-4c24-ace3-e13d1bf5729f",
+        "elder": "",
+        "vault": 0,
+        "showname": "LOLZ",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 50,
+        "totalSponges": 0,
+        "economyScore": 0.0,
+        "warps": {},
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "03-09-2023",
+        "members": [
+            "5128d956-0660-4c24-ace3-e13d1bf5729f"
+        ],
+        "rating": 0,
+        "powerScore": 0.0
+    },
+    "slayers": {
+        "level": 1,
+        "chief": "615e10cb-3921-4271-8d80-92a9e8a2c4c2",
+        "elder": "",
+        "vault": 0,
+        "showname": "Slayers",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 50,
+        "totalSponges": 0,
+        "economyScore": 0.0,
+        "warps": {},
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "03-19-2023",
+        "members": [
+            "615e10cb-3921-4271-8d80-92a9e8a2c4c2"
+        ],
+        "rating": 0,
+        "powerScore": 0.0
+    },
+    "leafblade": {
+        "level": 3,
+        "chief": "e832c149-d866-46b1-a6c8-6a5802651795",
+        "elder": "",
+        "vault": 16,
+        "showname": "leafblade",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 5,
+        "requiredSponges": 100,
+        "totalSponges": 191,
+        "economyScore": 191.0,
+        "compound": {
+            "world": "world",
+            "x": "1183.6100222351934",
+            "y": "46.75",
+            "z": "-3394.2244879166624",
+            "yaw": "-176.9975",
+            "pitch": "69.29977"
+        },
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "03-29-2023",
+        "members": [
+            "e832c149-d866-46b1-a6c8-6a5802651795"
+        ],
+        "rating": 0,
+        "powerScore": 191.0
+    },
+    "windville": {
+        "level": 3,
+        "chief": "8189525c-d420-48dc-bcb5-06904c9df4c4",
+        "elder": "9ac43de7-62d3-411a-8c5d-975e3344c17e",
+        "vault": 116,
+        "showname": "Windville",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 5,
+        "requiredSponges": 100,
+        "totalSponges": 266,
+        "economyScore": 416.7343691776578,
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "05-05-2023",
+        "members": [
+            "8189525c-d420-48dc-bcb5-06904c9df4c4",
+            "9ac43de7-62d3-411a-8c5d-975e3344c17e",
+            "3ecb18b4-49ec-4dcb-9e15-491465c68874",
+            "7ca529fe-9e5e-4961-99f9-70d0394151b2",
+            "f74dadca-51d7-409a-b95b-5ede53fb680f"
+        ],
+        "rating": 0,
+        "powerScore": 416.7,
+        "compound": {
+            "world": "world",
+            "x": "-20770.53551236149",
+            "y": "68.0",
+            "z": "10449.397418476763",
+            "yaw": "4.0257163",
+            "pitch": "29.966793"
+        }
+    },
+    "imperials": {
+        "level": 1,
+        "chief": "c2229013-6eed-45f1-852a-b6f2e50aa726",
+        "elder": "",
+        "vault": 0,
+        "showname": "imperials",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 50,
+        "totalSponges": 0,
+        "economyScore": 0.0,
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "05-26-2023",
+        "members": [
+            "c2229013-6eed-45f1-852a-b6f2e50aa726"
+        ],
+        "rating": 0,
+        "powerScore": 0.0
+    },
+    "test": {
+        "level": 1,
+        "chief": "28406ef7-b4a9-48e8-96ea-d27f9cf9e36b",
+        "elder": "",
+        "vault": 0,
+        "showname": "test",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 50,
+        "totalSponges": 0,
+        "economyScore": 0.0,
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "06-08-2023",
+        "members": [
+            "28406ef7-b4a9-48e8-96ea-d27f9cf9e36b"
+        ],
+        "rating": 0,
+        "powerScore": 0.0
+    },
+    "daisy": {
+        "level": 1,
+        "chief": "8a7be843-408f-4d01-ba2e-7d08a9d0b082",
+        "elder": "",
+        "vault": 456,
+        "showname": "Daisy",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 50,
+        "totalSponges": 734,
+        "economyScore": 997.2155314003421,
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "06-09-2023",
+        "members": [
+            "8a7be843-408f-4d01-ba2e-7d08a9d0b082",
+            "2e833055-7304-4e6d-ac75-b9e90f47d462",
+            "df1d4ae8-6c19-483c-8570-7b860c91b673"
+        ],
+        "rating": 0,
+        "powerScore": 997.2,
+        "compound": {
+            "world": "world",
+            "x": "13105.786274972825",
+            "y": "43.0",
+            "z": "-18541.903175620122",
+            "yaw": "92.46265",
+            "pitch": "16.949816"
+        }
+    },
+    "turbo": {
+        "level": 3,
+        "chief": "4e95b823-81b5-4451-b4c8-3b29a2cd6137",
+        "elder": "",
+        "vault": 241,
+        "showname": "turbo",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 5,
+        "requiredSponges": 100,
+        "totalSponges": 446,
+        "economyScore": 605.9375027309981,
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "06-09-2023",
+        "members": [
+            "4e95b823-81b5-4451-b4c8-3b29a2cd6137",
+            "63a342c3-0456-4a32-8e72-3261ed4a5f69",
+            "21987f5c-dec9-49e9-8217-24c936ad1985"
+        ],
+        "rating": 0,
+        "powerScore": 605.9,
+        "compound": {
+            "world": "world",
+            "x": "-94563.5416945481",
+            "y": "65.0",
+            "z": "-60716.60707816064",
+            "yaw": "-92.67224",
+            "pitch": "84.029945"
+        }
+    },
+    "dummies": {
+        "level": 1,
+        "chief": "1c92be33-e072-4e36-8024-a962a95208c0",
+        "elder": "",
+        "vault": 221,
+        "showname": "Dummies",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 50,
+        "totalSponges": 421,
+        "economyScore": 571.9723960756731,
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "06-10-2023",
+        "members": [
+            "1c92be33-e072-4e36-8024-a962a95208c0",
+            "f10c0eed-afea-48e1-95de-e053fb19b3c2",
+            "fccdcb8a-9617-411a-b2e6-b983d3907507"
+        ],
+        "rating": 0,
+        "powerScore": 572.0,
+        "compound": {
+            "world": "world",
+            "x": "15201.170186531881",
+            "y": "66.5625",
+            "z": "-4872.7403204435805",
+            "yaw": "-168.89929",
+            "pitch": "-90.0"
+        }
+    },
+    "quest": {
+        "level": 1,
+        "chief": "ba4c2cb4-56a2-4051-8417-4dd191ce5a02",
+        "elder": "",
+        "vault": 0,
+        "showname": "Quest",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 50,
+        "totalSponges": 0,
+        "economyScore": 0.0,
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "06-29-2023",
+        "members": [
+            "ba4c2cb4-56a2-4051-8417-4dd191ce5a02",
+            "445202e1-26bb-472f-9bef-69daf6be43f6"
+        ],
+        "rating": 0,
+        "powerScore": 0.0
+    },
+    "moxdaone": {
+        "level": 1,
+        "chief": "9dac653d-750d-4d5d-9caa-8968c5dce350",
+        "elder": "",
+        "vault": 0,
+        "showname": "moxdaone",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 50,
+        "totalSponges": 0,
+        "economyScore": 0.0,
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "07-20-2023",
+        "members": [
+            "9dac653d-750d-4d5d-9caa-8968c5dce350",
+            "bb7332b7-502c-4da0-9cd8-145040217c94"
+        ],
+        "rating": 0,
+        "powerScore": 0.0
+    },
+    "deadpool": {
+        "level": 1,
+        "chief": "88f8e2b4-149b-4288-889d-0bd7deb3d80d",
+        "elder": "",
+        "vault": 0,
+        "showname": "Deadpool",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 50,
+        "totalSponges": 0,
+        "economyScore": 0.0,
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "07-20-2023",
+        "members": [
+            "88f8e2b4-149b-4288-889d-0bd7deb3d80d"
+        ],
+        "rating": 0,
+        "powerScore": 0.0
+    },
+    "donkeys": {
+        "level": 1,
+        "chief": "40ecd537-17c0-4a4c-b1fd-fa03a72e8348",
+        "elder": "",
+        "vault": 0,
+        "showname": "Donkeys",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 50,
+        "totalSponges": 0,
+        "economyScore": 0.0,
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "08-11-2023",
+        "members": [
+            "40ecd537-17c0-4a4c-b1fd-fa03a72e8348"
+        ],
+        "rating": 0,
+        "powerScore": 0.0
+    },
+    "deez": {
+        "level": 1,
+        "chief": "b843837e-3a60-4de9-a260-4b271f60c47b",
+        "elder": "",
+        "vault": 0,
+        "showname": "deez",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 50,
+        "totalSponges": 0,
+        "economyScore": 0.0,
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "08-20-2023",
+        "members": [
+            "b843837e-3a60-4de9-a260-4b271f60c47b"
+        ],
+        "rating": 0,
+        "powerScore": 0.0
+    },
+    "ghoultown": {
+        "level": 1,
+        "chief": "77f9f3be-3bc6-4e99-806e-2b4c38bf9467",
+        "elder": "e7e65d53-63e0-4dad-9913-388059d5798b",
+        "vault": 30,
+        "showname": "GhoulTown",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 50,
+        "totalSponges": 80,
+        "economyScore": 97.06492074779347,
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "08-24-2023",
+        "members": [
+            "77f9f3be-3bc6-4e99-806e-2b4c38bf9467",
+            "e7e65d53-63e0-4dad-9913-388059d5798b"
+        ],
+        "rating": 0,
+        "powerScore": 97.1,
+        "compound": {
+            "world": "world",
+            "x": "-1266.300000011921",
+            "y": "79.0",
+            "z": "611.7972432843776",
+            "yaw": "175.05965",
+            "pitch": "9.450514"
+        }
+    },
+    "baldhead": {
+        "level": 1,
+        "chief": "5eee413f-5204-43c8-b693-9ff1ebeeca87",
+        "elder": "",
+        "vault": 0,
+        "showname": "BALDHEAD",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 50,
+        "totalSponges": 0,
+        "economyScore": 0.0,
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "08-24-2023",
+        "members": [
+            "5eee413f-5204-43c8-b693-9ff1ebeeca87"
+        ],
+        "rating": 0,
+        "powerScore": 0.0
+    },
+    "shartnfart": {
+        "level": 1,
+        "chief": "79391ec5-e2aa-460d-89e7-b56bda6134ed",
+        "elder": "",
+        "vault": 0,
+        "showname": "ShartNFart",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 50,
+        "totalSponges": 0,
+        "economyScore": 0.0,
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "08-24-2023",
+        "members": [
+            "79391ec5-e2aa-460d-89e7-b56bda6134ed"
+        ],
+        "rating": 0,
+        "powerScore": 0.0
+    },
+    "boxers": {
+        "level": 1,
+        "chief": "ee1f6f94-e2b7-499f-9111-6121ead9c464",
+        "elder": "",
+        "vault": 60,
+        "showname": "Boxers",
+        "currentWarps": 0,
+        "maxWarps": 1,
+        "maxPlayers": 3,
+        "requiredSponges": 50,
+        "totalSponges": 60,
+        "economyScore": 81.51625597278002,
+        "tribalgameswins": {
+            "ctf": 0,
+            "koth": 0,
+            "tott": 0,
+            "rating": 0
+        },
+        "dateCreated": "08-24-2023",
+        "members": [
+            "ee1f6f94-e2b7-499f-9111-6121ead9c464",
+            "630c7f31-a48b-4d7c-9868-afef13f1604f",
+            "46cb7ebb-3b61-4ef5-bc74-fa267581d0d9"
+        ],
+        "rating": 0,
+        "powerScore": 81.5
+    }
+}

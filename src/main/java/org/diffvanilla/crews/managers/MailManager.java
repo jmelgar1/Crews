@@ -15,7 +15,6 @@ import java.util.UUID;
 public class MailManager {
 
     CrewManager crewManager = new CrewManager();
-    Crews crewsClass = Crews.getInstance();
     ChatUtilities chatUtil = new ChatUtilities();
 
     public void opencrewMail(Player p){

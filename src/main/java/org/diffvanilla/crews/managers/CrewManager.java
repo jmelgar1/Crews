@@ -21,10 +21,6 @@ import org.diffvanilla.crews.utilities.JsonUtilities;
 import org.diffvanilla.crews.utilities.UnicodeCharacters;
 
 public class CrewManager {
-
-	//Crews instance
-	private final Crews crewsClass = Crews.getInstance();
-
 	private final UnicodeCharacters unicode = new UnicodeCharacters();
 	private final ChatUtilities chatUtil = new ChatUtilities();
 	private final JsonUtilities json = new JsonUtilities();
@@ -396,6 +392,9 @@ public class CrewManager {
 			p.sendMessage(chatUtil.errorIcon + ChatColor.RED + "That crew name does not exist or the selected player is not in a crew!");
 		}
 	}
+
+
+    //FOCUS ON THIS STUFF BELOW
 	
 	public void generateEconomy() {
 		JsonObject crewsJson = crewsClass.getcrewsJson();

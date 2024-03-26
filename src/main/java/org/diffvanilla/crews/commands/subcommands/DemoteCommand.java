@@ -56,15 +56,15 @@ public class DemoteCommand implements SubCommand {
             p.sendMessage(ConfigManager.PLAYER_NOT_IN_SAME_CREW);
             return;
         }
-        if (!pCrew.isUnderboss(demotedPlayer)) {
-            p.sendMessage(ConfigManager.PLAYER_NOT_UNDERBOSS);
+        if (!pCrew.isEnforcer(demotedPlayer)) {
+            p.sendMessage(ConfigManager.PLAYER_NOT_ENFORCER);
             return;
         }
         if (p.equals(demotedPlayer)) {
             p.sendMessage(ConfigManager.CAN_NOT_DEMOTE_SELF);
             return;
         }
-        pCrew.removeUnderboss(demotedPlayer.getUniqueId());
+        pCrew.removeEnforcer(demotedPlayer.getUniqueId());
         //MORE MESSAGES?
         //add demote functionality
     }

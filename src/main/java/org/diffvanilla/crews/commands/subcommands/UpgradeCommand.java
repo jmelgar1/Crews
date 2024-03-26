@@ -1,12 +1,17 @@
 package org.diffvanilla.crews.commands.subcommands;
 
 import com.google.gson.JsonObject;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.diffvanilla.crews.Crews;
 import org.diffvanilla.crews.commands.SubCommand;
 
 import net.md_5.bungee.api.ChatColor;
 import org.diffvanilla.crews.exceptions.NotInCrew;
+import org.diffvanilla.crews.managers.ConfigManager;
+import org.diffvanilla.crews.object.Crew;
+import org.diffvanilla.crews.object.PlayerData;
+import org.diffvanilla.crews.utilities.ChatUtilities;
 
 public class UpgradeCommand implements SubCommand {
 
@@ -29,29 +34,30 @@ public class UpgradeCommand implements SubCommand {
 
     @Override
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
-        String playerCrew = crewManager.getPlayercrew(p);
-
-        if(!playerCrew.equals("none")) {
-            JsonObject crewsJson = crewsClass.getcrewsJson();
-            JsonObject crewObject = crewsJson.getAsJsonObject(playerCrew);
-            int upgradeCost = crewObject.get("requiredSponges").getAsInt();
-            int crewVault = crewObject.get("vault").getAsInt();
-            if(args.length == 1) {
-                if(crewManager.CheckForChief(playerCrew, p)) {
-                    if(crewManager.getLevel(playerCrew) != 10) {
-                        crewManager.removeFromVault(playerCrew, upgradeCost, p);
-                        crewManager.upgradecrew(playerCrew, crewVault, p);
-                    } else {
-                        p.sendMessage(chatUtil.errorIcon + ChatColor.RED + "Your crew is max level!");
-                    }
-                } else {
-                    p.sendMessage(chatUtil.errorIcon + ChatColor.RED + "Only crew chiefs can upgrade the crew!");
-                }
-            } else {
-                chatUtil.CorrectUsage(p, getSyntax());
-            }
-        } else {
-            chatUtil.crewMembershipRequirement(p, getSyntax());
+        PlayerData data = plugin.getData();
+        Crew pCrew = data.getCrew(p);
+        if (args.length != 1) {
+            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            return;
+        }
+        if (pCrew == null) {
+            p.sendMessage(ConfigManager.NOT_IN_CREW);
+            return;
+        }
+        if (!pCrew.isBoss(p)) {
+            p.sendMessage(ConfigManager.MUST_BE_BOSS);
+            return;
+        }
+        if (pCrew.isMaxLevel()) {
+            p.sendMessage(ConfigManager.CREW_IS_MAX_LEVEL);
+            return;
+        }
+        int levelUpCost = pCrew.getLevelUpCost();
+        int currentLevel = pCrew.getLevel();
+        if (levelUpCost <= pCrew.getVault()) {
+            pCrew.removeFromVault(levelUpCost, p);
+            //new upgrade feature
+            //crewManager.upgradecrew(playerCrew, crewVault, p);
         }
     }
 }

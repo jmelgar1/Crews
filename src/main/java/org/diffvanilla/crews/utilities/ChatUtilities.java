@@ -33,7 +33,7 @@ public class ChatUtilities {
     public static String successIcon = ChatColor.DARK_GREEN + "[✔] ";
 
     //error messages
-    public void UpgradeSuccessful(String crew, String upgrade) {
+    public static void UpgradeSuccessful(String crew, String upgrade) {
         CrewManager crewManager = new CrewManager();
         crewManager.sendMessageToMembers(crew, ChatColor.DARK_PURPLE + "[" + ChatColor.LIGHT_PURPLE + "✨" + ChatColor.DARK_PURPLE + "] " + ChatColor.LIGHT_PURPLE + "Your crew has unlocked the " +
             upgrade.toUpperCase() + " upgrade!");
@@ -44,11 +44,11 @@ public class ChatUtilities {
             + ChatColor.YELLOW + "/crews shop");
     }
 
-    public void UpgradeAlreadyUnlocked(Player p) {
+    public static void UpgradeAlreadyUnlocked(Player p) {
         p.sendMessage(errorIcon + ChatColor.RED + "Your crew already has this unlocked!");
     }
 
-    public void NeedMoreSponges(Player p) {
+    public static void NeedMoreSponges(Player p) {
         p.sendMessage(errorIcon + ChatColor.RED + "You can not afford this! More sponges are required to be in the crew vault!");
     }
 
@@ -56,11 +56,11 @@ public class ChatUtilities {
         p.sendMessage(errorIcon + ChatColor.RED + "You have no active crew invite! ");
     }
 
-    public void MustBeChiefOrElder(Player p) {
+    public static void MustBeChiefOrElder(Player p) {
         p.sendMessage(errorIcon + ChatColor.RED + "You must be chief or elder to do this! ");
     }
 
-    public void MustBeChief(Player p) {
+    public static void MustBeChief(Player p) {
         p.sendMessage(errorIcon + ChatColor.RED + "You must be chief to do this! ");
     }
 

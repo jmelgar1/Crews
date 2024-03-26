@@ -7,6 +7,10 @@ import org.diffvanilla.crews.commands.SubCommand;
 
 import net.md_5.bungee.api.ChatColor;
 import org.diffvanilla.crews.exceptions.NotInCrew;
+import org.diffvanilla.crews.managers.ConfigManager;
+import org.diffvanilla.crews.object.Crew;
+import org.diffvanilla.crews.object.PlayerData;
+import org.diffvanilla.crews.utilities.ChatUtilities;
 
 public class PromoteCommand implements SubCommand {
 	@Override
@@ -28,39 +32,46 @@ public class PromoteCommand implements SubCommand {
 
     @Override
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
-        String playerCrew = crewManager.getPlayercrew(p);
-        if (!playerCrew.equals("none")) {
-            if (args.length == 2) {
-                Player promotedPlayer = Bukkit.getServer().getPlayer(args[1]);
-                if (promotedPlayer != null) {
-                    if (crewManager.CheckForChief(playerCrew, p)) {
-                        String promotedPlayercrew = crewManager.getPlayercrew(promotedPlayer);
-                        if (crewManager.getElder(playerCrew).equals("")) {
-                            if (playerCrew.equals(promotedPlayercrew)) {
-                                if (!promotedPlayer.getName().equals(p.getName())) {
-                                    crewManager.setElder(playerCrew, promotedPlayer);
-                                    crewManager.sendMessageToMembers(playerCrew,
-                                        ChatColor.DARK_GREEN + "[⏫] " + ChatColor.GREEN + promotedPlayer.getName() + " has been promoted to elder!");
-                                } else {
-                                    p.sendMessage(chatUtil.errorIcon + ChatColor.RED + "You can not promote yourself!");
-                                }
-                            } else {
-                                p.sendMessage(chatUtil.errorIcon + ChatColor.RED + promotedPlayer.getName() + " is not in your crew!");
-                            }
-                        } else {
-                            p.sendMessage(chatUtil.errorIcon + ChatColor.RED + "There can only be 1 other elder!");
-                        }
-                    } else {
-                        p.sendMessage(chatUtil.errorIcon + ChatColor.RED + "You need to be a chief to promote players!");
-                    }
-                } else {
-                    p.sendMessage(chatUtil.errorIcon + ChatColor.RED + "Player " + args[1] + " not found!");
-                }
-            } else {
-                chatUtil.CorrectUsage(p, getSyntax());
-            }
-        } else {
-            chatUtil.crewMembershipRequirement(p, getSyntax());
+        PlayerData data = plugin.getData();
+        Crew pCrew = data.getCrew(p);
+        Player tPlayer = Bukkit.getPlayer(args[1]);
+        Crew tCrew = data.getCrew(tPlayer);
+        if (args.length != 2) {
+            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            return;
         }
+        if(pCrew == null) {
+            p.sendMessage(ConfigManager.NOT_IN_CREW);
+            return;
+        }
+        if(tPlayer == null) {
+            p.sendMessage(ConfigManager.PLAYER_NOT_FOUND);
+            return;
+        }
+        if(!pCrew.isBoss(p)) {
+            p.sendMessage(ConfigManager.MUST_BE_BOSS);
+            return;
+        }
+        if(!pCrew.equals(tCrew)) {
+            p.sendMessage(ConfigManager.PLAYER_NOT_IN_SAME_CREW);
+            return;
+        }
+        if(pCrew.isEnforcer(tPlayer)) {
+            p.sendMessage(ConfigManager.ALREADY_ENFORCER);
+            return;
+        }
+        if(pCrew.getEnforcers().size() >= pCrew.getEnforcerLimit()) {
+            if(pCrew.isMaxLevel()) {
+                p.sendMessage(ConfigManager.MAX_LEVEL_ENFORCER_LIMIT);
+            } else {
+                p.sendMessage(ConfigManager.ENFORCER_LIMIT);
+            }
+            return;
+        }
+        if(tPlayer.equals(p)) {
+            p.sendMessage(ConfigManager.CAN_NOT_PROMOTE_SELF);
+            return;
+        }
+        pCrew.addEnforcer(tPlayer.getUniqueId());
     }
 }
