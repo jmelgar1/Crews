@@ -2,20 +2,22 @@ package org.diffvanilla.crews.commands.subcommands;
 
 import java.util.Map;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.diffvanilla.crews.Crews;
 import org.diffvanilla.crews.commands.SubCommand;
 import org.diffvanilla.crews.exceptions.NotInCrew;
 import org.diffvanilla.crews.object.PlayerData;
-import org.diffvanilla.crews.utilities.ChatUtilities;
-import org.diffvanilla.crews.utilities.GeneralUtilities;
 
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
+import org.diffvanilla.crews.utilities.UnicodeCharacters;
 
 public class ListCommand implements SubCommand {
 
@@ -40,74 +42,89 @@ public class ListCommand implements SubCommand {
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
         PlayerData data = plugin.getData();
 
-        //Slow process so run asynchronously
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                int pageNum = 0;
-                int firstEntry = 0;
-                int lastEntry = 0;
-
-                if(args.length == 1) {
-                    pageNum = 1;
-                    firstEntry = 1;
-                    lastEntry = 10;
-                } else if(args.length == 2) {
-                    pageNum = Integer.parseInt(args[1]);
-                    firstEntry = (pageNum*10)-9;
-                    lastEntry = (pageNum*10);
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            int pageNum;
+            if (args.length == 1) {
+                try {
+                    pageNum = Integer.parseInt(args[0]);
+                } catch (NumberFormatException e) {
+                    p.sendMessage(Component.text("Invalid page number.", TextColor.fromHexString("#FF0000"))); // Using red for errors
+                    return;
                 }
+            } else {
+                pageNum = 1;
+            }
 
-                Map<String, Double> sortedList = data.generateLeaderboardJson();
-                int count = 1;
-                int lastPageNum = (int)Math.ceil((sortedList.size()/10.0));
-                if(firstEntry <= sortedList.size()) {
-                    p.sendMessage(ChatUtilities.crewsColor + ChatColor.UNDERLINE.toString() + "Server crews:");
+            Map<String, Integer> sortedList = data.generateLeaderboardJson();
+            int totalEntries = sortedList.size();
+            int entriesPerPage = 10;
+            int lastPageNum = (int) Math.ceil(totalEntries / (double) entriesPerPage);
+            if (pageNum < 1 || pageNum > lastPageNum) {
+                p.sendMessage(Component.text("Page number is out of range. Please enter a number between 1 and " + lastPageNum + ".", TextColor.fromHexString("#FF0000")));
+                return;
+            }
 
-                    for(Map.Entry<String, Double> entry : sortedList.entrySet()) {
-                        if(count >= firstEntry && count <= lastEntry) {
-                            String crewName = entry.getKey();
-                            Double powerScore = entry.getValue();
+            int firstEntryIndex = (pageNum - 1) * entriesPerPage;
+            int count = 0;
+            boolean isAlternateColor = false; // For alternating colors after the top 5
 
-                            ChatColor countColor;
-                            ChatColor placementColor;
-                            if(count % 2 == 0){
-                                countColor = ChatColor.GREEN;
-                                placementColor = countColor;
-                            } else {
-                                countColor = ChatColor.DARK_GREEN;
-                                placementColor = countColor;
-                            }
+            TextComponent leaderBoardTitle = Component.text("=== ").color(TextColor.fromHexString("#BDBDBD"))
+                .append(Component.text((UnicodeCharacters.trophy + " CREWS LEADERBOARD " + UnicodeCharacters.trophy)).color(TextColor.fromHexString("#FFD54F")))
+                .append(Component.text(" ===")).color(TextColor.fromHexString("#BDBDBD"));
+            p.sendMessage(leaderBoardTitle);
+            for (Map.Entry<String, Integer> entry : sortedList.entrySet()) {
+                if (count >= firstEntryIndex && count < firstEntryIndex + entriesPerPage) {
+                    String crewName = entry.getKey();
+                    int influence = entry.getValue();
 
-                            if(count <= 5){
-                                placementColor = ChatColor.GOLD;
-                                countColor = ChatColor.YELLOW;
-                            }
-
-                            TextComponent crewInfo = new TextComponent(placementColor + "#" + count + ". " +
-                                countColor + crewName + ChatColor.DARK_PURPLE + " ["
-                                + ChatColor.LIGHT_PURPLE + powerScore + ChatColor.DARK_PURPLE + "]");
-                            crewInfo.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/crews lookup " + crewName));
-                            crewInfo.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("View " + crewName)));
-                            p.spigot().sendMessage(crewInfo);
-                        }
-                        count++;
+                    TextColor color;
+                    if (pageNum == 1 && count < 5) {
+                        color = (count % 2 == 0) ? TextColor.fromHexString("#FFD700") : TextColor.fromHexString("#C5A500");
+                    } else {
+                        color = isAlternateColor ? TextColor.fromHexString("#90A4AE") : TextColor.fromHexString("#546E7A");
+                        isAlternateColor = !isAlternateColor;
                     }
 
-                    String pageSelector;
-                    if(lastPageNum > pageNum) {
-                        pageSelector = ChatColor.GRAY + "Next Page >>>";
-                        TextComponent nextPage = new TextComponent(pageSelector);
-                        nextPage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/crews list " + (pageNum + 1)));
-                        nextPage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Click to view next page")));
-                        p.spigot().sendMessage(nextPage);
+                    Component message = Component.text((count + 1) + ". ", color)
+                        .append(Component.text(crewName, color))
+                        .append(Component.text(" [", UnicodeCharacters.influence_outline_color))
+                        .append(Component.text(influence, UnicodeCharacters.influence_color))
+                        .append(Component.text("]", UnicodeCharacters.influence_outline_color));
+
+                    message = message.hoverEvent(HoverEvent.showText(Component.text("View " + crewName)))
+                        .clickEvent(ClickEvent.runCommand("/crews lookup " + crewName));
+
+                    p.sendMessage(message);
+                }
+                if (++count >= firstEntryIndex + entriesPerPage) break;
+            }
+
+            // Combine pagination controls into a single line
+            if (pageNum > 1 || pageNum < lastPageNum) {
+                Component paginationLine = Component.empty(); // Start with an empty component
+
+                if (pageNum > 1) {
+                    Component previousPage = Component.text("< Previous", TextColor.fromHexString("#DCE775"))
+                        .clickEvent(ClickEvent.runCommand("/crews list " + (pageNum - 1)))
+                        .hoverEvent(HoverEvent.showText(Component.text("Click to view previous page", TextColor.fromHexString("#BDBDBD"))))
+                        .decorate(TextDecoration.BOLD);;
+                    paginationLine = paginationLine.append(previousPage);
+                }
+
+                if (pageNum < lastPageNum) {
+                    if (pageNum > 1) {
+                        Component separator = Component.text(" | ", TextColor.fromHexString("#FFFFFF"));
+                        paginationLine = paginationLine.append(separator);
                     }
 
-                } else {
-                    p.sendMessage(ChatUtilities.errorIcon + ChatColor.RED + "Last page number is " + (int)Math.ceil((sortedList.size()/10.0)));
+                    Component nextPage = Component.text("Next >", TextColor.fromHexString("#AED581"))
+                        .clickEvent(ClickEvent.runCommand("/crews list " + (pageNum + 1)))
+                        .hoverEvent(HoverEvent.showText(Component.text("Click to view next page", TextColor.fromHexString("#BDBDBD"))))
+                        .decorate(TextDecoration.BOLD);;
+                    paginationLine = paginationLine.append(nextPage);
                 }
+
+                p.sendMessage(paginationLine);
             }
         });
     }

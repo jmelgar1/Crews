@@ -14,6 +14,7 @@ repositories {
   maven(url = "https://jitpack.io")
   maven(url = "https://maven.playpro.com")
   maven(url = "https://maven.enginehub.org/repo/")
+  maven(url = "https://repo.dmulloy2.net/repository/public/")
 }
 
 dependencies {
@@ -21,6 +22,7 @@ dependencies {
   compileOnly("net.dv8tion:JDA:5.0.0-beta.13")
   compileOnly("net.coreprotect:coreprotect:22.0")
   compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.15")
+  compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
 }
 
 tasks {

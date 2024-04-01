@@ -43,6 +43,6 @@ public class WhoCommand implements SubCommand {
             p.sendMessage(ConfigManager.CREW_NOT_FOUND);
             return;
         }
-        tCrew.showInfo(p);
+        tCrew.showInfo(p, false);
     }
 }

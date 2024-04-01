@@ -2,37 +2,27 @@ package org.diffvanilla.crews;
 
 import java.io.*;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.diffvanilla.crews.commands.CommandManager;
-//import org.thefruitbox.fbcrews.commands.beginCTF;
-import org.diffvanilla.crews.commands.claimspongesCommand;
-import org.diffvanilla.crews.commands.subcommands.InfoCommand;
-import org.diffvanilla.crews.commands.subcommands.admin.addspongesCommand;
-import org.diffvanilla.crews.commands.subcommands.admin.setspongesCommand;
-import org.diffvanilla.crews.commands.subcommands.ShopCommand;
-import org.diffvanilla.crews.commands.subcommands.admin.updateCrewsCommand;
 import org.diffvanilla.crews.file.CrewsFile;
-import org.diffvanilla.crews.listeners.BreakRareOre;
-import org.diffvanilla.crews.listeners.CatchTreasure;
-import org.diffvanilla.crews.listeners.KillEvent;
 import org.diffvanilla.crews.listeners.PlayerEvents;
 import org.diffvanilla.crews.managers.ConfigManager;
 import org.diffvanilla.crews.object.Crew;
 import org.diffvanilla.crews.object.PlayerData;
-import org.diffvanilla.crews.runnables.CheckForUnclaimed;
-//import org.thefruitbox.fbcrews.tribalgames.events.ProtectionEvents;
-//import org.thefruitbox.fbcrews.tribalgames.runnables.ctf1.CTF1Countdown;
 
 import com.google.gson.*;
+import org.diffvanilla.crews.runnables.ShowInfoTask;
 
 public final class Crews extends JavaPlugin implements Listener {
+    /* New Stuff  */
     private PlayerData playerData;
     public PlayerData getData(){
         return this.playerData;
@@ -43,8 +33,20 @@ public final class Crews extends JavaPlugin implements Listener {
         return crewsFile;
     }
 
+    private ProtocolManager protocolManager;
+    public ProtocolManager getProtocolManager(){
+        return this.protocolManager;
+    }
+
+    private ShowInfoTask showInfoTask;
+    public ShowInfoTask getShowInfoTask(){
+        return this.showInfoTask;
+    }
+
+
     //private JDA jda;
 
+    /* Old stuff */
     //unclaimed rewards file
     private File rewardsFile;
     private FileConfiguration rewards;
@@ -69,35 +71,36 @@ public final class Crews extends JavaPlugin implements Listener {
     public void onEnable() {
         /* Crews Startup */
         System.out.println("Crews Enabled!");
+        this.playerData = new PlayerData();
+        this.showInfoTask = new ShowInfoTask(this);
         getCommand("crews").setExecutor(new CommandManager(this));
-
-        crewsFile = new CrewsFile(this);
-        crewsFile.loadCrews();
-        ConfigurationSerialization.registerClass(Crew.class);
-
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
         saveConfig();
         ConfigManager.loadConfig(this.getConfig());
+        crewsFile = new CrewsFile(this);
+        crewsFile.loadCrews();
+        ConfigurationSerialization.registerClass(Crew.class);
+
+        showInfoTask.runTaskTimer(this, 0L, 1L);
+
+        protocolManager = ProtocolLibrary.getProtocolManager();
 
         /* Old Stuff Needs Updating */
-        getCommand("claimsponges").setExecutor(new claimspongesCommand());
-        getCommand("setsponges").setExecutor(new setspongesCommand());
-        getCommand("addsponges").setExecutor(new addspongesCommand());
-        getCommand("crewsupdate").setExecutor(new updateCrewsCommand());
+        //getCommand("claimsponges").setExecutor(new claimspongesCommand());
+        //getCommand("setsponges").setExecutor(new setspongesCommand());
+        //getCommand("addsponges").setExecutor(new addspongesCommand());
+        //getCommand("crewsupdate").setExecutor(new updateCrewsCommand());
         //getCommand("beginctf").setExecutor(new beginCTF());
 
         //createcrewsFile();
-        createRewardsFile();
-        createPricesFile();
-        createCTFFile();
-        createDiscordSettings();
+//        createRewardsFile();
+//        createPricesFile();
+//        createCTFFile();
+//        createDiscordSettings();
 
-        createCrewsFileJson();
+        //createCrewsFileJson();
 
-        getServer().getPluginManager().registerEvents(new BreakRareOre(), this);
-        getServer().getPluginManager().registerEvents(new CatchTreasure(), this);
-        getServer().getPluginManager().registerEvents(new KillEvent(), this);
         getServer().getPluginManager().registerEvents(new PlayerEvents(this), this);
 //        getServer().getPluginManager().registerEvents(new InfoCommand(), this);
 //        getServer().getPluginManager().registerEvents(new ShopCommand(), this);
@@ -105,9 +108,6 @@ public final class Crews extends JavaPlugin implements Listener {
         //getServer().getPluginManager().registerEvents(new CTF1Countdown(), this);
         //getServer().getPluginManager().registerEvents(new ProtectionEvents(), this);
         //getCTF().set("event", false);
-
-        CheckForUnclaimed checkForUnclaimed = new CheckForUnclaimed();
-        checkForUnclaimed.runTaskTimer(this, 0L, 12000);
 
 //        try {
 //            jda = JDABuilder.createDefault(getDiscordSettings().getString("bot_token")).build();

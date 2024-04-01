@@ -3,14 +3,37 @@ package org.diffvanilla.crews.managers;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.diffvanilla.crews.utilities.MessageUtilities;
 
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.bukkit.ChatColor.translateAlternateColorCodes;
 
 public class ConfigManager {
+    /**
+     * Translates hex color codes and alternate color codes in the given message.
+     *
+     * @param message The message to translate color codes in.
+     * @return The message with color codes translated.
+     */
+    public static String translateColors(String message) {
+        final Pattern hexPattern = Pattern.compile("&#([A-Fa-f0-9]{6})");
+        Matcher matcher = hexPattern.matcher(message);
+        StringBuilder buffer = new StringBuilder();
+
+        while (matcher.find()) {
+            matcher.appendReplacement(buffer, ChatColor.of("#" + matcher.group(1)).toString());
+        }
+        matcher.appendTail(buffer);
+
+        // Translate alternate color codes (&c, &l, etc.)
+        return ChatColor.translateAlternateColorCodes('&', buffer.toString());
+    }
+
     public static void loadConfig(final FileConfiguration config){
         MAX_MEMBERS = config.getInt("max-members");
         COMMANDS_PER_PAGE = config.getInt("commands-per-page");
@@ -21,11 +44,11 @@ public class ConfigManager {
         UPGRADE_CHAT_COST = config.getInt("upgrade-chat-cost");
         UPGRADE_MAIL_COST = config.getInt("upgrade-mail-cost");
         UPGRADE_DISCORD_COST = config.getInt("upgrade-discord-cost");
+        INFLUENCE_PER_PLAYER = config.getInt("influence-per-player");
 
 
         /* Text Components */
         ALREADY_IN_CREW = MessageUtilities.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("already-in-crew")))));
-        ALREADY_ENFORCER = MessageUtilities.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("already-enforcer")))));
         CAN_NOT_INVITE_SELF = MessageUtilities.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("can-not-invite-self")))));
         CANT_KICK_BOSS = MessageUtilities.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("cant-kick-boss")))));
         CANT_KICK_SAME_RANK = MessageUtilities.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("cant-kick-same-rank")))));
@@ -64,6 +87,7 @@ public class ConfigManager {
 
         /* Strings */
         ALREADY_INVITED = translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("already-invited")));
+        ALREADY_ENFORCER = translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("already-enforcer")));
         CREW_DISBAND = translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("crew-disband")));
         CREW_FOUNDED = translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("crew-founded")));
         ENFORCER_LIMIT = translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("max-enforcer")));
@@ -78,9 +102,9 @@ public class ConfigManager {
         PLAYER_NOT_IN_SAME_CREW = translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("player-not-in-same-crew")));
         PLAYER_NOT_ONLINE = translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("player-not-online")));
         PLAYER_NOT_FREE_AGENT = translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("player-not-free-agent")));
-        PLAYER_ENFORCER_DEMOTE = translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("reached-max-members")));
+        PLAYER_ENFORCER_DEMOTE = translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("player-enforcer-demote")));
         UPGRADE_NOT_UNLOCKED = translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("upgrade-not-unlocked")));
-        REACHED_MAX_MEMBERS = translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("reached-max-members")));
+        UPGRADE_ALREADY_UNLOCKED = translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("upgrade-already-unlocked")));
         REACHED_MAX_MEMBERS = translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("reached-max-members")));
     }
 
@@ -93,7 +117,9 @@ public class ConfigManager {
     public static int UPGRADE_CHAT_COST;
     public static int UPGRADE_MAIL_COST;
     public static int UPGRADE_DISCORD_COST;
+    public static int INFLUENCE_PER_PLAYER;
     public static String ALREADY_INVITED;
+    public static String ALREADY_ENFORCER;
     public static String CREW_DISBAND;
     public static String CREW_FOUNDED;
     public static String ENFORCER_LIMIT;
@@ -111,8 +137,8 @@ public class ConfigManager {
     public static String SPONGE_DEPOSIT;
     public static String SPONGE_WITHDRAW;
     public static String UPGRADE_NOT_UNLOCKED;
+    public static String UPGRADE_ALREADY_UNLOCKED;
     public static TextComponent ALREADY_IN_CREW;
-    public static TextComponent ALREADY_ENFORCER;
     public static TextComponent CAN_NOT_DEMOTE_SELF;
     public static TextComponent CAN_NOT_PROMOTE_SELF;
     public static TextComponent CAN_NOT_INVITE_SELF;

@@ -33,11 +33,11 @@ public class ChatUtilities {
     public static String successIcon = ChatColor.DARK_GREEN + "[✔] ";
 
     //error messages
-    public static void UpgradeSuccessful(String crew, String upgrade) {
-        CrewManager crewManager = new CrewManager();
-        crewManager.sendMessageToMembers(crew, ChatColor.DARK_PURPLE + "[" + ChatColor.LIGHT_PURPLE + "✨" + ChatColor.DARK_PURPLE + "] " + ChatColor.LIGHT_PURPLE + "Your crew has unlocked the " +
-            upgrade.toUpperCase() + " upgrade!");
-    }
+//    public static void UpgradeSuccessful(String crew, String upgrade) {
+//        CrewManager crewManager = new CrewManager();
+//        crewManager.sendMessageToMembers(crew, ChatColor.DARK_PURPLE + "[" + ChatColor.LIGHT_PURPLE + "✨" + ChatColor.DARK_PURPLE + "] " + ChatColor.LIGHT_PURPLE + "Your crew has unlocked the " +
+//            upgrade.toUpperCase() + " upgrade!");
+//    }
 
     public void UpgradeNotUnlocked(Player p) {
         p.sendMessage(errorIcon + ChatColor.RED + "Your crew does not have this upgrade unlocked! "

@@ -1,6 +1,7 @@
 package org.diffvanilla.crews.object;
 
 import com.google.gson.JsonObject;
+import io.papermc.paper.configuration.type.fallback.FallbackValue;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
@@ -18,6 +19,7 @@ public class PlayerData {
         cPlayers = new HashMap<>();
         invites = new HashMap<>();
         pendingTeleports = new HashMap<>();
+        inCrewInfo = new ArrayList<>();
         inCrewChat = new ArrayList<>();
 
         // In case of server /reload
@@ -48,6 +50,14 @@ public class PlayerData {
     private final HashMap<Player, Integer> pendingTeleports;
     public HashMap<Player, Integer> getPendingTeleports(){
         return pendingTeleports;
+    }
+
+    /*
+   Looking at Crew Info Hologram
+    */
+    private final ArrayList<Player> inCrewInfo;
+    public ArrayList<Player> getInCrewInfo(){
+        return inCrewInfo;
     }
 
     /*
@@ -165,6 +175,20 @@ public class PlayerData {
         return true;
     }
 
+    public void calculateInfluenceForAllCrews() {
+        for(Crew crew : crews) {
+            calculateInfluence(crew);
+        }
+    }
+
+    public void calculateInfluence(Crew crew) {
+        int vault = crew.getVault();
+        int playerPower = crew.getMembers().size() * ConfigManager.INFLUENCE_PER_PLAYER;
+        int rating = crew.getRatingScore();
+        int influence = vault + playerPower + rating;
+        crew.setInfluence(influence);
+    }
+
 
     /* Crew Influence */
 //    public void generateEconomy() {
@@ -181,10 +205,10 @@ public class PlayerData {
 //        }
 //    }
 
-    public Map<String, Double> generateLeaderboardJson() {
-        HashMap<String, Double> crewAndScore = new HashMap<>();
+    public Map<String, Integer> generateLeaderboardJson() {
+        HashMap<String, Integer> crewAndScore = new HashMap<>();
         for(Crew crew : crews) {
-            double influence = crew.getInfluence();
+            int influence = crew.getInfluence();
             crewAndScore.put(crew.getName(), influence);
         }
         return GeneralUtilities.sortByComparator(crewAndScore, false);

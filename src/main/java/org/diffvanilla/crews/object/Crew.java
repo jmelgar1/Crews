@@ -1,6 +1,5 @@
 package org.diffvanilla.crews.object;
 
-import com.google.gson.JsonObject;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
@@ -9,6 +8,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -19,7 +19,10 @@ import org.diffvanilla.crews.managers.ConfigManager;
 import org.diffvanilla.crews.managers.WarpCancelListener;
 import org.diffvanilla.crews.utilities.ChatUtilities;
 import org.diffvanilla.crews.utilities.MessageUtilities;
+import org.diffvanilla.crews.utilities.UnicodeCharacters;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Crew implements ConfigurationSerializable {
@@ -44,14 +47,21 @@ public class Crew implements ConfigurationSerializable {
     public int getLevel() { return this.level; }
 
     //influence (power score)
-    private double influence;
-    public double getInfluence() { return this.influence; }
+    private int influence;
+    public int getInfluence() { return this.influence; }
+    public void setInfluence(int influence) {
+        this.influence = influence;
+    }
+    public void addInfluence(int amount) {
+        this.influence += amount;
+    }
+    public void removeInfluence(int amount) {
+        this.influence -= amount;
+    }
 
     //score (add up to influence)
     private int ratingScore;
     public int getRatingScore() { return this.ratingScore;}
-    private double economyScore;
-    public double getEconomyScore() { return this.economyScore;}
 
     //description
     private String description;
@@ -62,6 +72,9 @@ public class Crew implements ConfigurationSerializable {
     //crew upgrades
     private List<String> unlockedUpgrades;
     public List<String> getUnlockedUpgrades() { return this.unlockedUpgrades; }
+    public void addUpgrade(String upgrade) {
+        this.unlockedUpgrades.add(upgrade);
+    }
 
     //kills
     private int kills;
@@ -77,34 +90,32 @@ public class Crew implements ConfigurationSerializable {
     public ArrayList<String> getSentMail() { return this.sentMail; }
 
     //crew elites
-    private UUID boss;
-    public UUID getBoss() {
+    private String boss;
+    public String getBoss() {
         return this.boss;
     }
-    private ArrayList<UUID> enforcers;
-    public ArrayList<UUID> getEnforcers() {
-        return this.enforcers;
-    }
+    private final ArrayList<String> enforcers = new ArrayList<>();
+    public ArrayList<String> getEnforcers() {return this.enforcers;}
 
     //members
-    private ArrayList<UUID> members = new ArrayList<>();
-    public ArrayList<UUID> getMembers() {
+    private ArrayList<String> members = new ArrayList<>();
+    public ArrayList<String> getMembers() {
         return this.members;
     }
 
     //custom color
-    private TextColor color = TextColor.color(0xE0E0E0);
-    public TextColor getColor() {return this.color;}
+    private TextColor white_color = TextColor.color(0xE0E0E0);
+    public TextColor getColor() {return this.white_color;}
     public void setColor(TextColor color) {
-        this.color = color;
+        this.white_color = color;
     }
 
-    //sponge stuff
-    private int levelUpCost;
+    //sponge_icon stuff
+    private final int levelUpCost;
     public int getLevelUpCost() { return this.levelUpCost; }
-    private int memberLimit;
+    private final int memberLimit;
     public int getMemberLimit() { return this.memberLimit; }
-    private int enforcerLimit;
+    private final int enforcerLimit;
     public int getEnforcerLimit() { return this.enforcerLimit; }
 
     //warp stuff
@@ -164,11 +175,278 @@ public class Crew implements ConfigurationSerializable {
 
     public void setVault(int amount) {
         this.vault+= amount;
+        calculateInfluence();
     }
 
     public boolean hasMember(Player p) {
         if (this.members.contains(p.getUniqueId())) return true;
         return this.boss.equals(p.getUniqueId());
+    }
+
+    //Broadcast to all members
+    public void broadcast(final TextComponent text) {
+        if(text == null) return;
+        for (String member : this.members) {
+            UUID pUUID = UUID.fromString(member);
+            if (Bukkit.getOfflinePlayer(pUUID).isOnline()) {
+                Player p = Bukkit.getPlayer(pUUID);
+                if(p != null){p.sendMessage(text);}
+            }
+        }
+        if (Bukkit.getOfflinePlayer(this.boss).isOnline()) {
+            Player p = Bukkit.getPlayer(this.boss);
+            if (p != null && p.isOnline()) {
+                p.sendMessage(text);
+            }
+        }
+    }
+
+    //vault
+    public void addToVault(int amount, Player p){
+        this.vault = vault + amount;
+        calculateInfluence();
+    }
+    public void removeFromVault(int amount, Player p){
+        //takes player to put in the custom message (Player) removed vault blah
+        this.vault = vault - amount;
+        calculateInfluence();
+    }
+
+    public void calculateInfluence() {
+        int playerPower = this.members.size() * ConfigManager.INFLUENCE_PER_PLAYER;
+        int influence = this.vault + this.ratingScore + playerPower;
+        setInfluence(influence);
+    }
+
+    //Set new crew leader & add old one to members.
+    public void replaceBoss(final UUID id) {
+        this.members.add(this.boss);
+        this.boss = id.toString();
+        Crew pCrew = plugin.getData().getCrew(Bukkit.getPlayer(this.boss));
+        String crewName = pCrew.getName();
+        for (String member : this.members) {
+            UUID pUUID = UUID.fromString(member);
+            if (Bukkit.getOfflinePlayer(pUUID).isOnline()) {
+                Player p = Bukkit.getPlayer(pUUID);
+                if(p != null){
+                    p.sendMessage(MessageUtilities.createCrownIcon(TextColor.color(56, 142, 60)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.NEW_BOSS.replace("{player}", p.getName()).replace("{crew}", crewName))));
+                }
+            }
+        }
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(this.boss);
+        if (offlinePlayer.isOnline()) {
+            Player boss = Bukkit.getPlayer(this.boss);
+            if (boss != null) {
+                boss.sendMessage(ConfigManager.YOU_ARE_BOSS);
+            }
+        }
+    }
+
+    public void addEnforcer(final UUID id) {
+        if(enforcers.size() < enforcerLimit) {
+            enforcers.add(id.toString());
+
+            Player p = Bukkit.getPlayer(id);
+            if(p != null) {
+                p.sendMessage(ConfigManager.ENFORCER_PROMOTE);
+            }
+            broadcast(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.NEW_ENFORCER));
+        }
+    }
+
+    public void removeEnforcer(final UUID id) {
+        enforcers.remove(id.toString());
+
+        Player p = Bukkit.getPlayer(id);
+        if(p != null) {
+            p.sendMessage(ConfigManager.ENFORCER_DEMOTE);
+        }
+        broadcast(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.PLAYER_ENFORCER_DEMOTE));
+    }
+
+    public void showInfo(final Player p, boolean inCrew) {
+        sendMessageWithHeader(p, "┌──────[ ", this.name, " ]───────◓");
+        if(this.description == null) {
+            this.description = "No description set";
+        }
+        sendInfoMessage(p, UnicodeCharacters.founded_emoji, "Founded: ", this.dateFounded, UnicodeCharacters.founded_color);
+        sendInfoMessage(p, UnicodeCharacters.description_emoji, "Description: ", this.description, UnicodeCharacters.description_color);
+        sendInfoMessage(p, UnicodeCharacters.level_emoji, "Level: ", String.valueOf(this.level), UnicodeCharacters.level_color);
+        sendInfoMessage(p, UnicodeCharacters.vault_emoji, "Vault: ", UnicodeCharacters.sponge_icon + this.vault, UnicodeCharacters.sponge_color);
+        sendInfluenceMessage(p, UnicodeCharacters.influence_emoji, String.valueOf(this.influence));
+        sendInfoMessage(p, UnicodeCharacters.boss_emoji, "Boss: ", getPlayerName(UUID.fromString(this.boss)), UnicodeCharacters.boss_color);
+
+        StringBuilder enforcersList = new StringBuilder();
+        for (String enforcer : this.enforcers) {
+            UUID pUUID = UUID.fromString(enforcer);
+            String playerName = getPlayerName(pUUID);
+            if (playerName != null) {
+                if (enforcersList.length() > 0) {
+                    enforcersList.append(", ");
+                }
+                enforcersList.append(playerName);
+            }
+        }
+        sendInfoMessage(p, UnicodeCharacters.enforcers_emoji, "Enforcers: ", enforcersList.toString(), UnicodeCharacters.enforcers_color);
+
+        StringBuilder membersList = new StringBuilder();
+        for (String member : this.members) {
+            UUID pUUID = UUID.fromString(member);
+            String playerName = getPlayerName(pUUID);
+            if(playerName != null) {
+                if(membersList.length() > 0){
+                    membersList.append(", ");
+                }
+                membersList.append(playerName);
+            }
+        }
+        sendInfoMessage(p, UnicodeCharacters.members_emoji, "Members: ", membersList.toString(), UnicodeCharacters.members_color);
+
+        if(inCrew) {
+            TextColor activeColor = TextColor.fromHexString("#00FF00");
+            TextColor inactiveColor = TextColor.fromHexString("#FF0000");
+
+            String statusText = (hasCompound()) ? "ACTIVE" : "INACTIVE";
+            TextColor statusColor = (hasCompound()) ? activeColor : inactiveColor;
+
+            sendInfoMessage(p, UnicodeCharacters.compound_emoji, "Compound: ", statusText, statusColor);
+        }
+        p.sendMessage(Component.text("└────────────────────◒").color(UnicodeCharacters.logo_color));
+    }
+
+    /* CREW LEVEL */
+    public boolean isMaxLevel() {
+        return this.level == 10;
+    }
+
+    //Disband crew and delete all SPlayers
+    public void disband() {
+        plugin.getData().removeCPlayer(Bukkit.getPlayer(this.boss));
+        for (String members : this.getMembers()) {
+            UUID pUUID = UUID.fromString(members);
+            plugin.getData().removeCPlayer(Bukkit.getPlayer(pUUID));
+        }
+        plugin.getData().removeCrew(this);
+        Bukkit.broadcast(MessageUtilities.createCrewIcon(
+                TextColor.color(211,47,47))
+            .append(LegacyComponentSerializer.legacyAmpersand()
+                .deserialize(ConfigManager.CREW_DISBAND
+                    .replace("{crew}", this.name))));
+    }
+
+    private void sendInfoMessage(Player p, String prefixEmoji, String prefix, String text, TextColor color) {
+        p.sendMessage(Component.text("│ ").color(UnicodeCharacters.logo_color)
+                .append(Component.text(prefixEmoji).color(UnicodeCharacters.emoji_text_color))
+            .append(Component.text(prefix).color(UnicodeCharacters.info_text_color))
+            .append(Component.text(text).color(color)));
+    }
+
+    private void sendInfluenceMessage(Player p, String prefixEmoji, String influence) {
+        p.sendMessage(Component.text("│ ").color(UnicodeCharacters.logo_color)
+            .append(Component.text(prefixEmoji).color(UnicodeCharacters.emoji_text_color))
+            .append(Component.text("Influence: ").color(UnicodeCharacters.info_text_color))
+            .append(Component.text("[").color(UnicodeCharacters.influence_outline_color))
+            .append(Component.text(influence).color(UnicodeCharacters.influence_color))
+            .append(Component.text("]").color(UnicodeCharacters.influence_outline_color)));
+    }
+
+    private void sendMessageWithHeader(Player p, String prefix, String headerText, String suffix) {
+        p.sendMessage(Component.text(prefix).color(UnicodeCharacters.logo_color)
+            .append(Component.text(headerText).color(UnicodeCharacters.plugin_color))
+            .append(Component.text(suffix).color(UnicodeCharacters.logo_color)));
+    }
+
+    private String getOnlinePlayerName(UUID playerId) {
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerId);
+        if (offlinePlayer.isOnline() && offlinePlayer.getPlayer() != null) {
+            return offlinePlayer.getPlayer().getName();
+        } else {
+            return offlinePlayer.getName();
+        }
+    }
+
+    private String getPlayerName(UUID playerId) {
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerId);
+        System.out.println(offlinePlayer.getName());
+        return offlinePlayer.getName();
+    }
+
+    @Override
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = new HashMap<>();
+        ArrayList<String> unlockedUpgrades = new ArrayList<>(this.unlockedUpgrades);
+        ArrayList<String> sentMail = new ArrayList<>(this.sentMail);
+        ArrayList<String> membersStr = new ArrayList<>(this.members);
+        ArrayList<String> enforcersStr = new ArrayList<>(this.enforcers);
+
+        map.put("name", this.name);
+        map.put("level", this.level);
+        map.put("dateFounded", this.dateFounded);
+        map.put("vault", this.vault);
+        map.put("boss", this.boss);
+        map.put("enforcers", enforcersStr);
+        map.put("levelUpCost", this.levelUpCost);
+        map.put("memberLimit", this.memberLimit);
+        map.put("members", membersStr);
+        map.put("description", this.description);
+        map.put("compound", this.compound);
+        map.put("kills", this.kills);
+        map.put("ratingScore", this.ratingScore);
+        map.put("influence", this.influence);
+        map.put("unlockedUpgrades", unlockedUpgrades);
+        map.put("sentMail", sentMail);
+        return map;
+    }
+
+    //Remove player from crew, whether they left or were kicked. Returns true if player was in the crew, false if player was not.
+    public void removePlayer(final UUID pUUID, boolean wasKicked) {
+        this.enforcers.remove(pUUID.toString());
+        if (this.members.remove(pUUID.toString())) {
+            plugin.getData().removeCPlayer(Bukkit.getPlayer(pUUID));
+            String pName = Bukkit.getOfflinePlayer(pUUID).getName();
+            if(wasKicked){
+                this.broadcast(MessageUtilities.createKickIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.KICKED_FROM_CREW.replace("{player}", pName))));
+            } else {
+                this.broadcast(MessageUtilities.createLeaveIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.LEAVE_CREW.replace("{player}", pName))));
+            }
+            calculateInfluence();
+        }
+    }
+
+    //Add player to crew, player must be online to join so we use Player
+    public void addPlayer(final Player p) {
+        this.members.add(p.getUniqueId().toString());
+        plugin.getData().addCPlayer(p, this);
+        this.broadcast(MessageUtilities.createJoinIcon(TextColor.color(46,125,50)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.JOIN_CREW.replace("{player}", p.getName()))));
+        calculateInfluence();
+    }
+
+    public boolean isBoss(Player p) {
+        String pUUID = p.getUniqueId().toString();
+        return pUUID.equals(this.boss);
+    }
+
+    public boolean isEnforcer(Player p) {
+        String pUUID = p.getUniqueId().toString();
+        return this.enforcers.contains(pUUID);
+    }
+
+    public boolean isHigherup(Player p) {
+        return isBoss(p) || isEnforcer(p);
+    }
+
+    /* Mail */
+    public void addToMail(String message) {
+        this.sentMail.add(message);
+    }
+
+    /* Naming */
+    public void changeName(String newName) {
+        this.name = newName;
+    }
+
+    public static Crew deserialize(Map<String, Object> map, Crews data) {
+        return new Crew(map, data);
     }
 
     //Hashcode
@@ -187,259 +465,92 @@ public class Crew implements ConfigurationSerializable {
 
     //Constructor for new crew
     public Crew(final String name, final Player p, final Crews data) {
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+
         this.name = name;
-        this.boss = p.getUniqueId();
+        this.boss = p.getUniqueId().toString();
         this.plugin = data;
         this.plugin.getData().addCPlayer(p, this);
+        this.dateFounded = currentDate.format(formatter);
+        this.description = "No description set.";
         this.kills = 0;
+        this.vault = 0;
+        this.level = 1;
+        this.influence = 300;
+        this.levelUpCost = 25;
+        this.ratingScore = 0;
+        this.enforcerLimit = 1;
+        this.memberLimit = 3;
     }
 
     //Constructor for loaded crew
     public Crew(Map<String, Object> map, final Crews data) {
         this.plugin = data;
         this.name = (String) map.get("name");
-        if (map.get("boss") != null) this.boss = UUID.fromString((String) map.get("boss"));
-        for (String m : (ArrayList<String>) map.get("members")) {
-            this.members.add(UUID.fromString(m));
-            if (Bukkit.getOfflinePlayer(UUID.fromString(m)).isOnline())
-                data.getData().addCPlayer(Bukkit.getPlayer(UUID.fromString(m)), this);
-        }
-        this.description = (String) map.get("description");
-        if (map.get("kills") == null) this.kills = 0; else this.kills = (int) map.get("kills");
-        this.color = TextColor.fromHexString((String) map.get("color"));
-        this.compound = (Location) map.get("compound");
-    }
-
-    //Broadcast to all members
-    public void broadcast(final TextComponent text) {
-        if(text == null) return;
-        for (UUID pUUID : this.members) {
-            if (Bukkit.getOfflinePlayer(pUUID).isOnline()) {
-                Player p = Bukkit.getPlayer(pUUID);
-                if(p != null){p.sendMessage(text);}
-            }
-        }
-        if (Bukkit.getOfflinePlayer(this.boss).isOnline()) {
-            Player p = Bukkit.getPlayer(this.boss);
-            if (p != null && p.isOnline()) {
-                p.sendMessage(text);
-            }
-        }
-    }
-
-    //vault
-    public void addToVault(int amount, Player p){
-        this.vault = vault + amount;
-    }
-    public void removeFromVault(int amount, Player p){
-        //takes player to put in the custom message (Player) removed vault blah
-        this.vault = vault - amount;
-    }
-
-    //Set new crew leader & add old one to members.
-    public void replaceBoss(final UUID id) {
-        this.members.add(this.boss);
-        this.boss = id;
-        Crew pCrew = plugin.getData().getCrew(Bukkit.getPlayer(this.boss));
-        String crewName = pCrew.getName();
-        for (UUID uuid : this.members) {
-            if (Bukkit.getOfflinePlayer(uuid).isOnline()) {
-                Player p = Bukkit.getPlayer(uuid);
-                if(p != null){
-                    p.sendMessage(MessageUtilities.createCrownIcon(TextColor.color(56, 142, 60)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.NEW_BOSS.replace("{player}", p.getName()).replace("{crew}", crewName))));
-                }
-            }
-        }
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(this.boss);
-        if (offlinePlayer.isOnline()) {
-            Player boss = Bukkit.getPlayer(this.boss);
-            if (boss != null) {
-                boss.sendMessage(ConfigManager.YOU_ARE_BOSS);
-            }
-        }
-    }
-
-    public void addEnforcer(final UUID id) {
-        if(enforcers.size() < enforcerLimit) {
-            enforcers.add(id);
-
-            Player p = Bukkit.getPlayer(id);
-            if(p != null) {
-                p.sendMessage(ConfigManager.ENFORCER_PROMOTE);
-            }
-            broadcast(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.NEW_ENFORCER));
-        }
-    }
-
-    public void removeEnforcer(final UUID id) {
-        enforcers.remove(id);
-
-        Player p = Bukkit.getPlayer(id);
-        if(p != null) {
-            p.sendMessage(ConfigManager.ENFORCER_DEMOTE);
-        }
-        broadcast(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.PLAYER_ENFORCER_DEMOTE));
-    }
-
-    public void showInfo(final Player p) {
-        sendMessageWithHeader(p, "┌──────[ ", this.name, " ]───────◓");
-        if(this.description == null) {
-            this.description = "No description set";
-        }
-        sendInfoMessage(p, "Founded: ", this.dateFounded, descriptionColor);
-        sendInfoMessage(p, "Description: ", this.description, descriptionColor);
-        sendInfoMessage(p, "Level: ", String.valueOf(this.level), descriptionColor);
-        sendInfoMessage(p, "Vault: ", String.valueOf(this.vault), descriptionColor);
-        sendInfoMessage(p, "Influence: ", String.valueOf(this.influence), descriptionColor);
-        //sendInfoMessage(p, "Kills: ", String.valueOf(this.kills), killsColor);
-
-        String boss = getOnlinePlayerName(this.boss);
-        if (boss != null) {
-            sendInfoMessage(p, "Boss: ", boss, leaderColor);
-        }
-
-        StringBuilder enforceresList = new StringBuilder();
-        if(!this.enforcers.isEmpty()) {
-            for (UUID id : this.enforcers) {
-                String playerName = getOnlinePlayerName(id);
-                if (playerName != null) {
-                    if (enforceresList.length() > 0) {
-                        enforceresList.append(", ");
+        if (map.get("boss") != null) this.boss = (String) map.get("boss");
+        Object membersObj = map.get("members");
+        if (membersObj instanceof ArrayList<?> membersList) {
+            for (Object mObj : membersList) {
+                if (mObj instanceof String m) {
+                    try {
+                        this.members.add(m);
+                        if (Bukkit.getOfflinePlayer(m).isOnline()) {
+                            Player player = Bukkit.getPlayer(m);
+                            if (player != null) {
+                                data.getData().addCPlayer(player, this);
+                            }
+                        }
+                    } catch (IllegalArgumentException iae) {
+                        System.err.println("Invalid UUID found: " + m);
                     }
-                    enforceresList.append(playerName);
                 }
             }
-        }
-        sendInfoMessage(p, "Enforceres: ", enforceresList.toString(), membersColor);
-
-        StringBuilder membersList = new StringBuilder();
-        for (UUID id : this.members) {
-            String playerName = getOnlinePlayerName(id);
-            if(playerName != null) {
-                if(membersList.length() > 0){
-                    membersList.append(", ");
-                }
-                membersList.append(playerName);
-            }
-        }
-        sendInfoMessage(p, "Members: ", membersList.toString(), membersColor);
-        p.sendMessage(Component.text("└───────────────────◒").color(headerColor));
-    }
-
-    /* CREW LEVEL */
-    public boolean isMaxLevel() {
-        return this.level == 10;
-    }
-
-    //Disband crew and delete all SPlayers
-    public void disband() {
-        plugin.getData().removeCPlayer(Bukkit.getPlayer(this.boss));
-        for (UUID id : this.getMembers()) {
-            plugin.getData().removeCPlayer(Bukkit.getPlayer(id));
-        }
-        plugin.getData().removeCrew(this);
-        Bukkit.broadcast(MessageUtilities.createCrewIcon(
-                TextColor.color(211,47,47))
-            .append(LegacyComponentSerializer.legacyAmpersand()
-                .deserialize(ConfigManager.CREW_DISBAND
-                    .replace("{crew}", this.name))));
-    }
-
-    private void sendInfoMessage(Player p, String prefix, String text, TextColor color) {
-        p.sendMessage(Component.text("│ ").color(headerColor)
-            .append(Component.text(prefix).color(infoColor))
-            .append(Component.text(text).color(color)));
-    }
-
-    private void sendMessageWithHeader(Player p, String prefix, String headerText, String suffix) {
-        p.sendMessage(Component.text(prefix).color(headerColor)
-            .append(Component.text(headerText).color(defaultTextColor))
-            .append(Component.text(suffix).color(headerColor)));
-    }
-
-    private String getOnlinePlayerName(UUID playerId) {
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerId);
-        if (offlinePlayer.isOnline() && offlinePlayer.getPlayer() != null) {
-            return offlinePlayer.getPlayer().getName();
         } else {
-            return offlinePlayer.getName();
+            // Handle case where 'members' is not an ArrayList or is null
+            System.err.println("'members' is not an ArrayList or is null.");
         }
-    }
 
-    @Override
-    public Map<String, Object> serialize() {
-        Map<String, Object> map = new HashMap<>();
-        ArrayList<String> membersStr = new ArrayList<>();
-        for (UUID i : this.members) {
-            membersStr.add(i.toString());
-        }
-        map.put("name", this.name);
-        map.put("leader", this.boss.toString());
-        map.put("members", membersStr);
-        map.put("description", this.description);
-        map.put("compound", this.compound);
-        map.put("kills", this.kills);
-        return map;
-    }
-
-    //Remove player from crew, whether they left or were kicked. Returns true if player was in the crew, false if player was not.
-    public void removePlayer(final UUID pUUID, boolean wasKicked) {
-        this.enforcers.remove(pUUID);
-        if (this.members.remove(pUUID)) {
-            plugin.getData().removeCPlayer(Bukkit.getPlayer(pUUID));
-            String pName = Bukkit.getOfflinePlayer(pUUID).getName();
-            if(wasKicked){
-                this.broadcast(MessageUtilities.createKickIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.KICKED_FROM_CREW.replace("{player}", pName))));
-            } else {
-                this.broadcast(MessageUtilities.createLeaveIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.LEAVE_CREW.replace("{player}", pName))));
+        Object enforcersObj = map.get("enforcers");
+        if (enforcersObj instanceof ArrayList<?> enforcersList) {
+            for (Object eObj : enforcersList) {
+                if (eObj instanceof String e) {
+                    try {
+                        this.enforcers.add(e);
+                        if (Bukkit.getOfflinePlayer(e).isOnline()) {
+                            System.out.println(e);
+                            Player player = Bukkit.getPlayer(e);
+                            if (player != null) {data.getData().addCPlayer(player, this);}
+                        }
+                    } catch (IllegalArgumentException iae) {
+                        System.err.println("Invalid UUID found: " + e);
+                    }
+                }
             }
+        } else {
+            // Handle case where 'enforcers' is not an ArrayList or is null
+            System.err.println("'enforcers' is not an ArrayList or is null.");
         }
-    }
+        this.dateFounded = (String) map.get("dateFounded");
+        if(map.get("description") == null) this.description = "No description set."; else this.description = (String) map.get("description");
+        if (map.get("kills") == null) this.kills = 0; else this.kills = (int) map.get("kills");
+        if (map.get("compound") != null) {
+            Map<String, Object> compoundMap = (Map<String, Object>) map.get("compound");
+            World world = Bukkit.getWorld((String) compoundMap.get("world"));
+            double x = Double.parseDouble((String) compoundMap.get("x"));
+            double y = Double.parseDouble((String) compoundMap.get("y"));
+            double z = Double.parseDouble((String) compoundMap.get("z"));
+            float yaw = Float.parseFloat((String) compoundMap.get("yaw"));
+            float pitch = Float.parseFloat((String) compoundMap.get("pitch"));
 
-    //Add player to crew, player must be online to join so we use Player
-    public void addPlayer(final Player p) {
-        this.members.add(p.getUniqueId());
-        plugin.getData().addCPlayer(p, this);
-        this.broadcast(MessageUtilities.createJoinIcon(TextColor.color(46,125,50)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.JOIN_CREW.replace("{player}", p.getName()))));
+            this.compound = new Location(world, x, y, z, yaw, pitch);
+        }
+        if(map.get("vault") == null) this.vault = 0; else this.vault = (int) ((double) map.get("vault"));
+        if(map.get("influence") == null) this.influence = 0; else this.influence = (int) ((double) map.get("influence"));
+        if(map.get("level") == null) this.level = 1; else this.level = (int) ((double) map.get("level"));
+        if(map.get("levelUpCost") == null) this.levelUpCost = 25; else this.levelUpCost = (int) map.get("levelUpCost");
+        if(map.get("ratingScore") == null) this.ratingScore = 0; else this.ratingScore = (int) ((double) map.get("ratingScore"));
+        if(map.get("enforcerLimit") == null) this.enforcerLimit = 1; else this.enforcerLimit = (int) map.get("enforcerLimit");
+        if(map.get("memberLimit") == null) this.memberLimit = 3; else this.memberLimit = (int) map.get("memberLimit");
     }
-
-    public boolean isBoss(Player p) {
-        UUID pUUID = p.getUniqueId();
-        return pUUID.equals(this.boss);
-    }
-
-    public boolean isEnforcer(Player p) {
-        UUID pUUID = p.getUniqueId();
-        return this.enforcers.contains(pUUID);
-    }
-
-    public boolean isHigherup(Player p) {
-        UUID pUUID = p.getUniqueId();
-        return isBoss(p) || isEnforcer(p);
-    }
-
-    /* Mail */
-    public void addToMail(String message) {
-        this.sentMail.add(message);
-    }
-
-    /* Naming */
-    public void changeName(String newName) {
-        this.name = newName;
-    }
-
-    public static Crew deserialize(Map<String, Object> map, Crews data) {
-        return new Crew(map, data);
-    }
-
-    private final TextColor headerColor = TextColor.color(0xEF9A9A);
-    private final TextColor infoColor = TextColor.color(0xFFF9C4);
-    private final TextColor defaultTextColor = TextColor.color(0xEEEEEE);
-    private final TextColor descriptionColor = TextColor.color(0xE0E0E0);
-    private final TextColor killsColor = TextColor.color(0xFFA726);
-    private final TextColor dtrColor = TextColor.color(0xE57373);
-    private final TextColor leaderColor = TextColor.color(0xCE93D8);
-    private final TextColor membersColor = TextColor.color(0x2E7D32);
-    private final TextColor claimColor = TextColor.color(0x7CB342);
-    private final TextColor noClaimColor = TextColor.color(0xD32F2F);
 }

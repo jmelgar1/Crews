@@ -5,6 +5,9 @@ import com.google.gson.JsonObject;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.diffvanilla.crews.Crews;
+import org.diffvanilla.crews.file.CrewsFile;
+import org.diffvanilla.crews.object.Crew;
+import org.diffvanilla.crews.object.PlayerData;
 import org.diffvanilla.crews.utilities.ChatUtilities;
 import org.diffvanilla.crews.utilities.JsonUtilities;
 
@@ -14,20 +17,27 @@ import java.util.UUID;
 
 public class MailManager {
 
-    CrewManager crewManager = new CrewManager();
     ChatUtilities chatUtil = new ChatUtilities();
+    private final Crews plugin;
 
-    public void opencrewMail(Player p){
+    public MailManager(Crews plugin) {
+        this.plugin = plugin;
+    }
+
+    public void openCrewMail(Player p){
         UUID uuid = p.getUniqueId();
 
-        String playerCrew = crewManager.getPlayercrew(p);
-        JsonObject crewsJson = crewsClass.getcrewsJson();
-        JsonObject crewsObject = crewsJson.getAsJsonObject(playerCrew);
+        PlayerData data = plugin.getData();
+        Crew pCrew = data.getCrew(p);
+        CrewsFile crewsFile = plugin.getCrewsFile();
+        JsonObject crewsData = crewsFile.getCrewsData();
+
+        JsonObject crewsObject = crewsData.getAsJsonObject(pCrew.getName());
 
         if(crewsObject.getAsJsonObject("mailMessages") == null){
             JsonObject mailMessages = new JsonObject();
             crewsObject.add("mailMessages", mailMessages);
-            crewsClass.savecrewsFileJson();
+            crewsFile.saveCrews();
         }
 
         JsonObject mailMessages = crewsObject.getAsJsonObject("mailMessages");
@@ -48,10 +58,10 @@ public class MailManager {
 
                     if (membersUUIDList.isEmpty()) {
                         mailMessages.remove(message);
-                        crewsClass.savecrewsFileJson();
+                        crewsFile.saveCrews();
                     } else {
                         mailMessages.add(message, gson.toJsonTree(membersUUIDList).getAsJsonArray());
-                        crewsClass.savecrewsFileJson();
+                        crewsFile.saveCrews();
                     }
                 }
             }

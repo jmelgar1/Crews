@@ -8,11 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
@@ -104,8 +100,12 @@ public class PlayerEvents implements Listener {
 
         Crew targetCrew = plugin.getData().getCrew(p);
         JsonObject crewsJson = plugin.getcrewsJson();
-        JsonObject crewsObject = crewsJson.getAsJsonObject(targetCrew.getName());
 
+        if(targetCrew == null) {
+            return;
+        }
+
+        JsonObject crewsObject = crewsJson.getAsJsonObject(targetCrew.getName());
         if(crewsObject != null){
             if(crewsObject.getAsJsonObject("mailMessages") == null){
                 JsonObject mailMessages = new JsonObject();

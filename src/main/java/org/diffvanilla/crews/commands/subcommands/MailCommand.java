@@ -1,8 +1,5 @@
 package org.diffvanilla.crews.commands.subcommands;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.diffvanilla.crews.Crews;
 import org.diffvanilla.crews.commands.SubCommand;
@@ -17,7 +14,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 public class MailCommand implements SubCommand {
@@ -56,8 +52,8 @@ public class MailCommand implements SubCommand {
             return;
         }
         if(args[1].equalsIgnoreCase("open")) {
-            MailManager mailManager = new MailManager();
-            mailManager.opencrewMail(p);
+            MailManager mailManager = new MailManager(plugin);
+            mailManager.openCrewMail(p);
         } else {
             LocalDateTime currentDateTime = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -66,8 +62,8 @@ public class MailCommand implements SubCommand {
             String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
             String mailMessage = "[" + dateString + "] " + p.getName() + ": " + message;
 
-            List<UUID> crewMembers = pCrew.getMembers();
-            crewMembers.remove(p.getUniqueId());
+            List<String> crewMembers = pCrew.getMembers();
+            crewMembers.remove(p.getUniqueId().toString());
             pCrew.addToMail(mailMessage);
         }
     }

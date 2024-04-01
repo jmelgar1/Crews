@@ -1,0 +1,76 @@
+#============
+#CREWS CONFIG
+#============
+
+#Crew Values
+max-members: 12 #Maximum amount of crew members (changing might break something)
+teleport-delay: 3 #Teleport delay for compound
+commands-per-page: 5 #Commands per page for /crews
+warp-price: 0 #Cost to warp to compound
+set-compound-cost: 50 #Cost to set the crew compound
+rename-cost: 100 #Cost to rename your crew name
+upgrade-chat-cost: 250 #Cost to get the crew chat upgrade
+upgrade-mail-cost: 250 #Cost to get the crew mail upgrade
+upgrade-discord-cost: 250 #Cost to get the crew discord upgrade
+influence-per-player: 300 #Amount of influence per player in crew
+
+#Messages
+#TextComponents
+already-in-crew: "&#CBB2B2You are already in a crew!"
+already-enforcer: "&c"
+can-not-invite-self: ""
+cant-kick-boss: ""
+cant-kick-same-rank: ""
+choose-different-name: ""
+crew-is-max-level: ""
+crew-no-compound: ""
+crew-not-found: ""
+crew-chat-enabled: ""
+crew-chat-disabled: ""
+crew-only-alphabetical: ""
+crew-between-4-and-16: ""
+compound-removed: ""
+compound-exists: ""
+compound-set: ""
+full-inventory: ""
+incorrect-crew: ""
+max-level-limit-enforcer: ""
+must-be-boss: ""
+must-be-higherup: ""
+no-invite: ""
+name-taken: ""
+no-permission: ""
+must-be-in-crew: ""
+not-your-crew: ""
+not-enough-sponge: ""
+player-not-found: ""
+player-not-enforcer: ""
+please-wait-tp: ""
+msg-success: ""
+transfer-ownership: ""
+can-not-demote-self: ""
+can-not-promote-self: ""
+you-are-boss: ""
+you-are-enforcer: ""
+enforcer-demote: ""
+
+#Strings
+already-invited: ""
+crew-disband: ""
+crew-founded: ""
+max-enforcer: ""
+joined-crew: ""
+kicked-from-crew: ""
+leave-crew: ""
+new-boss: ""
+new-enforcer: ""
+sponge-deposit: ""
+sponge-withdraw: ""
+player-in-crew: ""
+player-not-in-same-crew: ""
+player-not-online: ""
+player-not-free-agent: ""
+player-enforcer-demote: ""
+upgrade-not-unlocked: ""
+upgrade-already-unlocked: ""
+reached-max-members: ""

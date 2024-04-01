@@ -10,16 +10,29 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.diffvanilla.crews.Crews;
+import org.diffvanilla.crews.managers.ConfigManager;
 import org.diffvanilla.crews.object.Crew;
+import org.diffvanilla.crews.object.PlayerData;
 import org.diffvanilla.crews.utilities.ChatUtilities;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class CrewShopListener implements Listener {
+    private static Inventory inv;
+    public static Map<UUID, Inventory> inventories = new HashMap<UUID, Inventory>();
+    private final Crews plugin;
+    public CrewShopListener(Crews plugin) {
+        this.plugin = plugin;
+    }
+
     @EventHandler
     public void onInventoryClick(final InventoryClickEvent event) {
+        PlayerData data = plugin.getData();
         final Player p = (Player) event.getWhoClicked();
         UUID playerUUID = p.getUniqueId();
         if (!event.getInventory().equals(inventories.get(playerUUID))) return;
@@ -32,84 +45,65 @@ public class CrewShopListener implements Listener {
         if (clickedItem == null || clickedItem.getType().isAir()) return;
 
         if (clickedItem.getType() == Material.LAPIS_BLOCK) {
-            Crew pCrew = crewManager.getPlayercrew(p);
-            if (!upgradeManager.checkForUpgrade(playerCrew, "discord")) {
-                if (crewManager.CheckForChief(playerCrew, p)) {
-                    int purchasePrice = crewsClass.getPrices().getConfigurationSection("upgrades").getInt("discord");
-                    if(crewManager.getVault(playerCrew) >= purchasePrice) {
-                        getDiscordName = p;
-                        p.sendMessage(ChatColor.DARK_BLUE + "[\uD83C\uDFA7]" + ChatColor.BLUE + " Please type/enter your discord username: ");
-                        p.closeInventory();
-                    } else {
-                        ChatUtilities.NeedMoreSponges(p);
-                    }
-                } else {
-                    ChatUtilities.MustBeChief(p);
-                }
-            } else {
-                ChatUtilities.UpgradeAlreadyUnlocked(p);
+            Crew pCrew = data.getCrew(p);
+            if(pCrew.getUnlockedUpgrades().contains("discord")){
+                p.sendMessage(ConfigManager.UPGRADE_ALREADY_UNLOCKED);
+                return;
             }
+            if(!pCrew.isHigherup(p)){
+                p.sendMessage(ConfigManager.MUST_BE_HIGHERUP);
+                return;
+            }
+            if(pCrew.getVault() < ConfigManager.UPGRADE_DISCORD_COST){
+                p.sendMessage(ConfigManager.NOT_ENOUGH_IN_VAULT);
+                return;
+            }
+            pCrew.addUpgrade("discord");
+            pCrew.removeFromVault(ConfigManager.UPGRADE_DISCORD_COST, p);
+            p.sendMessage(ChatColor.DARK_BLUE + "[\uD83C\uDFA7]" + ChatColor.BLUE + " Please type/enter your discord username: ");
+            p.closeInventory();
         }
 
         if (clickedItem.getType() == Material.BAMBOO_SIGN) {
-            String playerCrew = crewManager.getPlayercrew(p);
-            if (!upgradeManager.checkForUpgrade(playerCrew, "chat")) {
-                if (crewManager.CheckForElder(playerCrew, p) || crewManager.CheckForChief(playerCrew, p)) {
-                    int purchasePrice = crewsClass.getPrices().getConfigurationSection("upgrades").getInt("chat");
-                    if(crewManager.getVault(playerCrew) >= purchasePrice) {
-                        crewManager.removeFromVault(playerCrew, purchasePrice, p);
-                        ChatUtilities.UpgradeSuccessful(playerCrew, "chat");
-                        upgradeManager.editUpgrade(playerCrew, "chat", true);
-                        p.closeInventory();
-                    } else {
-                        ChatUtilities.NeedMoreSponges(p);
-                    }
-                } else {
-                    ChatUtilities.MustBeChiefOrElder(p);
-                }
-            } else {
-                ChatUtilities.UpgradeAlreadyUnlocked(p);
+            Crew pCrew = data.getCrew(p);
+            if(pCrew.getUnlockedUpgrades().contains("chat")){
+                p.sendMessage(ConfigManager.UPGRADE_ALREADY_UNLOCKED);
+                return;
             }
+            if(!pCrew.isHigherup(p)){
+                p.sendMessage(ConfigManager.MUST_BE_HIGHERUP);
+                return;
+            }
+            if(pCrew.getVault() < ConfigManager.UPGRADE_CHAT_COST){
+                p.sendMessage(ConfigManager.NOT_ENOUGH_IN_VAULT);
+                return;
+            }
+            pCrew.addUpgrade("chat");
+            pCrew.removeFromVault(ConfigManager.UPGRADE_CHAT_COST, p);
+            //success message here
+            p.closeInventory();
         }
 
         //NEED TO TAKE MONEY FROM crew WHEN BUYING UPGRADES!!!!!!!!!!!!!!!!!!!!!!!!
 
         if (clickedItem.getType() == Material.FILLED_MAP) {
-            String playerCrew = crewManager.getPlayercrew(p);
-            if (!upgradeManager.checkForUpgrade(playerCrew, "mail")) {
-                if (crewManager.CheckForElder(playerCrew, p) || crewManager.CheckForChief(playerCrew, p)) {
-                    int purchasePrice = crewsClass.getPrices().getConfigurationSection("upgrades").getInt("mail");
-                    if(crewManager.getVault(playerCrew) >= purchasePrice) {
-                        crewManager.removeFromVault(playerCrew, purchasePrice, p);
-                        ChatUtilities.UpgradeSuccessful(playerCrew, "mail");
-                        upgradeManager.editUpgrade(playerCrew, "mail", true);
-                        p.closeInventory();
-                    } else {
-                        ChatUtilities.NeedMoreSponges(p);
-                    }
-                } else {
-                    ChatUtilities.MustBeChiefOrElder(p);
-                }
-            } else {
-                ChatUtilities.UpgradeAlreadyUnlocked(p);
+            Crew pCrew = data.getCrew(p);
+            if(pCrew.getUnlockedUpgrades().contains("mail")){
+                p.sendMessage(ConfigManager.UPGRADE_ALREADY_UNLOCKED);
+                return;
             }
-        }
-
-        if (clickedItem.getType() == Material.NAME_TAG) {
-            String playerCrew = crewManager.getPlayercrew(p);
-            if (crewManager.CheckForChief(playerCrew, p)) {
-                int purchasePrice = crewsClass.getPrices().getInt("changename");
-                if(crewManager.getVault(playerCrew) >= purchasePrice) {
-                    waitingForInputPlayer = p;
-                    p.sendMessage(ChatColor.YELLOW + "[\uD83D\uDD8A]" + ChatColor.GOLD + " Please type/enter your new crew name: ");
-                    p.closeInventory();
-                } else {
-                    ChatUtilities.NeedMoreSponges(p);
-                }
-            } else {
-                ChatUtilities.MustBeChief(p);
+            if(!pCrew.isHigherup(p)){
+                p.sendMessage(ConfigManager.MUST_BE_HIGHERUP);
+                return;
             }
-
+            if(pCrew.getVault() < ConfigManager.UPGRADE_MAIL_COST){
+                p.sendMessage(ConfigManager.NOT_ENOUGH_IN_VAULT);
+                return;
+            }
+            pCrew.addUpgrade("mail");
+            pCrew.removeFromVault(ConfigManager.UPGRADE_MAIL_COST, p);
+            //success message here
+            p.closeInventory();
         }
     }
 

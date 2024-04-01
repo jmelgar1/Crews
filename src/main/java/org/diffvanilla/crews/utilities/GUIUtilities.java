@@ -22,7 +22,6 @@ public class GUIUtilities {
         int vault = crew.getVault();
         int requiredSponges = crew.getLevelUpCost();
         int ratingScore = crew.getRatingScore();
-        double economyScore = crew.getEconomyScore();
         double influence = crew.getInfluence();
         //OfflinePlayer chief = Bukkit.getServer().getOfflinePlayer(crewManager.getChief(crew));
 
@@ -35,7 +34,7 @@ public class GUIUtilities {
 //            enforcer = "NONE";
 //        }
 
-        List<UUID> crewMembers = crew.getMembers();
+        List<String> crewMembers = crew.getMembers();
 
         Material[] levelItems = {Material.COAL, Material.COPPER_INGOT, Material.IRON_INGOT, Material.GOLD_INGOT, Material.REDSTONE
             , Material.LAPIS_LAZULI, Material.EMERALD, Material.DIAMOND, Material.NETHERITE_INGOT, Material.NETHER_STAR};
@@ -50,22 +49,22 @@ public class GUIUtilities {
             inv.setItem(4, createGuiItem(levelItems[level-1], ChatUtilities.tribalGames.toString() + net.md_5.bungee.api.ChatColor.BOLD + crewName.toUpperCase(),
                 net.md_5.bungee.api.ChatColor.DARK_GRAY + UnicodeCharacters.foundedDate + net.md_5.bungee.api.ChatColor.GRAY + " Date Founded: " + net.md_5.bungee.api.ChatColor.WHITE + dateCreated,
                 net.md_5.bungee.api.ChatColor.DARK_GRAY + UnicodeCharacters.level + net.md_5.bungee.api.ChatColor.GRAY + " Level: " + net.md_5.bungee.api.ChatColor.WHITE + level,
-                net.md_5.bungee.api.ChatColor.DARK_GRAY + UnicodeCharacters.vault + net.md_5.bungee.api.ChatColor.GRAY + " Vault: " + ChatUtilities.spongeColor + UnicodeCharacters.sponge + vault,
-                net.md_5.bungee.api.ChatColor.DARK_GRAY + UnicodeCharacters.xp + net.md_5.bungee.api.ChatColor.GRAY + " Cost to upgrade: " + requiredColor + UnicodeCharacters.sponge + requiredSponges,
+                net.md_5.bungee.api.ChatColor.DARK_GRAY + UnicodeCharacters.vault + net.md_5.bungee.api.ChatColor.GRAY + " Vault: " + ChatUtilities.spongeColor + UnicodeCharacters.sponge_icon + vault,
+                net.md_5.bungee.api.ChatColor.DARK_GRAY + UnicodeCharacters.xp + net.md_5.bungee.api.ChatColor.GRAY + " Cost to upgrade: " + requiredColor + UnicodeCharacters.sponge_icon + requiredSponges,
                 "",
                 net.md_5.bungee.api.ChatColor.GOLD.toString() + net.md_5.bungee.api.ChatColor.UNDERLINE + "Scores:",
                 net.md_5.bungee.api.ChatColor.YELLOW + UnicodeCharacters.rating + net.md_5.bungee.api.ChatColor.GOLD + " Rating: " + net.md_5.bungee.api.ChatColor.YELLOW + ratingScore,
-                net.md_5.bungee.api.ChatColor.GREEN + UnicodeCharacters.economy + net.md_5.bungee.api.ChatColor.DARK_GREEN + " Economy Score: " + net.md_5.bungee.api.ChatColor.GREEN + economyScore,
+                net.md_5.bungee.api.ChatColor.GREEN + UnicodeCharacters.economy_icon + net.md_5.bungee.api.ChatColor.DARK_GREEN + " Economy Score: " + net.md_5.bungee.api.ChatColor.GREEN + "placeholder",
                 net.md_5.bungee.api.ChatColor.LIGHT_PURPLE + UnicodeCharacters.powerScore + net.md_5.bungee.api.ChatColor.DARK_PURPLE + " Influence: " + net.md_5.bungee.api.ChatColor.LIGHT_PURPLE + influence));
         } else {
             inv.setItem(4, createGuiItem(levelItems[level-1], ChatUtilities.tribalGames.toString() + net.md_5.bungee.api.ChatColor.BOLD + crewName.toUpperCase(),
                 net.md_5.bungee.api.ChatColor.DARK_GRAY + UnicodeCharacters.foundedDate + net.md_5.bungee.api.ChatColor.GRAY + " Date Founded: " + net.md_5.bungee.api.ChatColor.WHITE + dateCreated,
                 net.md_5.bungee.api.ChatColor.DARK_GRAY + UnicodeCharacters.level + net.md_5.bungee.api.ChatColor.GRAY + " Level: " + net.md_5.bungee.api.ChatColor.WHITE + level,
-                net.md_5.bungee.api.ChatColor.DARK_GRAY + UnicodeCharacters.vault + net.md_5.bungee.api.ChatColor.GRAY + " Vault: " + net.md_5.bungee.api.ChatColor.WHITE + UnicodeCharacters.sponge + vault,
+                net.md_5.bungee.api.ChatColor.DARK_GRAY + UnicodeCharacters.vault + net.md_5.bungee.api.ChatColor.GRAY + " Vault: " + net.md_5.bungee.api.ChatColor.WHITE + UnicodeCharacters.sponge_icon + vault,
                 net.md_5.bungee.api.ChatColor.DARK_GRAY + UnicodeCharacters.xp + net.md_5.bungee.api.ChatColor.GRAY + " Cost to upgrade: " + ChatUtilities.spongeColor + "MAX LEVEL",
                 "",
                 net.md_5.bungee.api.ChatColor.YELLOW + UnicodeCharacters.rating + net.md_5.bungee.api.ChatColor.GOLD + " Rating: " + net.md_5.bungee.api.ChatColor.YELLOW + ratingScore,
-                net.md_5.bungee.api.ChatColor.GREEN + UnicodeCharacters.economy + net.md_5.bungee.api.ChatColor.DARK_GREEN + " Economy: " + net.md_5.bungee.api.ChatColor.GREEN + economyScore,
+                net.md_5.bungee.api.ChatColor.GREEN + UnicodeCharacters.economy_icon + net.md_5.bungee.api.ChatColor.DARK_GREEN + " Economy: " + net.md_5.bungee.api.ChatColor.GREEN + "placeholder",
                 net.md_5.bungee.api.ChatColor.LIGHT_PURPLE + UnicodeCharacters.powerScore + net.md_5.bungee.api.ChatColor.DARK_PURPLE + " Power Score: " + net.md_5.bungee.api.ChatColor.LIGHT_PURPLE + influence));
         }
 

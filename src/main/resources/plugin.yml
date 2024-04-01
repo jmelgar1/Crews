@@ -10,21 +10,21 @@ commands:
   crews:
     description: Create crews
     usage: /crews create
-  claimsponges:
-    description: Claim a sponge reward
-    usage: /claimsponges
-  setsponges:
-    description: Set sponge reward
-    usage: /setsponges [player] [amount]
-    permission: crews.setsponges
-  addsponges:
-    description: Ad sponge reward
-    usage: /addsponges [player] [amount]
-    permission: crews.addsponges
-  beginctf:
-    description: Begin CTF Game
-    usage: /beginctf
-  crewsupdate:
-    description: Update crew scores
-    usage: /crewsupdate
-    permission: crews.update
+#  claimsponges:
+#    description: Claim a sponge_icon reward
+#    usage: /claimsponges
+#  setsponges:
+#    description: Set sponge_icon reward
+#    usage: /setsponges [player] [amount]
+#    permission: crews.setsponges
+#  addsponges:
+#    description: Ad sponge_icon reward
+#    usage: /addsponges [player] [amount]
+#    permission: crews.addsponges
+#  beginctf:
+#    description: Begin CTF Game
+#    usage: /beginctf
+#  crewsupdate:
+#    description: Update crew scores
+#    usage: /crewsupdate
+#    permission: crews.update

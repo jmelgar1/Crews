@@ -2,11 +2,13 @@ package org.diffvanilla.crews.commands;
 
 import java.util.*;
 
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,9 +18,10 @@ import org.diffvanilla.crews.commands.subcommands.*;
 
 import org.diffvanilla.crews.exceptions.NotInCrew;
 import org.diffvanilla.crews.managers.ConfigManager;
+import org.diffvanilla.crews.utilities.UnicodeCharacters;
 
 public class CommandManager implements CommandExecutor {
-//
+
     private final Map<String, SubCommand> subCommands = new LinkedHashMap<>();
 	public final Map<String, SubCommand> enforcerCommands = new LinkedHashMap<>();
 	public final Map<String, SubCommand> bossCommands = new LinkedHashMap<>();
@@ -33,7 +36,7 @@ public class CommandManager implements CommandExecutor {
             try {
                 page = Integer.parseInt(args[1]);
             } catch (NumberFormatException e) {
-                p.sendMessage(ChatColor.RED + "Invalid page number.");
+                p.sendMessage(Component.text("Invalid page number.", NamedTextColor.RED));
                 return;
             }
         }
@@ -42,27 +45,50 @@ public class CommandManager implements CommandExecutor {
         int endIndex = Math.min(startIndex + commandsPerPage, commandListType.size());
 
         if (startIndex >= commandListType.size()) {
-            p.sendMessage(ChatColor.RED + "Page not found.");
+            p.sendMessage(Component.text("Page not found.", NamedTextColor.RED));
             return;
         }
 
-        p.sendMessage(ChatColor.GRAY + "-----[ " + ChatColor.GREEN + "Crews Guide" + ChatColor.GRAY + " (" + page + "/" + lastPage + ") ]-----");
+        sendCrewsGuideMessage(p, page, lastPage);
 
         List<Map.Entry<String, SubCommand>> entries = new ArrayList<>(commandListType.entrySet());
         for (int i = startIndex; i < endIndex; i++) {
             Map.Entry<String, SubCommand> entry = entries.get(i);
             SubCommand command = entry.getValue();
             String commandName = entry.getKey();
-            TextComponent commandText = new TextComponent(ChatColor.GRAY.toString() + (i + 1) + ". " + ChatColor.DARK_GREEN + "/crews " + commandName + ChatColor.WHITE + " - " + command.getDescription());
-            commandText.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/crews " + commandName));
-            commandText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("/crews " + commandName)));
-            p.spigot().sendMessage(commandText);
+
+            Component commandText = Component.text((i + 1) + ". ", NamedTextColor.DARK_GRAY)
+                .append(Component.text("/crews " + commandName + " - ", NamedTextColor.GRAY))
+                .append(Component.text(command.getDescription(), NamedTextColor.WHITE))
+                .clickEvent(ClickEvent.suggestCommand("/crews " + commandName))
+                .hoverEvent(HoverEvent.showText(Component.text("/crews " + commandName, NamedTextColor.GRAY)));
+
+            p.sendMessage(commandText);
         }
 
-        // Pagination logic remains the same as your original function
-        // Just ensure it uses the corrected variables and logic as per the corrections above
+        // Pagination logic
+        Component pagination = Component.empty();
+        if (page > 1) {
+            Component previousPage = Component.text("< Previous", TextColor.fromHexString("#DCE775"))
+                .clickEvent(ClickEvent.runCommand("/crews help " + (page - 1)))
+                .hoverEvent(HoverEvent.showText(Component.text("Go to page " + (page - 1), NamedTextColor.YELLOW)))
+                .decorate(TextDecoration.BOLD);
+            pagination = pagination.append(previousPage);
+        }
+        if (page > 1 && page < lastPage) {
+            pagination = pagination.append(Component.text(" | ", NamedTextColor.DARK_GRAY));
+        }
+        if (page < lastPage) {
+            Component nextPage = Component.text("Next >", TextColor.fromHexString("#AED581"))
+                .clickEvent(ClickEvent.runCommand("/crews help " + (page + 1)))
+                .hoverEvent(HoverEvent.showText(Component.text("Go to page " + (page + 1), NamedTextColor.YELLOW)))
+                .decorate(TextDecoration.BOLD);
+            pagination = pagination.append(nextPage);
+        }
+        if (!pagination.equals(Component.empty())) {
+            p.sendMessage(pagination);
+        }
     }
-
 
   private final Crews plugin;
 	public CommandManager(final Crews inst) {
@@ -97,31 +123,32 @@ public class CommandManager implements CommandExecutor {
         allCommands.putAll(enforcerCommands);
         allCommands.putAll(bossCommands);
 	}
-	
-	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-    if (!(sender instanceof Player p)) return true;
-    if (args.length == 0) {
-      sendHelp(p, subCommands, args);
-      return true;
-    }
 
-    String argument = args[0].toLowerCase();
-    String[] pass = Arrays.copyOfRange(args, 1, args.length);
-    if (!allCommands.containsKey(argument)) {
-      sendHelp(p, subCommands, args);
-      return true;
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (!(sender instanceof Player p)) return true;
+        if (args.length == 0) {
+            sendHelp(p, subCommands, args);
+            return true;
+        }
+
+        String argument = args[0].toLowerCase();
+        String[] pass = Arrays.copyOfRange(args, 1, args.length);
+        if (!allCommands.containsKey(argument)) {
+            sendHelp(p, subCommands, args);
+            return true;
+        }
+        try {
+            SubCommand subCmd = allCommands.get(argument);
+            if (p.hasPermission(subCmd.getPermission())) {
+                subCmd.perform(p, pass, plugin);
+            } else {
+                p.sendMessage(ConfigManager.NO_PERMISSION);
+            }
+        } catch (NotInCrew ignored) {
+        }
+        return true;
     }
-    try {
-      SubCommand subCmd = allCommands.get(argument);
-      if (p.hasPermission(subCmd.getPermission())) {
-        subCmd.perform(p, pass, plugin);
-      } else {
-        p.sendMessage(ConfigManager.NO_PERMISSION);
-      }
-    } catch (NotInCrew ignored) {}
-    return true;
-  }
 
 	public Map<String, SubCommand> getSubCommands() {
 		return subCommands;
@@ -134,4 +161,18 @@ public class CommandManager implements CommandExecutor {
 	public Map<String, SubCommand> getEnforcerCommands() {
 		return enforcerCommands;
 	}
+
+    public void sendCrewsGuideMessage(Player p, int page, int lastPage) {
+        TextComponent message = Component.text()
+            .append(Component.text("-----[ ", TextColor.fromHexString(UnicodeCharacters.textColor)))
+            .append(Component.text(UnicodeCharacters.crews, TextColor.fromHexString(UnicodeCharacters.logoColor)))
+            .append(Component.text(" Crews Guide ", TextColor.fromHexString(UnicodeCharacters.pluginColor)))
+            .append(Component.text(UnicodeCharacters.crews, TextColor.fromHexString(UnicodeCharacters.logoColor)))
+            .append(Component.text(" (", TextColor.fromHexString("#7B7B7B")))
+            .append(Component.text(page + "/" + lastPage, TextColor.fromHexString("#FFFFFF")))
+            .append(Component.text(") ]-----", TextColor.fromHexString(UnicodeCharacters.textColor)))
+            .build();
+
+        p.sendMessage(message);
+    }
 }

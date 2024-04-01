@@ -30,15 +30,13 @@ public class LookupCommand implements SubCommand {
     @Override
 	public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
         PlayerData data = plugin.getData();
-        Crew tCrew = data.getCrew(args[1]);
-        if (args.length != 2) {
+        Crew tCrew = data.getCrew(args[0]);
+        if (args.length != 1) {
             p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
             return;
         }
-        if(tCrew == null) {
-            p.sendMessage(ConfigManager.CREW_NOT_FOUND);
-            return;
-        }
-        tCrew.showInfo(p);
+
+        p.sendMessage(tCrew.getName());
+        tCrew.showInfo(p, false);
 	}
 }

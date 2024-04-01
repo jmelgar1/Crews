@@ -34,7 +34,7 @@ public class CreateCommand implements SubCommand {
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
         PlayerData data = plugin.getData();
         Crew pCrew = data.getCrew(p);
-        if (args.length != 2) {
+        if (args.length != 1) {
             p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
             return;
         }
@@ -43,8 +43,8 @@ public class CreateCommand implements SubCommand {
             return;
         }
 
-        //this should be in a seperate class. For all the checks.
-        String proposedCrewName = args[1];
+        String proposedCrewName = args[0];
+        p.sendMessage(proposedCrewName);
         if (data.isValidCrewName(p, proposedCrewName)) {
             Crew newCrew = new Crew(args[0], p, plugin);
             data.addCrew(newCrew);
