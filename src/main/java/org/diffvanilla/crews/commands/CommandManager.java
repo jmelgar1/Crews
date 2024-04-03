@@ -95,7 +95,6 @@ public class CommandManager implements CommandExecutor {
     this.plugin = inst;
 		subCommands.put("create", new CreateCommand());
 		subCommands.put("list", new ListCommand());
-		subCommands.put("lookup", new LookupCommand());
 		subCommands.put("info", new InfoCommand());
 		subCommands.put("chat", new ChatCommand());
 		subCommands.put("deposit", new DepositCommand());
@@ -140,7 +139,7 @@ public class CommandManager implements CommandExecutor {
         }
         try {
             SubCommand subCmd = allCommands.get(argument);
-            if (p.hasPermission(subCmd.getPermission())) {
+            if (p.hasPermission("crews.player.*")) {
                 subCmd.perform(p, pass, plugin);
             } else {
                 p.sendMessage(ConfigManager.NO_PERMISSION);

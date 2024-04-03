@@ -37,4 +37,19 @@ public class GeneralUtilities {
 
         return sortedMap;
    }
+
+    public static boolean isNumeric(String input) {
+        if (input == null) {
+            return false;
+        }
+        try {
+            double d = Double.parseDouble(input);
+            if (d <= 0 || d != (int) d) {
+                return false;
+            }
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
 }

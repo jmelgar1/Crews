@@ -31,22 +31,19 @@ public class AcceptCommand implements SubCommand {
 
     @Override
 	public void perform(Player p, String[] args, Crews plugin) {
-        Crew targetCrew = plugin.getData().getCrew(args[1]);
-        if (args.length != 2) {
+        if (args.length != 1) {
             p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
             return;
         }
-
         if (!plugin.getData().hasInvitation(p)) {
             p.sendMessage(ConfigManager.NO_INVITE);
             return;
         }
-
         if (plugin.getData().getCrew(p) != null) {
             p.sendMessage(ConfigManager.ALREADY_IN_CREW);
             return;
         }
-
+        Crew targetCrew = plugin.getData().getCrew(args[0]);
         targetCrew.addPlayer(p);
         plugin.getData().handleInvite(p, targetCrew, true);
         //crewManager.generateScorePercrew(otherCrew);

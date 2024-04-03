@@ -1,49 +1,49 @@
-package org.diffvanilla.crews.managers;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-import org.diffvanilla.crews.Crews;
-
-import net.md_5.bungee.api.ChatColor;
-import org.diffvanilla.crews.file.CrewsFile;
-import org.diffvanilla.crews.utilities.ChatUtilities;
-import org.diffvanilla.crews.utilities.JsonUtilities;
-import org.diffvanilla.crews.utilities.UnicodeCharacters;
-
-public class CrewManager {
-	private final UnicodeCharacters unicode = new UnicodeCharacters();
-	private final ChatUtilities chatUtil = new ChatUtilities();
-	private final JsonUtilities json = new JsonUtilities();
-    private final Crews plugin;
-    public CrewManager(final Crews plugin){
-        this.plugin = plugin;
-    }
-	
-	public String getPlayercrew(Player p) {
-		CrewsFile crewsFile = plugin.getCrewsFile();
-        JsonObject crewsData = crewsFile.getCrewsData();
-		String playerUUID = p.getUniqueId().toString();
-		
-		for(String crew : crewsData.keySet()) {
-			JsonObject crewObject = crewsData.getAsJsonObject(crew);
-			JsonArray memberArray = crewObject.getAsJsonArray("members");
-			if(json.JsonArrayToStringList(memberArray).contains(playerUUID)) {
-				return crew;
-			}
-		}
-		return "none";
-	}
+//package org.diffvanilla.crews.managers;
+//
+//import java.math.BigDecimal;
+//import java.util.ArrayList;
+//import java.util.HashMap;
+//import java.util.List;
+//import java.util.UUID;
+//import java.util.stream.Collectors;
+//
+//import com.google.gson.Gson;
+//import com.google.gson.JsonArray;
+//import com.google.gson.JsonObject;
+//import org.bukkit.Bukkit;
+//import org.bukkit.OfflinePlayer;
+//import org.bukkit.entity.Player;
+//import org.diffvanilla.crews.Crews;
+//
+//import net.md_5.bungee.api.ChatColor;
+//import org.diffvanilla.crews.file.CrewsFile;
+//import org.diffvanilla.crews.utilities.ChatUtilities;
+//import org.diffvanilla.crews.utilities.JsonUtilities;
+//import org.diffvanilla.crews.utilities.UnicodeCharacters;
+//
+//public class CrewManager {
+//	private final UnicodeCharacters unicode = new UnicodeCharacters();
+//	private final ChatUtilities chatUtil = new ChatUtilities();
+//	private final JsonUtilities json = new JsonUtilities();
+//    private final Crews plugin;
+//    public CrewManager(final Crews plugin){
+//        this.plugin = plugin;
+//    }
+//
+//	public String getPlayercrew(Player p) {
+//		CrewsFile crewsFile = plugin.getCrewsFile();
+//        JsonObject crewsData = crewsFile.getCrewsData();
+//		String playerUUID = p.getUniqueId().toString();
+//
+//		for(String crew : crewsData.keySet()) {
+//			JsonObject crewObject = crewsData.getAsJsonObject(crew);
+//			JsonArray memberArray = crewObject.getAsJsonArray("members");
+//			if(json.JsonArrayToStringList(memberArray).contains(playerUUID)) {
+//				return crew;
+//			}
+//		}
+//		return "none";
+//	}
 
 //	public String getPlayercrew(OfflinePlayer p) {
 //        CrewsFile crewsFile = plugin.getCrewsFile();
@@ -531,4 +531,4 @@ public class CrewManager {
 //		generateRating();
 //		generatePowerScore();
 //	}
-}
+//}

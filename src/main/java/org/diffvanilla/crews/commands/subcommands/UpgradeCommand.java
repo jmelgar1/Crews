@@ -36,7 +36,7 @@ public class UpgradeCommand implements SubCommand {
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
         PlayerData data = plugin.getData();
         Crew pCrew = data.getCrew(p);
-        if (args.length != 1) {
+        if (args.length != 0) {
             p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
             return;
         }
@@ -55,7 +55,7 @@ public class UpgradeCommand implements SubCommand {
         int levelUpCost = pCrew.getLevelUpCost();
         int currentLevel = pCrew.getLevel();
         if (levelUpCost <= pCrew.getVault()) {
-            pCrew.removeFromVault(levelUpCost, p);
+            pCrew.removeFromVault(levelUpCost, p, false);
             //new upgrade feature
             //crewManager.upgradecrew(playerCrew, crewVault, p);
         }

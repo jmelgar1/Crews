@@ -42,9 +42,11 @@ public class DelCompoundCommand implements SubCommand {
         }
         if (!pCrew.hasCompound()) {
             p.sendMessage(ConfigManager.CREW_NO_COMPOUND);
+            return;
         }
         if(!pCrew.isHigherup(p)) {
             p.sendMessage(ConfigManager.MUST_BE_HIGHERUP);
+            return;
         }
         pCrew.removeCompound();
     }

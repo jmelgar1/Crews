@@ -36,7 +36,7 @@ public class CompoundCommand implements SubCommand {
             p.sendMessage(ConfigManager.NOT_IN_CREW);
             return;
         }
-        if (args.length != 1) {
+        if (args.length != 0) {
             p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
             return;
         }
@@ -46,9 +46,11 @@ public class CompoundCommand implements SubCommand {
         }
         if (!playerCrew.hasCompound()) {
             p.sendMessage(ConfigManager.CREW_NO_COMPOUND);
+            return;
         }
         if (plugin.getData().getPendingTeleports().containsKey(p)) {
             p.sendMessage(ConfigManager.PLEASE_WAIT_TELEPORT);
+            return;
         }
         int teleportRunnable = new BukkitRunnable() {
             @Override

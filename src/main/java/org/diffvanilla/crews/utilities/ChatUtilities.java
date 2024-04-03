@@ -2,7 +2,6 @@ package org.diffvanilla.crews.utilities;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.diffvanilla.crews.managers.CrewManager;
 
 public class ChatUtilities {
 

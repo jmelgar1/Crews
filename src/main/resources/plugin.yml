@@ -1,15 +1,20 @@
 api-version: 1.16
 name: Crews
-version: 1.04
+version: 1.0
 author: DiffVanilla
 website: www.diffvanilla.org
 main: org.diffvanilla.crews.Crews
 description: Crews plugin for DiffVanilla
 depend: [ Vault ]
 commands:
-  crews:
-    description: Create crews
-    usage: /crews create
+    crews:
+        description: Use crews
+        aliases: [c, crew, crews, C, Crew, Crews]
+        usage: /crews create
+permissions:
+    crews.player.*:
+        description: Access to crews
+        default: true
 #  claimsponges:
 #    description: Claim a sponge_icon reward
 #    usage: /claimsponges

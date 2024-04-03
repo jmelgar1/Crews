@@ -35,8 +35,7 @@ public class OnwershipCommand implements SubCommand {
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
         PlayerData data = plugin.getData();
         Crew pCrew = data.getCrew(p);
-        Player tPlayer = Bukkit.getPlayer(args[1]);
-        if (args.length != 2) {
+        if (args.length != 1) {
             p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
             return;
         }
@@ -44,12 +43,13 @@ public class OnwershipCommand implements SubCommand {
             p.sendMessage(ConfigManager.NOT_IN_CREW);
             return;
         }
+        Player tPlayer = Bukkit.getPlayer(args[0]);
         if(tPlayer == null) {
             p.sendMessage(ConfigManager.PLAYER_NOT_FOUND);
             return;
         }
         if(!data.getCrew(tPlayer).equals(pCrew)) {
-            p.sendMessage(ConfigManager.PLAYER_NOT_IN_SAME_CREW);
+            p.sendMessage(ConfigManager.PLAYER_NOT_IN_SAME_CREW.replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName())));
             return;
         }
         if(!pCrew.isBoss(p)) {

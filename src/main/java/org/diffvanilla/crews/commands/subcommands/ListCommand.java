@@ -15,8 +15,7 @@ import org.diffvanilla.crews.commands.SubCommand;
 import org.diffvanilla.crews.exceptions.NotInCrew;
 import org.diffvanilla.crews.object.PlayerData;
 
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.hover.content.Text;
+import org.diffvanilla.crews.utilities.ChatUtilities;
 import org.diffvanilla.crews.utilities.UnicodeCharacters;
 
 public class ListCommand implements SubCommand {
@@ -48,7 +47,7 @@ public class ListCommand implements SubCommand {
                 try {
                     pageNum = Integer.parseInt(args[0]);
                 } catch (NumberFormatException e) {
-                    p.sendMessage(Component.text("Invalid page number.", TextColor.fromHexString("#FF0000"))); // Using red for errors
+                    p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
                     return;
                 }
             } else {
@@ -68,16 +67,28 @@ public class ListCommand implements SubCommand {
             int count = 0;
             boolean isAlternateColor = false; // For alternating colors after the top 5
 
-            TextComponent leaderBoardTitle = Component.text("=== ").color(TextColor.fromHexString("#BDBDBD"))
-                .append(Component.text((UnicodeCharacters.trophy + " CREWS LEADERBOARD " + UnicodeCharacters.trophy)).color(TextColor.fromHexString("#FFD54F")))
-                .append(Component.text(" ===")).color(TextColor.fromHexString("#BDBDBD"));
+            TextComponent leaderBoardTitle = Component.text("=======[ ").color(TextColor.fromHexString("#BDBDBD"))
+                .append(Component.text((UnicodeCharacters.trophy + " CREWS LEADERBOARD " + UnicodeCharacters.trophy)).color(TextColor.fromHexString("#FFD54F"))
+                    .decorate(TextDecoration.BOLD)).append(Component.text(" ]=======")).color(TextColor.fromHexString("#BDBDBD"));
+            TextComponent crewHighTable = Component.text("-=-=").color(TextColor.fromHexString("#BDBDBD"))
+                .append(Component.text((" Crew High Table ")).color(TextColor.fromHexString("#9575CD")))
+                .append(Component.text("=-=-")).color(TextColor.fromHexString("#BDBDBD"));
+            TextComponent crewHighTableFooter = Component.text("-=-=-=-=-=-=-=-=-=-=-=-").color(TextColor.fromHexString("#BDBDBD"));
             p.sendMessage(leaderBoardTitle);
+            p.sendMessage(Component.text(""));
             for (Map.Entry<String, Integer> entry : sortedList.entrySet()) {
                 if (count >= firstEntryIndex && count < firstEntryIndex + entriesPerPage) {
                     String crewName = entry.getKey();
                     int influence = entry.getValue();
 
+                    if(count == 0) {
+                        p.sendMessage(crewHighTable);
+                    }
+
                     TextColor color;
+                    if(pageNum == 1 && count == 5) {
+                        p.sendMessage(crewHighTableFooter);
+                    }
                     if (pageNum == 1 && count < 5) {
                         color = (count % 2 == 0) ? TextColor.fromHexString("#FFD700") : TextColor.fromHexString("#C5A500");
                     } else {
@@ -92,7 +103,7 @@ public class ListCommand implements SubCommand {
                         .append(Component.text("]", UnicodeCharacters.influence_outline_color));
 
                     message = message.hoverEvent(HoverEvent.showText(Component.text("View " + crewName)))
-                        .clickEvent(ClickEvent.runCommand("/crews lookup " + crewName));
+                        .clickEvent(ClickEvent.runCommand("/crews info " + crewName));
 
                     p.sendMessage(message);
                 }

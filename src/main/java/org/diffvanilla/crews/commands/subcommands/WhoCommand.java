@@ -33,11 +33,11 @@ public class WhoCommand implements SubCommand {
     @Override
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
         PlayerData data = plugin.getData();
-        if (args.length != 2) {
+        if (args.length != 1) {
             p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
             return;
         }
-        OfflinePlayer tPlayer = Bukkit.getServer().getOfflinePlayer(args[1]);
+        OfflinePlayer tPlayer = Bukkit.getServer().getOfflinePlayer(args[0]);
         Crew tCrew = data.getCrew(tPlayer);
         if(tCrew == null) {
             p.sendMessage(ConfigManager.CREW_NOT_FOUND);

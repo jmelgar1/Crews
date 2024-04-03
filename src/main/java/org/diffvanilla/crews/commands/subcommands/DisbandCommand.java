@@ -35,8 +35,7 @@ public class DisbandCommand implements SubCommand {
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
         PlayerData data = plugin.getData();
         Crew pCrew = data.getCrew(p);
-        String targetCrew = args[1];
-        if (args.length != 2) {
+        if (args.length != 1) {
             p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
             return;
         }
@@ -44,6 +43,7 @@ public class DisbandCommand implements SubCommand {
             p.sendMessage(ConfigManager.NOT_IN_CREW);
             return;
         }
+        String targetCrew = args[0];
         if(data.getCrew(targetCrew) != pCrew){
             p.sendMessage(ConfigManager.NOT_YOUR_CREW);
             return;

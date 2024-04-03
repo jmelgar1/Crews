@@ -1,5 +1,7 @@
 package org.diffvanilla.crews.utilities;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 
 public class UnicodeCharacters {
@@ -66,4 +68,43 @@ public class UnicodeCharacters {
     public static TextColor emoji_text_color = TextColor.fromHexString("#FFEBEE");
     public static TextColor compound_inactive = TextColor.fromHexString("#E57373");
     public static TextColor compound_active = TextColor.fromHexString("#81C784");
+
+    /* Create Message Icon Headers */
+    public static TextComponent createAlertIcon(TextColor color) {
+        return Component.text("[💡] ").color(color);
+    }
+    public static TextComponent createXIcon(TextColor color) {return Component.text("[✘] ").color(color);}
+    public static TextComponent createSuccessIcon(TextColor color) {
+        return Component.text("[✔] ").color(color);
+    }
+    public static TextComponent createTeleportIcon(TextColor color) {
+        return Component.text("[⤼] ").color(color);
+    }
+    public static TextComponent createCrewIcon(TextColor color) {
+        return Component.text("[🎲] ").color(color);
+    }
+    public static TextComponent createCrownIcon(TextColor color) {return Component.text("[👑] ").color(color);}
+    public static TextComponent createKickIcon(TextColor color) {
+        return Component.text("[👢] ").color(color);
+    }
+    public static TextComponent createLeaveIcon(TextColor color){
+        return Component.text("[⬅] ").color(color);
+    }
+    public static TextComponent createJoinIcon(TextColor color){
+        return Component.text("[➡] ").color(color);
+    }
+    public static TextComponent createSpongeIcon(TextColor color) {
+        return Component.text("[⧠] ").color(color);
+    }
+    public static TextComponent createPromoteIcon(TextColor color) {
+        return Component.text("[⟰] ").color(color);
+    }
+    public static TextComponent createDemoteIcon(TextColor color) {
+        return Component.text("[⟱] ").color(color);
+    }
+    public static TextComponent createMailIcon(TextColor color) {return Component.text("[📪] ").color(color);}
+    public static TextComponent createCompoundIcon(TextColor color) {return Component.text("[🏯] ").color(color);}
+    public static TextComponent createChatIcon(TextColor color) {return Component.text("[✉] ").color(color);}
+    public static TextComponent createDisbandIcon(TextColor color) {return Component.text("[💥] ").color(color);}
+    public static TextComponent createCrewsIcon(TextColor color) {return Component.text("[👥] ").color(color);}
 }

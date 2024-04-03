@@ -47,7 +47,7 @@ public class CrewShopListener implements Listener {
         if (clickedItem.getType() == Material.LAPIS_BLOCK) {
             Crew pCrew = data.getCrew(p);
             if(pCrew.getUnlockedUpgrades().contains("discord")){
-                p.sendMessage(ConfigManager.UPGRADE_ALREADY_UNLOCKED);
+                p.sendMessage(ConfigManager.UPGRADE_ALREADY_UNLOCKED.replaceText(builder -> builder.matchLiteral("{upgrade}").replacement("discord")));
                 return;
             }
             if(!pCrew.isHigherup(p)){
@@ -59,7 +59,7 @@ public class CrewShopListener implements Listener {
                 return;
             }
             pCrew.addUpgrade("discord");
-            pCrew.removeFromVault(ConfigManager.UPGRADE_DISCORD_COST, p);
+            pCrew.removeFromVault(ConfigManager.UPGRADE_DISCORD_COST, p, false);
             p.sendMessage(ChatColor.DARK_BLUE + "[\uD83C\uDFA7]" + ChatColor.BLUE + " Please type/enter your discord username: ");
             p.closeInventory();
         }
@@ -67,7 +67,7 @@ public class CrewShopListener implements Listener {
         if (clickedItem.getType() == Material.BAMBOO_SIGN) {
             Crew pCrew = data.getCrew(p);
             if(pCrew.getUnlockedUpgrades().contains("chat")){
-                p.sendMessage(ConfigManager.UPGRADE_ALREADY_UNLOCKED);
+                p.sendMessage(ConfigManager.UPGRADE_ALREADY_UNLOCKED.replaceText(builder -> builder.matchLiteral("{upgrade}").replacement("chat")));
                 return;
             }
             if(!pCrew.isHigherup(p)){
@@ -79,7 +79,7 @@ public class CrewShopListener implements Listener {
                 return;
             }
             pCrew.addUpgrade("chat");
-            pCrew.removeFromVault(ConfigManager.UPGRADE_CHAT_COST, p);
+            pCrew.removeFromVault(ConfigManager.UPGRADE_CHAT_COST, p, false);
             //success message here
             p.closeInventory();
         }
@@ -89,7 +89,7 @@ public class CrewShopListener implements Listener {
         if (clickedItem.getType() == Material.FILLED_MAP) {
             Crew pCrew = data.getCrew(p);
             if(pCrew.getUnlockedUpgrades().contains("mail")){
-                p.sendMessage(ConfigManager.UPGRADE_ALREADY_UNLOCKED);
+                p.sendMessage(ConfigManager.UPGRADE_ALREADY_UNLOCKED.replaceText(builder -> builder.matchLiteral("{upgrade}").replacement("mail")));
                 return;
             }
             if(!pCrew.isHigherup(p)){
@@ -101,7 +101,7 @@ public class CrewShopListener implements Listener {
                 return;
             }
             pCrew.addUpgrade("mail");
-            pCrew.removeFromVault(ConfigManager.UPGRADE_MAIL_COST, p);
+            pCrew.removeFromVault(ConfigManager.UPGRADE_MAIL_COST, p, false);
             //success message here
             p.closeInventory();
         }

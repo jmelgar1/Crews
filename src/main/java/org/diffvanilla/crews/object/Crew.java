@@ -60,7 +60,7 @@ public class Crew implements ConfigurationSerializable {
     }
 
     //score (add up to influence)
-    private int ratingScore;
+    private final int ratingScore;
     public int getRatingScore() { return this.ratingScore;}
 
     //description
@@ -98,7 +98,7 @@ public class Crew implements ConfigurationSerializable {
     public ArrayList<String> getEnforcers() {return this.enforcers;}
 
     //members
-    private ArrayList<String> members = new ArrayList<>();
+    private final ArrayList<String> members = new ArrayList<>();
     public ArrayList<String> getMembers() {
         return this.members;
     }
@@ -151,7 +151,7 @@ public class Crew implements ConfigurationSerializable {
                     p.teleport(compound, PlayerTeleportEvent.TeleportCause.COMMAND);
 
                     int amount = ConfigManager.WARP_COST;
-                    plugin.getData().getCrew(p).removeFromVault(amount, p);
+                    plugin.getData().getCrew(p).removeFromVault(amount, p, false);
 
                     p.sendMessage(ChatUtilities.successIcon + ChatColor.GREEN + "Warp successful!");
                     inWarp.remove(p);
@@ -179,12 +179,14 @@ public class Crew implements ConfigurationSerializable {
     }
 
     public boolean hasMember(Player p) {
-        if (this.members.contains(p.getUniqueId())) return true;
-        return this.boss.equals(p.getUniqueId());
+        String pUUID = String.valueOf(p.getUniqueId());
+        return this.members.contains(pUUID) ||
+            this.enforcers.contains(pUUID) ||
+            this.boss.equals(pUUID);
     }
 
     //Broadcast to all members
-    public void broadcast(final TextComponent text) {
+    public void broadcast(final Component text) {
         if(text == null) return;
         for (String member : this.members) {
             UUID pUUID = UUID.fromString(member);
@@ -193,27 +195,50 @@ public class Crew implements ConfigurationSerializable {
                 if(p != null){p.sendMessage(text);}
             }
         }
-        if (Bukkit.getOfflinePlayer(this.boss).isOnline()) {
-            Player p = Bukkit.getPlayer(this.boss);
+        for (String enforcer : this.enforcers) {
+            UUID pUUID = UUID.fromString(enforcer);
+            if (Bukkit.getOfflinePlayer(pUUID).isOnline()) {
+                Player p = Bukkit.getPlayer(pUUID);
+                if(p != null){p.sendMessage(text);}
+            }
+        }
+        if (Bukkit.getOfflinePlayer(UUID.fromString(this.boss)).isOnline()) {
+            Player p = Bukkit.getPlayer(UUID.fromString(this.boss));
             if (p != null && p.isOnline()) {
                 p.sendMessage(text);
             }
         }
     }
 
-    //vault
-    public void addToVault(int amount, Player p){
+    //fix this redundant code
+    public void addToVault(int amount, Player p, boolean showTransactionMessage){
+        if(showTransactionMessage) {
+            Component broadcastMessage = ConfigManager.ADD_TO_VAULT
+                .replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName()))
+                .replaceText(builder -> builder.matchLiteral("{current_amount}").replacement(String.valueOf(vault)))
+                .replaceText(builder -> builder.matchLiteral("{amount}").replacement(String.valueOf(amount)))
+                .replaceText(builder -> builder.matchLiteral("{new_amount}").replacement(String.valueOf(vault + amount)));
+            broadcast(broadcastMessage);
+        }
         this.vault = vault + amount;
         calculateInfluence();
     }
-    public void removeFromVault(int amount, Player p){
-        //takes player to put in the custom message (Player) removed vault blah
+    public void removeFromVault(int amount, Player p, boolean showTransactionMessage){
+        if(showTransactionMessage) {
+            Component broadcastMessage = ConfigManager.REMOVE_FROM_VAULT
+                .replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName()))
+                .replaceText(builder -> builder.matchLiteral("{current_amount}").replacement(String.valueOf(vault)))
+                .replaceText(builder -> builder.matchLiteral("{amount}").replacement(String.valueOf(amount)))
+                .replaceText(builder -> builder.matchLiteral("{new_amount}").replacement(String.valueOf(vault - amount)));
+            broadcast(broadcastMessage);
+        }
         this.vault = vault - amount;
         calculateInfluence();
     }
 
     public void calculateInfluence() {
-        int playerPower = this.members.size() * ConfigManager.INFLUENCE_PER_PLAYER;
+        int totalPlayers = this.members.size() + this.enforcers.size() + 1;
+        int playerPower = totalPlayers * ConfigManager.INFLUENCE_PER_PLAYER;
         int influence = this.vault + this.ratingScore + playerPower;
         setInfluence(influence);
     }
@@ -229,7 +254,9 @@ public class Crew implements ConfigurationSerializable {
             if (Bukkit.getOfflinePlayer(pUUID).isOnline()) {
                 Player p = Bukkit.getPlayer(pUUID);
                 if(p != null){
-                    p.sendMessage(MessageUtilities.createCrownIcon(TextColor.color(56, 142, 60)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.NEW_BOSS.replace("{player}", p.getName()).replace("{crew}", crewName))));
+                    p.sendMessage(ConfigManager.NEW_BOSS
+                        .replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName()))
+                        .replaceText(builder -> builder.matchLiteral("{crew}").replacement(crewName)));
                 }
             }
         }
@@ -245,23 +272,31 @@ public class Crew implements ConfigurationSerializable {
     public void addEnforcer(final UUID id) {
         if(enforcers.size() < enforcerLimit) {
             enforcers.add(id.toString());
-
+            members.remove(id.toString());
             Player p = Bukkit.getPlayer(id);
             if(p != null) {
                 p.sendMessage(ConfigManager.ENFORCER_PROMOTE);
             }
-            broadcast(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.NEW_ENFORCER));
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(id);
+            String playerName = offlinePlayer.getName();
+            if (playerName != null) {
+                broadcast(ConfigManager.NEW_ENFORCER.replaceText(builder -> builder.matchLiteral("{player}").replacement(playerName)));
+            }
         }
     }
 
     public void removeEnforcer(final UUID id) {
         enforcers.remove(id.toString());
-
+        members.add(id.toString());
         Player p = Bukkit.getPlayer(id);
         if(p != null) {
             p.sendMessage(ConfigManager.ENFORCER_DEMOTE);
         }
-        broadcast(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.PLAYER_ENFORCER_DEMOTE));
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(id);
+        String playerName = offlinePlayer.getName();
+        if (playerName != null) {
+            broadcast(ConfigManager.PLAYER_ENFORCER_DEMOTE.replaceText(builder -> builder.matchLiteral("{player}").replacement(playerName)));
+        }
     }
 
     public void showInfo(final Player p, boolean inCrew) {
@@ -326,12 +361,8 @@ public class Crew implements ConfigurationSerializable {
             UUID pUUID = UUID.fromString(members);
             plugin.getData().removeCPlayer(Bukkit.getPlayer(pUUID));
         }
+        Bukkit.broadcast(ConfigManager.CREW_DISBAND.replaceText(builder -> builder.matchLiteral("{crew}").replacement(this.name)));
         plugin.getData().removeCrew(this);
-        Bukkit.broadcast(MessageUtilities.createCrewIcon(
-                TextColor.color(211,47,47))
-            .append(LegacyComponentSerializer.legacyAmpersand()
-                .deserialize(ConfigManager.CREW_DISBAND
-                    .replace("{crew}", this.name))));
     }
 
     private void sendInfoMessage(Player p, String prefixEmoji, String prefix, String text, TextColor color) {
@@ -405,9 +436,9 @@ public class Crew implements ConfigurationSerializable {
             plugin.getData().removeCPlayer(Bukkit.getPlayer(pUUID));
             String pName = Bukkit.getOfflinePlayer(pUUID).getName();
             if(wasKicked){
-                this.broadcast(MessageUtilities.createKickIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.KICKED_FROM_CREW.replace("{player}", pName))));
+                this.broadcast(ConfigManager.KICKED_FROM_CREW.replaceText(builder -> builder.matchLiteral("{player}").replacement(pName)));
             } else {
-                this.broadcast(MessageUtilities.createLeaveIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.LEAVE_CREW.replace("{player}", pName))));
+                this.broadcast(ConfigManager.LEAVE_CREW.replaceText(builder -> builder.matchLiteral("{player}").replacement(pName)));
             }
             calculateInfluence();
         }
@@ -417,7 +448,7 @@ public class Crew implements ConfigurationSerializable {
     public void addPlayer(final Player p) {
         this.members.add(p.getUniqueId().toString());
         plugin.getData().addCPlayer(p, this);
-        this.broadcast(MessageUtilities.createJoinIcon(TextColor.color(46,125,50)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(ConfigManager.JOIN_CREW.replace("{player}", p.getName()))));
+        this.broadcast(ConfigManager.JOIN_CREW.replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName())));
         calculateInfluence();
     }
 
@@ -468,10 +499,10 @@ public class Crew implements ConfigurationSerializable {
         LocalDate currentDate = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 
-        this.name = name;
-        this.boss = p.getUniqueId().toString();
         this.plugin = data;
         this.plugin.getData().addCPlayer(p, this);
+        this.name = name;
+        this.boss = p.getUniqueId().toString();
         this.dateFounded = currentDate.format(formatter);
         this.description = "No description set.";
         this.kills = 0;
@@ -482,13 +513,22 @@ public class Crew implements ConfigurationSerializable {
         this.ratingScore = 0;
         this.enforcerLimit = 1;
         this.memberLimit = 3;
+        this.unlockedUpgrades = new ArrayList<>();
     }
 
     //Constructor for loaded crew
     public Crew(Map<String, Object> map, final Crews data) {
         this.plugin = data;
         this.name = (String) map.get("name");
-        if (map.get("boss") != null) this.boss = (String) map.get("boss");
+        if (map.get("boss") != null) {
+            this.boss = (String) map.get("boss");
+//            if (Bukkit.getOfflinePlayer(UUID.fromString(this.boss)).isOnline()) {
+//                Player player = Bukkit.getPlayer(UUID.fromString(this.boss));
+//                if (player != null) {
+//                    data.getData().addCPlayer(player, this);
+//                }
+//            }
+        }
         Object membersObj = map.get("members");
         if (membersObj instanceof ArrayList<?> membersList) {
             for (Object mObj : membersList) {
@@ -510,7 +550,6 @@ public class Crew implements ConfigurationSerializable {
             // Handle case where 'members' is not an ArrayList or is null
             System.err.println("'members' is not an ArrayList or is null.");
         }
-
         Object enforcersObj = map.get("enforcers");
         if (enforcersObj instanceof ArrayList<?> enforcersList) {
             for (Object eObj : enforcersList) {

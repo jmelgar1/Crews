@@ -31,22 +31,19 @@ public class DeclineCommand implements SubCommand {
 
     @Override
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
-        Crew targetCrew = plugin.getData().getCrew(args[1]);
-        if (args.length != 2) {
+        if (args.length != 1) {
             p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
             return;
         }
-
         if (!plugin.getData().hasInvitation(p)) {
             p.sendMessage(ConfigManager.NO_INVITE);
             return;
         }
-
         if (plugin.getData().getCrew(p) != null) {
             p.sendMessage(ConfigManager.ALREADY_IN_CREW);
             return;
         }
-
+        Crew targetCrew = plugin.getData().getCrew(args[0]);
         plugin.getData().handleInvite(p, targetCrew, false);
         //add success message
     }

@@ -2,25 +2,18 @@ package org.diffvanilla.crews.listeners;
 
 import com.google.gson.JsonObject;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.diffvanilla.crews.Crews;
 import org.diffvanilla.crews.commands.subcommands.ShopCommand;
-//import org.diffvanilla.crews.managers.DiscordManager;
 import org.diffvanilla.crews.object.Crew;
-import org.diffvanilla.crews.utilities.ChatUtilities;
 import org.diffvanilla.crews.utilities.JsonUtilities;
 import org.diffvanilla.crews.utilities.UnicodeCharacters;
 
@@ -95,36 +88,47 @@ public class PlayerEvents implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event){
-        Player p = event.getPlayer();
-        UUID uuid = p.getUniqueId();
-
-        Crew targetCrew = plugin.getData().getCrew(p);
-        JsonObject crewsJson = plugin.getcrewsJson();
-
-        if(targetCrew == null) {
-            return;
-        }
-
-        JsonObject crewsObject = crewsJson.getAsJsonObject(targetCrew.getName());
-        if(crewsObject != null){
-            if(crewsObject.getAsJsonObject("mailMessages") == null){
-                JsonObject mailMessages = new JsonObject();
-                crewsObject.add("mailMessages", mailMessages);
-                plugin.savecrewsFileJson();
-            }
-
-            JsonObject mailMessages = crewsObject.getAsJsonObject("mailMessages");
-            if(!mailMessages.keySet().isEmpty()){
-                for(String message : mailMessages.keySet()) {
-                    JsonUtilities json = new JsonUtilities();
-                    List<String> membersUUIDList = json.JsonArrayToStringList(mailMessages.get(message).getAsJsonArray());
-                    if(membersUUIDList.contains(uuid.toString())){
-                        UnicodeCharacters unicode = new UnicodeCharacters();
-                        p.sendMessage(ChatColor.AQUA + "[" + UnicodeCharacters.mail + "]" + " You have unopened crew mail! Use /crews mail open");
-                        break;
-                    }
-                }
+        for (Crew c : plugin.getData().getCrews()) {
+            if (c.hasMember(event.getPlayer())) {
+                plugin.getData().addCPlayer(event.getPlayer(), c);
+                break;
             }
         }
+//        Player p = event.getPlayer();
+//        UUID uuid = p.getUniqueId();
+//
+//        Crew targetCrew = plugin.getData().getCrew(p);
+//        JsonObject crewsJson = plugin.getcrewsJson();
+//
+//        if(targetCrew == null) {
+//            return;
+//        }
+//
+//        JsonObject crewsObject = crewsJson.getAsJsonObject(targetCrew.getName().toLowerCase());
+//        if(crewsObject != null){
+//            if(crewsObject.getAsJsonObject("mailMessages") == null){
+//                JsonObject mailMessages = new JsonObject();
+//                crewsObject.add("mailMessages", mailMessages);
+//                plugin.savecrewsFileJson();
+//            }
+//
+//            JsonObject mailMessages = crewsObject.getAsJsonObject("mailMessages");
+//            if(!mailMessages.keySet().isEmpty()){
+//                for(String message : mailMessages.keySet()) {
+//                    JsonUtilities json = new JsonUtilities();
+//                    List<String> membersUUIDList = json.JsonArrayToStringList(mailMessages.get(message).getAsJsonArray());
+//                    if(membersUUIDList.contains(uuid.toString())){
+//                        UnicodeCharacters unicode = new UnicodeCharacters();
+//                        p.sendMessage(ChatColor.AQUA + "[" + UnicodeCharacters.mail + "]" + " You have unopened crew mail! Use /crews mail open");
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+    }
+
+    @EventHandler
+    private void onLeave(PlayerQuitEvent event) {
+        plugin.getData().removeCPlayer(event.getPlayer());
     }
 }

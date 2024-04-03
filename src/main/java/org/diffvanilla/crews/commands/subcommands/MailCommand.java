@@ -48,7 +48,7 @@ public class MailCommand implements SubCommand {
             return;
         }
         if(!pCrew.getUnlockedUpgrades().contains("mail")) {
-            p.sendMessage(ConfigManager.UPGRADE_NOT_UNLOCKED);
+            p.sendMessage(ConfigManager.UPGRADE_NOT_UNLOCKED.replaceText(builder -> builder.matchLiteral("{upgrade}").replacement("mail")));
             return;
         }
         if(args[1].equalsIgnoreCase("open")) {

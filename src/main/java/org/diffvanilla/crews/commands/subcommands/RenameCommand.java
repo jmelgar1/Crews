@@ -39,8 +39,7 @@ public class RenameCommand implements SubCommand {
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
         PlayerData data = plugin.getData();
         Crew pCrew = data.getCrew(p);
-        String newName = args[1];
-        if (args.length != 2) {
+        if (args.length != 1) {
             p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
             return;
         }
@@ -56,6 +55,7 @@ public class RenameCommand implements SubCommand {
             p.sendMessage(ConfigManager.MUST_BE_BOSS);
             return;
         }
+        String newName = args[0];
         if (pCrew.getName().equals(newName)) {
             p.sendMessage(ConfigManager.CHOOSE_DIFFERENT_NAME);
             return;
@@ -63,7 +63,7 @@ public class RenameCommand implements SubCommand {
 
         if (data.isValidCrewName(p, newName)) {
             pCrew.changeName(newName);
-            pCrew.removeFromVault(ConfigManager.RENAME_COST, p);
+            pCrew.removeFromVault(ConfigManager.RENAME_COST, p, true);
         }
     }
 

@@ -34,9 +34,7 @@ public class PromoteCommand implements SubCommand {
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
         PlayerData data = plugin.getData();
         Crew pCrew = data.getCrew(p);
-        Player tPlayer = Bukkit.getPlayer(args[1]);
-        Crew tCrew = data.getCrew(tPlayer);
-        if (args.length != 2) {
+        if (args.length != 1) {
             p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
             return;
         }
@@ -44,6 +42,8 @@ public class PromoteCommand implements SubCommand {
             p.sendMessage(ConfigManager.NOT_IN_CREW);
             return;
         }
+        Player tPlayer = Bukkit.getPlayer(args[0]);
+        Crew tCrew = data.getCrew(tPlayer);
         if(tPlayer == null) {
             p.sendMessage(ConfigManager.PLAYER_NOT_FOUND);
             return;
@@ -53,18 +53,20 @@ public class PromoteCommand implements SubCommand {
             return;
         }
         if(!pCrew.equals(tCrew)) {
-            p.sendMessage(ConfigManager.PLAYER_NOT_IN_SAME_CREW);
+            p.sendMessage(ConfigManager.PLAYER_NOT_IN_SAME_CREW.replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName())));
             return;
         }
         if(pCrew.isEnforcer(tPlayer)) {
-            p.sendMessage(ConfigManager.ALREADY_ENFORCER);
+            p.sendMessage(ConfigManager.ALREADY_ENFORCER
+                .replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName())));
             return;
         }
         if(pCrew.getEnforcers().size() >= pCrew.getEnforcerLimit()) {
             if(pCrew.isMaxLevel()) {
                 p.sendMessage(ConfigManager.MAX_LEVEL_ENFORCER_LIMIT);
             } else {
-                p.sendMessage(ConfigManager.ENFORCER_LIMIT);
+                p.sendMessage(ConfigManager.ENFORCER_LIMIT
+                    .replaceText(builder -> builder.matchLiteral("{limit}").replacement(String.valueOf(pCrew.getEnforcerLimit()))));
             }
             return;
         }

@@ -1,7 +1,5 @@
 package org.diffvanilla.crews.object;
 
-import com.google.gson.JsonObject;
-import io.papermc.paper.configuration.type.fallback.FallbackValue;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
@@ -88,14 +86,15 @@ public class PlayerData {
     }
 
     public Crew getCrew(Player p){
+        System.out.println(cPlayers);
         return cPlayers.get(p);
     }
 
     public Crew getCrew(OfflinePlayer p){
         if(p.isOnline()) return getCrew((Player) p);
-        UUID id = p.getUniqueId();
+        String id = String.valueOf(p.getUniqueId());
         for(Crew c : getCrews()){
-            if(c.getMembers().contains(id) || c.getBoss().equals(id)) return c;
+            if(c.getMembers().contains(id) || c.getBoss().equals(id) || c.getEnforcers().contains(id)) return c;
         }
         return null;
     }
@@ -183,7 +182,8 @@ public class PlayerData {
 
     public void calculateInfluence(Crew crew) {
         int vault = crew.getVault();
-        int playerPower = crew.getMembers().size() * ConfigManager.INFLUENCE_PER_PLAYER;
+        int totalPlayers = crew.getMembers().size() + crew.getEnforcers().size() + 1;
+        int playerPower = totalPlayers * ConfigManager.INFLUENCE_PER_PLAYER;
         int rating = crew.getRatingScore();
         int influence = vault + playerPower + rating;
         crew.setInfluence(influence);

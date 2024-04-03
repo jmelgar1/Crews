@@ -34,7 +34,7 @@ public class SetCompoundCommand implements SubCommand {
         PlayerData data = plugin.getData();
         Crew pCrew = data.getCrew(p);
         int cost = ConfigManager.SET_COMPOUND_COST;
-        if (args.length != 1) {
+        if (args.length != 0) {
             p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
             return;
         }
@@ -50,11 +50,11 @@ public class SetCompoundCommand implements SubCommand {
             p.sendMessage(ConfigManager.COMPOUND_EXISTS);
             return;
         }
-        if (pCrew.getVault() >= cost) {
+        if (pCrew.getVault() < cost) {
             p.sendMessage(ConfigManager.NOT_ENOUGH_IN_VAULT);
             return;
         }
         pCrew.setCompound(p);
-        pCrew.removeFromVault(cost, p);
+        pCrew.removeFromVault(cost, p, true);
     }
 }

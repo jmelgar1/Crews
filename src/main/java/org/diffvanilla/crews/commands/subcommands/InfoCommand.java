@@ -20,7 +20,9 @@ import org.diffvanilla.crews.commands.SubCommand;
 
 import net.md_5.bungee.api.ChatColor;
 import org.diffvanilla.crews.exceptions.NotInCrew;
+import org.diffvanilla.crews.managers.ConfigManager;
 import org.diffvanilla.crews.object.Crew;
+import org.diffvanilla.crews.object.PlayerData;
 import org.diffvanilla.crews.utilities.ChatUtilities;
 import org.diffvanilla.crews.utilities.UnicodeCharacters;
 
@@ -47,49 +49,43 @@ public class InfoCommand implements SubCommand {
 
     @Override
 	public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
-        plugin.getData().getInCrewInfo().add(p);
-        if (args.length == 0) {
-            Crew c = plugin.getData().getCrewOrError(p);
-            c.showInfo(p, true);
+        PlayerData data = plugin.getData();
+        Crew pCrew = data.getCrew(p);
+        if(args.length >= 2) {
+            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
             return;
         }
-
-		//player's crew
+        if (args.length == 0) {
+            if (pCrew != null) {
+                Crew c = plugin.getData().getCrewOrError(p);
+                inv = Bukkit.createInventory(null, 54, ChatUtilities.tribalGames.toString() + ChatColor.BOLD + pCrew.getName() + " Crew Profile");
+                UUID playerUUID = p.getUniqueId();
+                inventories.put(playerUUID, inv);
+                initializeItems(pCrew);
+                openInventory(p, inventories.get(playerUUID));
+                c.showInfo(p, true);
+            } else {
+                p.sendMessage(ConfigManager.NOT_IN_CREW);
+                return;
+            }
+        }
 		if(args.length == 1) {
-            Crew playerCrew = plugin.getData().getCrew(p);
-			if(playerCrew != null) {
-
-	        	inv = Bukkit.createInventory(null, 54, ChatUtilities.tribalGames.toString() + ChatColor.BOLD + playerCrew.getName() + " crew Profile");
-				UUID playerUUID = p.getUniqueId();
-				inventories.put(playerUUID, inv);
-				initializeItems(playerCrew);
-				openInventory(p, inventories.get(playerUUID));
-
-                plugin.getData().getCrew(p).showInfo(p, true);
-				//JsonObject crewsection = crewsFile.getAsJsonObject(playerCrew);
-				//crewManager.getcrewInfo(crewsFile, crewsection, playerCrew, p, false);
-
-			} else {
-				p.sendMessage(org.bukkit.ChatColor.DARK_RED + "[✖] " + ChatColor.RED + "You are not in a cr ew! " +
-						"Receive an invite from a crew or create your own: " + ChatColor.YELLOW + "/crews create [crew]");
-			}
-
-			//other players crew
-		} else if (args.length == 2) {
-			p.sendMessage(ChatUtilities.usageIcon + ChatColor.WHITE + "To view another crew's information please use "
-					+ ChatColor.YELLOW + "/crews lookup [crew]");
-		} else {
-            //ChatUtilities.CorrectUsage(p, getSyntax());
-		}
+            Crew tCrew = data.getCrew(args[0]);
+            if (tCrew != null) {
+                tCrew.showInfo(p, false);
+            } else {
+                p.sendMessage(ConfigManager.CREW_NOT_FOUND);
+//				p.sendMessage(org.bukkit.ChatColor.DARK_RED + "[✖] " + ChatColor.RED + "You are not in a cr ew! " +
+//						"Receive an invite from a crew or create your own: " + ChatColor.YELLOW + "/crews create [crew]");
+            }
+        }
 	}
-	
 	public void initializeItems(Crew crew) {
         String crewName = crew.getName();
 		String dateCreated = crew.getDateFounded();
 		int level = crew.getLevel();
 		int vault = crew.getVault();
 		int requiredSponges = crew.getLevelUpCost();
-		int ratingScore = crew.getRatingScore();
 		int influence = crew.getInfluence();
 		//OfflinePlayer chief = Bukkit.getServer().getOfflinePlayer(crewManager.getChief(crew));
 		

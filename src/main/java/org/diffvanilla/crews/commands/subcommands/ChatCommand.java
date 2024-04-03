@@ -33,7 +33,7 @@ public class ChatCommand implements SubCommand {
             return;
         }
         if(!playerCrew.getUnlockedUpgrades().contains("chat")) {
-            p.sendMessage(ConfigManager.UPGRADE_NOT_UNLOCKED);
+            p.sendMessage(ConfigManager.UPGRADE_NOT_UNLOCKED.replaceText(builder -> builder.matchLiteral("{upgrade}").replacement("chat")));
             return;
         }
         if(plugin.getData().isInCrewChat(p.getUniqueId())) {
@@ -44,6 +44,7 @@ public class ChatCommand implements SubCommand {
         if(!plugin.getData().isInCrewChat(p.getUniqueId())) {
             p.sendMessage(ConfigManager.CREW_CHAT_ENABLED);
             plugin.getData().enableCrewChat(p.getUniqueId());
+            return;
         }
     }
 }

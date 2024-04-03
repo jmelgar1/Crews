@@ -34,10 +34,14 @@ public class InviteCommand implements SubCommand {
     @Override
 	public void perform(Player p, String[] args, Crews plugin) {
         Crew crew = plugin.getData().getCrew(p);
-        Player target = Bukkit.getPlayer(args[1]);
-        if (target != null) {
+        if (args[0] != null) {
+            Player target = Bukkit.getPlayer(args[0]);
+            if (args.length != 1) {
+                p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+                return;
+            }
             if (Bukkit.getServer().getPlayer(target.getName()) == null) {
-                p.sendMessage(ConfigManager.PLAYER_NOT_ONLINE);
+                p.sendMessage(ConfigManager.PLAYER_NOT_ONLINE.replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName())));
                 return;
             }
             if (crew == null) {
@@ -48,12 +52,9 @@ public class InviteCommand implements SubCommand {
                 p.sendMessage(ConfigManager.MUST_BE_HIGHERUP);
                 return;
             }
-            if (args.length != 2) {
-                p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
-                return;
-            }
-            if (crew.getMemberLimit() <= crew.getMembers().size()) {
-                p.sendMessage(ConfigManager.REACHED_MAX_MEMBERS);
+            //add one for boss
+            if (crew.getMemberLimit() <= crew.getMembers().size() + crew.getEnforcers().size() + 1) {
+                p.sendMessage(ConfigManager.REACHED_MAX_MEMBERS.replaceText(builder -> builder.matchLiteral("{limit}").replacement(String.valueOf(crew.getMemberLimit()))));
                 return;
             }
             if (target.getName().equals(p.getName())) {
@@ -61,7 +62,7 @@ public class InviteCommand implements SubCommand {
                 return;
             }
             if (plugin.getData().hasInvitation(p)) {
-                p.sendMessage(ConfigManager.ALREADY_INVITED);
+                p.sendMessage(ConfigManager.ALREADY_INVITED.replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName())));
                 return;
             }
             if (plugin.getData().getCrew(target) == crew) {
@@ -69,7 +70,7 @@ public class InviteCommand implements SubCommand {
                 return;
             }
             if (plugin.getData().getCrew(target) != null) {
-                p.sendMessage(ConfigManager.PLAYER_NOT_FREE_AGENT);
+                p.sendMessage(ConfigManager.PLAYER_NOT_FREE_AGENT.replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName())));
                 return;
             }
 
@@ -103,6 +104,8 @@ public class InviteCommand implements SubCommand {
                     plugin.getData().expireInvitation(target);
                 }
             }.runTaskLaterAsynchronously(plugin, 3600);
+        } else {
+            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
         }
     }
 }

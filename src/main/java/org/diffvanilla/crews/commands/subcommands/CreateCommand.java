@@ -34,21 +34,20 @@ public class CreateCommand implements SubCommand {
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
         PlayerData data = plugin.getData();
         Crew pCrew = data.getCrew(p);
-        if (args.length != 1) {
-            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
-            return;
-        }
         if (pCrew != null) {
             p.sendMessage(ConfigManager.ALREADY_IN_CREW);
             return;
         }
-
+        if (args.length != 1) {
+            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            return;
+        }
         String proposedCrewName = args[0];
         p.sendMessage(proposedCrewName);
         if (data.isValidCrewName(p, proposedCrewName)) {
             Crew newCrew = new Crew(args[0], p, plugin);
             data.addCrew(newCrew);
-            Bukkit.broadcast(LegacyComponentSerializer.legacyAmpersand().deserialize((ConfigManager.CREW_FOUNDED.replaceAll("\\{sector}", args[0]))));
+            Bukkit.broadcast(ConfigManager.CREW_FOUNDED.replaceText(builder -> builder.matchLiteral("{crew}").replacement(newCrew.getName())));
         }
     }
 }

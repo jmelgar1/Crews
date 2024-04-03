@@ -35,15 +35,15 @@ public class DemoteCommand implements SubCommand {
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
         PlayerData data = plugin.getData();
         Crew pCrew = data.getCrew(p);
-        Player demotedPlayer = Bukkit.getServer().getPlayer(args[1]);
         if (pCrew == null) {
             p.sendMessage(ConfigManager.NOT_IN_CREW);
             return;
         }
-        if (args.length != 2) {
+        if (args.length != 1) {
             p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
             return;
         }
+        Player demotedPlayer = Bukkit.getServer().getPlayer(args[0]);
         if (demotedPlayer == null) {
             p.sendMessage(ConfigManager.PLAYER_NOT_FOUND);
             return;
@@ -53,7 +53,7 @@ public class DemoteCommand implements SubCommand {
             return;
         }
         if (!data.getCrew(demotedPlayer).equals(pCrew)) {
-            p.sendMessage(ConfigManager.PLAYER_NOT_IN_SAME_CREW);
+            p.sendMessage(ConfigManager.PLAYER_NOT_IN_SAME_CREW.replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName())));
             return;
         }
         if (!pCrew.isEnforcer(demotedPlayer)) {
