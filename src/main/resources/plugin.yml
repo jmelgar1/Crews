@@ -1,10 +1,10 @@
 api-version: 1.16
 name: Crews
 version: 1.0
-author: DiffVanilla
-website: www.diffvanilla.org
-main: org.diffvanilla.crews.Crews
-description: Crews plugin for DiffVanilla
+author: OVClub
+website: www.ovclub.gg
+main: org.ovclub.crews.Crews
+description: Crews plugin for OVClub
 depend: [ Vault ]
 commands:
     crews:
