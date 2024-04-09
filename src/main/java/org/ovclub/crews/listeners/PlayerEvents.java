@@ -1,14 +1,10 @@
 package org.ovclub.crews.listeners;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentLike;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -35,7 +31,6 @@ public class PlayerEvents implements Listener {
         Crew targetCrew = plugin.getData().getCrew(p);
 
         if(targetCrew != null) {
-            //String showName = targetCrew.getcrewshowName(targetCrew);
             String crewChatPrefix = ChatColor.GREEN + "(" + ChatColor.DARK_GREEN + targetCrew.getName() + ChatColor.GREEN + ") ";
 
             String sentMessage = event.getMessage();

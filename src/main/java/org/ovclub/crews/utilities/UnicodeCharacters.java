@@ -58,6 +58,7 @@ public class UnicodeCharacters {
     public static TextColor description_color = TextColor.fromHexString("#FFF59D");
     public static TextColor founded_color = TextColor.fromHexString("#81C784");
     public static TextColor economy_color = TextColor.fromHexString("#4CAF50");
+    public static TextColor queue_color = TextColor.fromHexString("#F9A825");
     public static TextColor rating_color = TextColor.fromHexString("#FFEB3B");
     public static TextColor turfwar_color = TextColor.fromHexString("#EF5350");
     public static TextColor boss_color = TextColor.fromHexString("#3F51B5");

@@ -1,10 +1,6 @@
 package org.ovclub.crews.commands.subcommands;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.ovclub.crews.Crews;
 import org.ovclub.crews.commands.SubCommand;
 import org.ovclub.crews.exceptions.NotInCrew;
@@ -12,10 +8,7 @@ import org.ovclub.crews.managers.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 import org.ovclub.crews.utilities.ChatUtilities;
-import org.ovclub.crews.utilities.GUIUtilities;
-import org.ovclub.crews.utilities.UnicodeCharacters;
-
-import java.util.UUID;
+import org.ovclub.crews.utilities.GUICreator;
 
 public class ShopCommand implements SubCommand {
 
@@ -50,13 +43,7 @@ public class ShopCommand implements SubCommand {
             p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
             return;
         }
-        Inventory inv = Bukkit.createInventory(null, 27, Component.text(UnicodeCharacters.shop_emoji + "CREW UPGRADE SHOP " + UnicodeCharacters.shop_emoji)
-            .color(UnicodeCharacters.sponge_color)
-            .decorate(TextDecoration.BOLD));
-        UUID playerUUID = p.getUniqueId();
-        GUIUtilities.initializeCrewShopItems(pCrew, inv);
-        data.getInventories().put(playerUUID, inv);
-        GUIUtilities.openInventory(p, data.getInventories().get(playerUUID));
+        GUICreator.createCrewShopGUI(data, p, pCrew);
     }
 	
 //	@EventHandler

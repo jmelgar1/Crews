@@ -11,6 +11,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.ovclub.crews.Crews;
 import org.ovclub.crews.managers.ConfigManager;
@@ -43,6 +44,10 @@ public class Crew implements ConfigurationSerializable {
     private final int level;
     public int getLevel() { return this.level; }
 
+    private ItemStack banner;
+    public ItemStack getBanner() { return this.banner; }
+    public void setBanner(ItemStack newBanner) { this.banner = newBanner; }
+
     //influence (power score)
     private int influence;
     public int getInfluence() { return this.influence; }
@@ -59,6 +64,15 @@ public class Crew implements ConfigurationSerializable {
     //score (add up to influence)
     private final int ratingScore;
     public int getRatingScore() { return this.ratingScore;}
+
+    private int turfWarWins;
+    public int getTurfWarWins() { return this.turfWarWins;}
+
+    private int turfWarDraws;
+    public int getTurfWarDraws() { return this.turfWarDraws;}
+
+    private int turfWarLosses;
+    public int getTurfWarLosses() { return this.turfWarLosses;}
 
     //description
     private String description;
@@ -609,5 +623,8 @@ public class Crew implements ConfigurationSerializable {
         if(map.get("ratingScore") == null) this.ratingScore = 0; else this.ratingScore = (int) ((double) map.get("ratingScore"));
         if(map.get("enforcerLimit") == null) this.enforcerLimit = 1; else this.enforcerLimit = (int) map.get("enforcerLimit");
         if(map.get("memberLimit") == null) this.memberLimit = 3; else this.memberLimit = (int) map.get("memberLimit");
+        if(map.get("turfWarWins") == null) this.turfWarWins = 0; else this.turfWarWins = (int) map.get("turfWarWins");
+        if(map.get("turfWarDraws") == null) this.turfWarDraws = 0; else this.turfWarDraws = (int) map.get("turfWarDraws");
+        if(map.get("turfWarLosses") == null) this.turfWarLosses = 0; else this.turfWarLosses = (int) map.get("turfWarLosses");
     }
 }

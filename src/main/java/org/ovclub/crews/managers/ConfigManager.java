@@ -32,6 +32,7 @@ public class ConfigManager {
         CANT_KICK_SAME_RANK = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("cant-kick-same-rank")))));
         CANT_KICK_SELF = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("cant-kick-self")))));
         CHOOSE_DIFFERENT_NAME = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("choose-different-name")))));
+        CREW_HAS_JOINED_QUEUE = UnicodeCharacters.createQueueIcon(TextColor.fromHexString("#FF7043")).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("crew-has-joined-queue")))));
         CREW_IS_MAX_LEVEL = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("crew-is-max-level")))));
         CREW_NO_COMPOUND = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("crew-no-compound")))));
         CREW_NOT_FOUND = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("crew-not-found")))));
@@ -110,6 +111,7 @@ public class ConfigManager {
     public static TextComponent ALREADY_ENFORCER;
     public static TextComponent CREW_DISBAND;
     public static TextComponent CREW_FOUNDED;
+    public static TextComponent CREW_HAS_JOINED_QUEUE;
     public static TextComponent ENFORCER_LIMIT;
     public static TextComponent JOIN_CREW;
     public static TextComponent KICKED_FROM_CREW;

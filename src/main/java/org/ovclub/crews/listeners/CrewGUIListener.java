@@ -1,7 +1,6 @@
 package org.ovclub.crews.listeners;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
@@ -12,7 +11,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.ovclub.crews.Crews;
@@ -20,7 +18,7 @@ import org.ovclub.crews.managers.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 import org.ovclub.crews.object.turfwar.TurfWarQueueItem;
-import org.ovclub.crews.utilities.GUIUtilities;
+import org.ovclub.crews.utilities.GUICreator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,11 +43,8 @@ public class CrewGUIListener implements Listener {
         if (clickedItem == null || clickedItem.getType().isAir()) return;
 
         Crew pCrew = data.getCrew(p);
-//        String inventoryTitle = net.md_5.bungee.api.ChatColor.stripColor(event.getView().getTitle());
-//        Crew targetCrew = plugin.getData().getCrew(p);
 
         if(clickedItem.getType() == Material.COMPASS) {
-            //warp logic
             p.closeInventory();
         }
 
@@ -63,16 +58,12 @@ public class CrewGUIListener implements Listener {
             p.performCommand("crews shop");
         }
 
-        TextComponent turfWarSetup = Component.text("Turf War Setup");
         if(clickedItem.getType() == Material.DIAMOND_SWORD && e.getView().title().equals(Component.text("Crew Turf Wars"))) {
             p.closeInventory();
-            Inventory queueInv = Bukkit.createInventory(null, 27, turfWarSetup);
-            GUIUtilities.initializeTurfWarSelectPlayerItems(pCrew, queueInv);
-            data.getInventories().put(playerUUID, queueInv);
-            GUIUtilities.openInventory(p, queueInv);
+            GUICreator.createTurfWarSelectPlayersGUI(data, p, pCrew);
         }
 
-        if (clickedItem.getType() == Material.PLAYER_HEAD && e.getView().title().equals(turfWarSetup)) {
+        if (clickedItem.getType() == Material.PLAYER_HEAD && e.getView().title().equals("Turf War Setup")) {
             ItemMeta meta = clickedItem.getItemMeta();
             if (meta != null && meta.hasDisplayName()) {
                 String playerName = PlainTextComponentSerializer.plainText().serialize(meta.displayName());
@@ -109,8 +100,33 @@ public class CrewGUIListener implements Listener {
                 queueItem.setCrew(data.getCrew(p));
                 queueItem.setPlayers(data.getSelectedForQueue());
                 plugin.getTurfWarManager().queueCrew(queueItem);
+                plugin.getData().broadcastToAllOnlineCrewMembers(ConfigManager.CREW_HAS_JOINED_QUEUE);
+                p.sendMessage(ConfigManager.JOINED_QUEUE);
             } else {
                 p.sendMessage(ConfigManager.ONE_PLAYER_REQUIRED_FOR_QUEUE);
+            }
+        }
+
+        if(clickedItem.getType().equals(Material.LILY_PAD)) {
+            if(e.getView().title().equals(Component.text("Change Crew Banner"))) {
+                p.closeInventory();
+                GUICreator.createCrewInfoGUI(data, p, pCrew);
+            }
+        }
+
+        if(clickedItem.getType().toString().endsWith("_BANNER")) {
+            if(e.getView().title().equals(Component.text(pCrew.getName() + " - Profile"))) {
+                p.closeInventory();
+                GUICreator.createBannerSelectGUI(data, p, pCrew);
+            }
+            else if(e.getView().title().equals(Component.text("Change Crew Banner"))) {
+                if(p.getInventory().contains(clickedItem)) {
+                    p.closeInventory();
+                    ItemStack newBanner = clickedItem.clone();
+                    newBanner.setAmount(1);
+                    pCrew.setBanner(newBanner);
+                    GUICreator.createBannerSelectGUI(data, p, pCrew);
+                }
             }
         }
     }

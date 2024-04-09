@@ -45,7 +45,8 @@ public class CreateCommand implements SubCommand {
         if (data.isValidCrewName(p, proposedCrewName)) {
             Crew newCrew = new Crew(args[0], p, plugin);
             data.addCrew(newCrew);
-            Bukkit.broadcast(ConfigManager.CREW_FOUNDED.replaceText(builder -> builder.matchLiteral("{crew}").replacement(newCrew.getName())));
+            Bukkit.broadcast(ConfigManager.CREW_FOUNDED.replaceText(builder -> builder.matchLiteral("{crew}").replacement(newCrew.getName()))
+                .replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName())));
         }
     }
 }

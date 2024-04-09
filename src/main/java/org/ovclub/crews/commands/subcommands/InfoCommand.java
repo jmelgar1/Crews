@@ -1,11 +1,6 @@
 package org.ovclub.crews.commands.subcommands;
 
-import java.util.*;
-
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.ovclub.crews.Crews;
 import org.ovclub.crews.commands.SubCommand;
 
@@ -14,13 +9,11 @@ import org.ovclub.crews.managers.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 import org.ovclub.crews.utilities.ChatUtilities;
-import org.ovclub.crews.utilities.GUIUtilities;
+import org.ovclub.crews.utilities.GUICreator;
 
 public class InfoCommand implements SubCommand {
-	
-	private static Inventory inv;
 
-	@Override
+    @Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
 		return "See your crew's info.";
@@ -47,11 +40,7 @@ public class InfoCommand implements SubCommand {
         if (args.length == 0) {
             if (pCrew != null) {
                 Crew c = plugin.getData().getCrewOrError(p);
-                inv = Bukkit.createInventory(null, 54, Component.text(pCrew.getName() + " - Crew Profile"));
-                UUID playerUUID = p.getUniqueId();
-                GUIUtilities.initializeCrewInfoItems(pCrew, inv);
-                data.getInventories().put(playerUUID, inv);
-                GUIUtilities.openInventory(p, data.getInventories().get(playerUUID));
+                GUICreator.createCrewInfoGUI(data, p, pCrew);
                 c.showInfo(p, true);
             } else {
                 p.sendMessage(ConfigManager.NOT_IN_CREW);

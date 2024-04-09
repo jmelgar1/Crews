@@ -228,4 +228,30 @@ public class PlayerData {
         }
         return GeneralUtilities.sortByComparator(crewAndScore, false);
     }
+
+    public void broadcastToAllOnlineCrewMembers(final Component text) {
+        if(text == null) return;
+        for(Crew crew: crews) {
+            for (String member : crew.getMembers()) {
+                UUID pUUID = UUID.fromString(member);
+                if (Bukkit.getOfflinePlayer(pUUID).isOnline()) {
+                    Player p = Bukkit.getPlayer(pUUID);
+                    if(p != null){p.sendMessage(text);}
+                }
+            }
+            for (String enforcer : crew.getEnforcers()) {
+                UUID pUUID = UUID.fromString(enforcer);
+                if (Bukkit.getOfflinePlayer(pUUID).isOnline()) {
+                    Player p = Bukkit.getPlayer(pUUID);
+                    if(p != null){p.sendMessage(text);}
+                }
+            }
+            if (Bukkit.getOfflinePlayer(UUID.fromString(crew.getBoss())).isOnline()) {
+                Player p = Bukkit.getPlayer(UUID.fromString(crew.getBoss()));
+                if (p != null && p.isOnline()) {
+                    p.sendMessage(text);
+                }
+            }
+        }
+    }
 }
