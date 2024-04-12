@@ -66,6 +66,7 @@ public class ConfigManager {
         YOU_ARE_BOSS = UnicodeCharacters.createSuccessIcon(TextColor.color(46,125,50)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("you-are-boss")))));
         ENFORCER_PROMOTE = UnicodeCharacters.createPromoteIcon(TextColor.color(46,125,50)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("you-are-enforcer")))));
         ENFORCER_DEMOTE = UnicodeCharacters.createDemoteIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("enforcer-demote")))));
+        WAITING_FOR_MATCHUP = UnicodeCharacters.createQueueIcon(UnicodeCharacters.queue_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("waiting-for-matchup")))));
 
         /* Strings */
         ALREADY_INVITED = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("already-invited")))));
@@ -95,6 +96,18 @@ public class ConfigManager {
         NEED_MORE_SPONGE = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("need-more-sponge")))));
         INVALID_AMOUNT = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("invalid-amount")))));
 
+        /* Turf War Started */
+        TURF_WAR_STARTED = UnicodeCharacters.createTurfWarIcon(UnicodeCharacters.turfwar_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("turf-war-started")))));
+        NOT_IN_QUEUE = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("not-in-queue")))));
+        YOU_HAVE_CONFIRMED = UnicodeCharacters.createSuccessIcon(TextColor.color(46,125,50)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("you-have-confirmed")))));
+        WAITING_ON_CONFIRMATION = UnicodeCharacters.createQueueIcon(UnicodeCharacters.turfwar_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("waiting-on-confirmation")))));
+        PLAYER_CONFIRMED = UnicodeCharacters.createSuccessIcon(TextColor.color(46,125,50)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("player-confirmed")))));
+        INVALID_INTEGER = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("invalid-number")))));
+        INVALID_RANGE = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("invalid-range")))));
+        CREW_HAS_CHOSEN_PLAYER_AMOUNT = UnicodeCharacters.createTurfWarIcon(TextColor.color(232,194,59)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("crew-has-chosen-player-amount")))));
+        ENEMY_HAS_CHOSEN_PLAYER_AMOUNT = UnicodeCharacters.createTurfWarIcon(TextColor.color(232,194,59)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("enemy-has-chosen-player-amount")))));
+        PLAYERS_SITTING_OUT = UnicodeCharacters.createTurfWarIcon(TextColor.color(232,194,59)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("players-sitting-out")))));
+        MATCH_CANCELLED = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("match-cancelled")))));
     }
 
     public static int COMMANDS_PER_PAGE;
@@ -111,7 +124,6 @@ public class ConfigManager {
     public static TextComponent ALREADY_ENFORCER;
     public static TextComponent CREW_DISBAND;
     public static TextComponent CREW_FOUNDED;
-    public static TextComponent CREW_HAS_JOINED_QUEUE;
     public static TextComponent ENFORCER_LIMIT;
     public static TextComponent JOIN_CREW;
     public static TextComponent KICKED_FROM_CREW;
@@ -131,7 +143,6 @@ public class ConfigManager {
     public static TextComponent ADD_TO_VAULT;
     public static TextComponent REMOVE_FROM_VAULT;
     public static TextComponent ALREADY_IN_CREW;
-    public static TextComponent ALREADY_IN_QUEUE;
     public static TextComponent CAN_NOT_DEMOTE_SELF;
     public static TextComponent CAN_NOT_PROMOTE_SELF;
     public static TextComponent CAN_NOT_INVITE_SELF;
@@ -152,7 +163,6 @@ public class ConfigManager {
     public static TextComponent FULL_INVENTORY;
     public static TextComponent INCORRECT_CREW;
     public static TextComponent INVALID_AMOUNT;
-    public static TextComponent JOINED_QUEUE;
     public static TextComponent MAX_LEVEL_ENFORCER_LIMIT;
     public static TextComponent MUST_BE_BOSS;
     public static TextComponent MUST_BE_HIGHERUP;
@@ -163,7 +173,6 @@ public class ConfigManager {
     public static TextComponent NOT_YOUR_CREW;
     public static TextComponent NO_INVITE;
     public static TextComponent NO_PERMISSION;
-    public static TextComponent ONE_PLAYER_REQUIRED_FOR_QUEUE;
     public static TextComponent PLAYER_NOT_FOUND;
     public static TextComponent PLAYER_NOT_ENFORCER;
     public static TextComponent PLEASE_WAIT_TELEPORT;
@@ -172,4 +181,22 @@ public class ConfigManager {
     public static TextComponent YOU_ARE_BOSS;
     public static TextComponent ENFORCER_PROMOTE;
     public static TextComponent ENFORCER_DEMOTE;
+    public static TextComponent WAITING_FOR_MATCHUP;
+
+    /* Turf War */
+    public static TextComponent CREW_HAS_JOINED_QUEUE;
+    public static TextComponent JOINED_QUEUE;
+    public static TextComponent ALREADY_IN_QUEUE;
+    public static TextComponent ONE_PLAYER_REQUIRED_FOR_QUEUE;
+    public static TextComponent TURF_WAR_STARTED;
+    public static TextComponent NOT_IN_QUEUE;
+    public static TextComponent WAITING_ON_CONFIRMATION;
+    public static TextComponent YOU_HAVE_CONFIRMED;
+    public static TextComponent PLAYER_CONFIRMED;
+    public static TextComponent INVALID_INTEGER;
+    public static TextComponent INVALID_RANGE;
+    public static TextComponent CREW_HAS_CHOSEN_PLAYER_AMOUNT;
+    public static TextComponent ENEMY_HAS_CHOSEN_PLAYER_AMOUNT;
+    public static TextComponent PLAYERS_SITTING_OUT;
+    public static TextComponent MATCH_CANCELLED;
 }

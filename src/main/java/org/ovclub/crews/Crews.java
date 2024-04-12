@@ -2,8 +2,6 @@ package org.ovclub.crews;
 
 import java.io.*;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -21,6 +19,8 @@ import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 
 import com.google.gson.*;
+import org.ovclub.crews.runnables.AskToConfirmTask;
+import org.ovclub.crews.runnables.MatchSearchTask;
 
 public final class Crews extends JavaPlugin implements Listener {
     /* New Stuff  */
@@ -35,14 +35,22 @@ public final class Crews extends JavaPlugin implements Listener {
     }
 
     private TurfWarManager turfWarManager;
-    public TurfWarManager getTurfWarManager(){
-        return turfWarManager;
+    public TurfWarManager getTurfWarManager(){return turfWarManager;}
+
+    private MatchSearchTask matchSearchTask;
+    public MatchSearchTask getMatchSearchTask(){
+        return this.matchSearchTask;
     }
 
-    private ProtocolManager protocolManager;
-    public ProtocolManager getProtocolManager(){
-        return this.protocolManager;
+    private AskToConfirmTask askToConfirmTask;
+    public AskToConfirmTask getAskToConfirmTask(){
+        return this.askToConfirmTask;
     }
+
+//    private ProtocolManager protocolManager;
+//    public ProtocolManager getProtocolManager(){
+//        return this.protocolManager;
+//    }
 
     //private JDA jda;
 
@@ -72,7 +80,9 @@ public final class Crews extends JavaPlugin implements Listener {
         /* Crews Startup */
         System.out.println("Crews Enabled!");
         this.playerData = new PlayerData();
-        this.turfWarManager = new TurfWarManager();
+        this.turfWarManager = new TurfWarManager(this);
+        this.matchSearchTask = new MatchSearchTask(this);
+        this.askToConfirmTask = new AskToConfirmTask(this);
         getCommand("crews").setExecutor(new CommandManager(this));
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
@@ -82,7 +92,13 @@ public final class Crews extends JavaPlugin implements Listener {
         crewsFile.loadCrews();
         ConfigurationSerialization.registerClass(Crew.class);
 
-        protocolManager = ProtocolLibrary.getProtocolManager();
+        getServer().getPluginManager().registerEvents(new PlayerEvents(this), this);
+        getServer().getPluginManager().registerEvents(new CrewGUIListener(this), this);
+
+        matchSearchTask.runTaskTimer(this, 0L, 20L * 60);
+        askToConfirmTask.runTaskTimer(this, 0L, 20L * 5);
+
+        //protocolManager = ProtocolLibrary.getProtocolManager();
 
         /* Old Stuff Needs Updating */
         //getCommand("claimsponges").setExecutor(new claimspongesCommand());
@@ -99,8 +115,6 @@ public final class Crews extends JavaPlugin implements Listener {
 
         //createCrewsFileJson();
 
-        getServer().getPluginManager().registerEvents(new PlayerEvents(this), this);
-        getServer().getPluginManager().registerEvents(new CrewGUIListener(this), this);
 //        getServer().getPluginManager().registerEvents(new InfoCommand(), this);
 //        getServer().getPluginManager().registerEvents(new ShopCommand(), this);
 

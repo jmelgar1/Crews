@@ -20,9 +20,7 @@ import org.ovclub.crews.object.PlayerData;
 import org.ovclub.crews.object.turfwar.TurfWarQueueItem;
 import org.ovclub.crews.utilities.GUICreator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class CrewGUIListener implements Listener {
 
@@ -63,14 +61,14 @@ public class CrewGUIListener implements Listener {
             GUICreator.createTurfWarSelectPlayersGUI(data, p, pCrew);
         }
 
-        if (clickedItem.getType() == Material.PLAYER_HEAD && e.getView().title().equals("Turf War Setup")) {
+        if (clickedItem.getType() == Material.PLAYER_HEAD && e.getView().title().equals(Component.text("Turf War Setup"))) {
             ItemMeta meta = clickedItem.getItemMeta();
             if (meta != null && meta.hasDisplayName()) {
                 String playerName = PlainTextComponentSerializer.plainText().serialize(meta.displayName());
                 Player player = Bukkit.getPlayerExact(playerName);
 
                 if (player != null && player.isOnline()) {
-                    data.getSelectedForQueue().add(player.getUniqueId().toString());
+                    data.addToSelectedForQueue(pCrew, player.getUniqueId().toString());
                     List<Component> currentLore = meta.lore();
                     boolean isQueued = false;
                     if (currentLore != null) {
@@ -94,18 +92,33 @@ public class CrewGUIListener implements Listener {
         }
 
         if(clickedItem.getType() == Material.DIAMOND_SWORD && e.getView().title().equals(Component.text("Turf War Setup"))) {
+            if(plugin.getTurfWarManager().getQueue().isInQueue(pCrew)) {
+                p.sendMessage(ConfigManager.ALREADY_IN_QUEUE);
+                return;
+            }
             if(data.getSelectedForQueue().size() >= 1) {
                 p.closeInventory();
                 TurfWarQueueItem queueItem = new TurfWarQueueItem();
-                queueItem.setCrew(data.getCrew(p));
-                queueItem.setPlayers(data.getSelectedForQueue());
+                queueItem.setCrew(pCrew);
+                queueItem.setPlayers(data.getSelectedForQueue().get(pCrew));
+                data.getSelectedForQueue().remove(pCrew);
                 plugin.getTurfWarManager().queueCrew(queueItem);
-                plugin.getData().broadcastToAllOnlineCrewMembers(ConfigManager.CREW_HAS_JOINED_QUEUE);
-                p.sendMessage(ConfigManager.JOINED_QUEUE);
-            } else {
-                p.sendMessage(ConfigManager.ONE_PLAYER_REQUIRED_FOR_QUEUE);
+                Bukkit.broadcast(ConfigManager.CREW_HAS_JOINED_QUEUE);
+                for(String stringUUID : queueItem.getPlayers()) {
+                    UUID pUUID = UUID.fromString(stringUUID);
+                    Player player = Bukkit.getPlayer(pUUID);
+                    if(player != null) {
+                        if (player.isOnline()) {
+                            player.sendMessage(ConfigManager.JOINED_QUEUE);
+                        } else {
+                            //throw error here
+                        }
+                    }
+                }
+                } else {
+                    p.sendMessage(ConfigManager.ONE_PLAYER_REQUIRED_FOR_QUEUE);
+                }
             }
-        }
 
         if(clickedItem.getType().equals(Material.LILY_PAD)) {
             if(e.getView().title().equals(Component.text("Change Crew Banner"))) {
@@ -116,6 +129,10 @@ public class CrewGUIListener implements Listener {
 
         if(clickedItem.getType().toString().endsWith("_BANNER")) {
             if(e.getView().title().equals(Component.text(pCrew.getName() + " - Profile"))) {
+                if(!pCrew.isHigherup(p)) {
+                    p.sendMessage(ConfigManager.MUST_BE_HIGHERUP);
+                    return;
+                }
                 p.closeInventory();
                 GUICreator.createBannerSelectGUI(data, p, pCrew);
             }

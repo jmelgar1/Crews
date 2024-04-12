@@ -19,6 +19,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.ovclub.crews.managers.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
+import org.ovclub.crews.object.turfwar.TurfWarQueueItem;
 
 import java.util.*;
 
@@ -26,7 +27,6 @@ public class GUICreator {
     public static void createCrewInfoGUI(PlayerData data, Player p, Crew crew) {
         Inventory inv = Bukkit.createInventory(null, 54, Component.text(crew.getName() + " - Profile"));
         data.getInventories().put(p.getUniqueId(), inv);
-        GUICreator.openInventory(p, data.getInventories().get(p.getUniqueId()));
 
         String crewName = crew.getName();
         String dateCreated = crew.getDateFounded();
@@ -117,7 +117,7 @@ public class GUICreator {
         String[] memberArray = crewMembers.toArray(new String[0]);
 
         Component bossName = Component.text(boss, NamedTextColor.GOLD);
-        getCrewMemberSkull(38, UUID.fromString(crew.getBoss()), bossName, inv);
+        getPlayerHead(38, UUID.fromString(crew.getBoss()), bossName, inv);
         int counter = 1;
         for (int i = 39; i < 53; i++) {
             if (i == 43) {
@@ -129,17 +129,18 @@ public class GUICreator {
                 String memberIGN = offlinePlayer.getName();
                 Component displayName = Component.text(memberIGN, NamedTextColor.GOLD);
 
-                getCrewMemberSkull(i, memberUUID, displayName, inv, Component.text("Click to select this member for the queue."));
+                getPlayerHead(i, memberUUID, displayName, inv, Component.text("Click to select this member for the queue."));
             } else if (counter < crew.getLevel() + 2) {
-                UUID empty = Bukkit.getOfflinePlayer("MHF_Redstone").getUniqueId();
-                getCrewMemberSkull(i, empty, Component.text("EMPTY", NamedTextColor.GREEN), inv);
+                UUID empty = Bukkit.getOfflinePlayer("Trajan").getUniqueId();
+                getPlayerHead(i, empty, Component.text("EMPTY", NamedTextColor.GREEN), inv);
             } else {
-                UUID filled = Bukkit.getOfflinePlayer("Trajan").getUniqueId();
-                getCrewMemberSkull(i, filled, Component.text("LOCKED", NamedTextColor.RED), inv,
+                UUID filled = Bukkit.getOfflinePlayer("MHF_Redstone").getUniqueId();
+                getPlayerHead(i, filled, Component.text("LOCKED", NamedTextColor.RED), inv,
                     Component.text("Unlock at level " + (counter - 1), NamedTextColor.RED));
             }
             counter++;
         }
+        GUICreator.openInventory(p, data.getInventories().get(p.getUniqueId()));
     }
 
     public static void createCrewShopGUI(PlayerData data, Player p, Crew crew) {
@@ -147,7 +148,6 @@ public class GUICreator {
             .color(UnicodeCharacters.sponge_color)
             .decorate(TextDecoration.BOLD));
         data.getInventories().put(p.getUniqueId(), inv);
-        GUICreator.openInventory(p, data.getInventories().get(p.getUniqueId()));
 
         inv.setItem(14, createGuiItem(Material.BAMBOO_SIGN,
             ComponentUtilities.createComponent("Private Crew Chat", NamedTextColor.DARK_GREEN),
@@ -174,11 +174,12 @@ public class GUICreator {
             ComponentUtilities.createComponentWithPlaceHolder("Cost: ", NamedTextColor.GRAY, UnicodeCharacters.sponge_icon + ConfigManager.UPGRADE_MAIL_COST, UnicodeCharacters.sponge_color),
             Component.text(""),
             ComponentUtilities.createComponentWithPlaceHolder("Purchased: ", NamedTextColor.GRAY, crew.getUnlockedUpgrades().contains("mail") ? "True" : "False", crew.getUnlockedUpgrades().contains("mail") ? NamedTextColor.GREEN : NamedTextColor.RED)));
+
+        GUICreator.openInventory(p, data.getInventories().get(p.getUniqueId()));
     }
     public static void createTurfWarQueueGUI(PlayerData data, Player p, int queueSize) {
         Inventory inv = Bukkit.createInventory(null, 9, Component.text("Crew Turf Wars"));
         data.getInventories().put(p.getUniqueId(), inv);
-        GUICreator.openInventory(p, data.getInventories().get(p.getUniqueId()));
 
         NamedTextColor queueSizeColor = queueSize > 0 ? NamedTextColor.DARK_GREEN : NamedTextColor.DARK_GRAY;
         inv.setItem(4, createGuiItem(Material.DIAMOND_SWORD,
@@ -189,11 +190,12 @@ public class GUICreator {
                 .append(Component.text(" crews in queue!").color(NamedTextColor.GRAY))).decoration(TextDecoration.ITALIC, false),
             Component.text(""),
             ComponentUtilities.createComponent("Click to join the queue!", UnicodeCharacters.economy_color)));
+
+        GUICreator.openInventory(p, data.getInventories().get(p.getUniqueId()));
     }
     public static void createTurfWarSelectPlayersGUI(PlayerData data, Player p, Crew pCrew) {
         Inventory inv = Bukkit.createInventory(null, 27, Component.text("Turf War Setup"));
         data.getInventories().put(p.getUniqueId(), inv);
-        GUICreator.openInventory(p, inv);
 
         ArrayList<String> onlineMembers = pCrew.getOnlinePlayerUUIDs();
         int[] slots = new int[]{0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21};
@@ -205,7 +207,7 @@ public class GUICreator {
                 UUID pUUID = player.getUniqueId();
                 Component displayName = Component.text(player.getName());
                 Component[] lore = new Component[]{Component.text("Click to select this member for the queue.").color(NamedTextColor.GRAY)};
-                getCrewMemberSkull(slots[i], pUUID, displayName, inv, lore);
+                getPlayerHead(slots[i], pUUID, displayName, inv, lore);
             }
         }
         inv.setItem(8, createGuiItem(Material.BARRIER,
@@ -215,12 +217,31 @@ public class GUICreator {
         inv.setItem(15, createGuiItem(Material.DIAMOND_SWORD,
             ComponentUtilities.createComponentWithDecoration("JOIN QUEUE", NamedTextColor.GREEN, TextDecoration.BOLD),
             ComponentUtilities.createComponent("Click to join the queue.", NamedTextColor.GRAY)));
+
+        GUICreator.openInventory(p, data.getInventories().get(p.getUniqueId()));
     }
+//    public static void createTurfWarMatchBalancingGUI(PlayerData data, Player p, TurfWarQueueItem team1, TurfWarQueueItem team2) {
+//        Inventory inv = Bukkit.createInventory(null, 27, Component.text("Turf War Match Balancing"));
+//        data.getInventories().put(p.getUniqueId(), inv);
+//
+//        List<String> teamOnePlayerUUIDs = team1.getPlayers();
+//        for (int i = 0; i < teamOnePlayerUUIDs.size() && i < 9; i++) {
+//            UUID uuid = UUID.fromString(teamOnePlayerUUIDs.get(i));
+//            getPlayerHead(i, uuid, Component.text("Player " + (i + 1)), inv);
+//        }
+//
+//        List<String> teamTwoPlayerUUIDs = team2.getPlayers();
+//        for (int i = 0; i < teamTwoPlayerUUIDs.size() && i < 9; i++) {
+//            UUID uuid = UUID.fromString(teamTwoPlayerUUIDs.get(i));
+//            getPlayerHead(18 + i, uuid, Component.text("Player " + (i + 1)), inv);
+//        }
+//
+//        GUICreator.openInventory(p, data.getInventories().get(p.getUniqueId()));
+//    }
     public static void createBannerSelectGUI(PlayerData data, Player p, Crew crew) {
         Inventory bannerInv = Bukkit.createInventory(null, 9, Component.text("Change Crew Banner"));
         ItemStack banner = Optional.ofNullable(crew.getBanner()).orElse(new ItemStack(Material.WHITE_BANNER));
         data.getInventories().put(p.getUniqueId(), bannerInv);
-        GUICreator.openInventory(p, bannerInv);
 
         bannerInv.setItem(0, createGuiItem(Material.LILY_PAD,
             ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
@@ -233,6 +254,8 @@ public class GUICreator {
         bannerInv.setItem(8, createGuiItem(Material.BARRIER,
             ComponentUtilities.createComponentWithDecoration("EXIT", NamedTextColor.RED, TextDecoration.BOLD),
             ComponentUtilities.createComponent("Click to exit.", NamedTextColor.GRAY)));
+
+        GUICreator.openInventory(p, bannerInv);
     }
     protected static ItemStack createGuiItem(final Material material, final TextComponent name, final TextComponent... lore) {
         final ItemStack item = new ItemStack(material, 1);
@@ -256,7 +279,7 @@ public class GUICreator {
         }
         return item;
     }
-    public static void getCrewMemberSkull(int slot, UUID playerUUID, Component displayName, Inventory inventory, final Component... lore) {
+    public static void getPlayerHead(int slot, UUID playerUUID, Component displayName, Inventory inventory, final Component... lore) {
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) skull.getItemMeta();
         if (meta != null) {

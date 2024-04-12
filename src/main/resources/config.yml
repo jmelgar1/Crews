@@ -35,7 +35,7 @@ compound-exists: "&#E46060The crew compound already exists!"
 compound-set: "&#60E462Crew compound successfully set!"
 full-inventory: "&#E57373Your inventory is full!"
 incorrect-crew: "&#E57373You are not in that crew!"
-joined-queue: "&#60E462You have joined the queue!"#F9A825
+joined-queue: "&#60E462You have joined the queue!"
 crew-has-joined-queue: "&#F9A825A crew has joined the Turf War queue!"
 max-level-limit-enforcer: "&#E57373You have reached your crew enforcer limit!"
 must-be-boss: "&#E57373You must be the boss to do this!"
@@ -59,6 +59,7 @@ you-are-enforcer: "&#60E462You are now a crew enforcer!"
 enforcer-demote: "&#E57373You have been demoted!"
 need-more-sponge: "&#E57373You need more sponge in your inventory to do this!"
 invalid-amount: "&#E57373Please enter a valid amount!"
+waiting-for-matchup: "&#F9A825Waiting for a match-up... to leave type &#FFEB3B'/c turfwar queue leave'"
 
 #Strings
 already-invited: "&#E24949{player} &#E57373already has an active invite!"
@@ -83,3 +84,16 @@ upgrade-already-unlocked: "&eThe crew &#dfff00{upgrade} &eupgrade is already unl
 reached-max-members: "&#E57373The crew has reached its current maximum number of {limit} members!"
 add-to-vault: "&a(&2{player}&a) &6Crew Vault: &#72E373{current_amount} &2(&a+{amount}&2) &#606660= &#2BBC2B{new_amount}"
 remove-from-vault: "&6(&e{player}&6) &6Crew Vault: &#E3D272{current_amount} &4(&c-{amount}&4) &#606660= &#DD8425{new_amount}"
+
+#Turf War
+turf-war-started: "&#BE5350A turf war between &#EF7550{crew1} &#BE5350and &#EF7550{crew2} &#BE5350has started!"
+not-in-queue: "&#E57373You are not currently in the queue!"
+waiting-on-confirmation: "&eMATCH FOUND: &#EF7550Waiting on a confirmation for the turf war match! &#FFEB3B'/c turfwar accept'"
+you-have-confirmed: "&#60E462You have accepted the match-up!"
+player-confirmed: "&#60E462A player has accepted the match-up! &#AEE9B0(&#E1FFCF{accepted}/{total}&#AEE9B0)"
+invalid-number: "&#E57373Please enter a valid integer!"
+invalid-range: "&#E57373Your number must be between {min} and {max}."
+crew-has-chosen-player-amount: "&#E8C23BYour crew has chosen to fight {amount} player(s)!"
+enemy-has-chosen-player-amount: "&#E8C23BThe enemy crew has chosen to fight {amount} player(s)."
+players-sitting-out: "&#E8C23BUnfortunately {amount} player(s) will be sitting out... this will be chosen at random"
+match-cancelled: "&#E57373A player has logged out and the match has been cancelled!"

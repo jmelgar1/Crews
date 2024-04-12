@@ -123,8 +123,8 @@ public class CommandManager implements CommandExecutor {
 		bossCommands.put("upgrade", new UpgradeCommand());
         turfWarCommands.put("turfwar queue", new TurfWarQueueCommand());
         turfWarCommands.put("turfwar queue leave", new TurfWarQueueLeaveCommand());
-        turfWarCommands.put("turfwar accept", new TurfWarAcceptCommand());
         turfWarCommands.put("turfwar stats", new TurfWarStatsCommand());
+        turfWarCommands.put("turfwar accept", new TurfWarAcceptCommand());
         allCommands.putAll(subCommands);
         allCommands.putAll(enforcerCommands);
         allCommands.putAll(bossCommands);

@@ -35,8 +35,6 @@ public class TurfWar {
         }
         // maybe more logic to check if the match should end based on score
     }
-
-    // Getters and setters as needed
     public TurfWarQueueItem getCrewModel1() {
         return crew1;
     }

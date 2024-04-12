@@ -3,10 +3,7 @@ package org.ovclub.crews.object;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -626,5 +623,6 @@ public class Crew implements ConfigurationSerializable {
         if(map.get("turfWarWins") == null) this.turfWarWins = 0; else this.turfWarWins = (int) map.get("turfWarWins");
         if(map.get("turfWarDraws") == null) this.turfWarDraws = 0; else this.turfWarDraws = (int) map.get("turfWarDraws");
         if(map.get("turfWarLosses") == null) this.turfWarLosses = 0; else this.turfWarLosses = (int) map.get("turfWarLosses");
+        if(map.get("banner") == null) this.banner = new ItemStack(Material.WHITE_BANNER); else this.banner = (ItemStack) map.get("banner");
     }
 }

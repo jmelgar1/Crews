@@ -21,7 +21,7 @@ public class PlayerData {
         inCrewInfo = new ArrayList<>();
         inCrewChat = new ArrayList<>();
         inventories = new HashMap<>();
-        selectedForQueue = new ArrayList<>();
+        selectedForQueue = new HashMap<>();
 
         // In case of server /reload
         for(Player p : Bukkit.getOnlinePlayers()){
@@ -39,9 +39,18 @@ public class PlayerData {
         return inventories;
     }
 
-    private final ArrayList<String> selectedForQueue;
-    public ArrayList<String> getSelectedForQueue(){
+    private final HashMap<Crew, ArrayList<String>> selectedForQueue;
+    public HashMap<Crew, ArrayList<String>> getSelectedForQueue(){
         return selectedForQueue;
+    }
+    public void addToSelectedForQueue(Crew pCrew, String pUUID){
+        if (selectedForQueue.containsKey(pCrew)) {
+            selectedForQueue.get(pCrew).add(pUUID);
+        } else {
+            ArrayList<String> uuidList = new ArrayList<>();
+            uuidList.add(pUUID);
+            selectedForQueue.put(pCrew, uuidList);
+        }
     }
 
     /*
@@ -102,7 +111,6 @@ public class PlayerData {
     }
 
     public Crew getCrew(Player p){
-        System.out.println(cPlayers);
         return cPlayers.get(p);
     }
 

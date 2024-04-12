@@ -110,4 +110,5 @@ public class UnicodeCharacters {
     public static TextComponent createDisbandIcon(TextColor color) {return Component.text("[💥] ").color(color);}
     public static TextComponent createCrewsIcon(TextColor color) {return Component.text("[👥] ").color(color);}
     public static TextComponent createQueueIcon(TextColor color) {return Component.text("[⏳] ").color(color);}
+    public static TextComponent createTurfWarIcon(TextColor color) {return Component.text("[⚔] ").color(color);}
 }
