@@ -3,8 +3,8 @@ package org.ovclub.crews.runnables;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.ovclub.crews.Crews;
 import org.ovclub.crews.managers.ConfigManager;
-import org.ovclub.crews.object.turfwar.TurfWarQueueItem;
-import org.ovclub.crews.object.turfwar.TurfWarQueuePair;
+import org.ovclub.crews.object.skirmish.SkirmishQueueItem;
+import org.ovclub.crews.object.skirmish.SkirmishQueuePair;
 
 import java.util.List;
 
@@ -15,14 +15,13 @@ public class MatchSearchTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        if (plugin.getTurfWarManager().getQueue().size() > 0) {
-            List<TurfWarQueueItem> queueList = plugin.getTurfWarManager().getQueue().getAllItemsInQueue();
-            List<TurfWarQueuePair> potentialMatchups = plugin.getTurfWarManager().getPotentialMatchups();
-
-            for (TurfWarQueueItem item : queueList) {
+        if (plugin.getSkirmishManager().getQueue().size() > 0) {
+            List<SkirmishQueueItem> queueList = plugin.getSkirmishManager().getQueue().getAllItemsInQueue();
+            List<SkirmishQueuePair> potentialMatchups = plugin.getSkirmishManager().getPotentialMatchups();
+            for (SkirmishQueueItem item : queueList) {
                 boolean isPaired = false;
                 if (!potentialMatchups.isEmpty()) {
-                    for (TurfWarQueuePair pair : potentialMatchups) {
+                    for (SkirmishQueuePair pair : potentialMatchups) {
                         if (pair.contains(item)) {
                             isPaired = true;
                             break;

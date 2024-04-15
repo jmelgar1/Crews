@@ -96,18 +96,22 @@ public class ConfigManager {
         NEED_MORE_SPONGE = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("need-more-sponge")))));
         INVALID_AMOUNT = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("invalid-amount")))));
 
-        /* Turf War Started */
-        TURF_WAR_STARTED = UnicodeCharacters.createTurfWarIcon(UnicodeCharacters.turfwar_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("turf-war-started")))));
+        /* Skirmish Started */
+        SKIRMISH_STARTED = UnicodeCharacters.createSkirmishIcon(UnicodeCharacters.skirmish_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("skirmish-started")))));
         NOT_IN_QUEUE = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("not-in-queue")))));
         YOU_HAVE_CONFIRMED = UnicodeCharacters.createSuccessIcon(TextColor.color(46,125,50)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("you-have-confirmed")))));
-        WAITING_ON_CONFIRMATION = UnicodeCharacters.createQueueIcon(UnicodeCharacters.turfwar_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("waiting-on-confirmation")))));
+        WAITING_ON_CONFIRMATION = UnicodeCharacters.createQueueIcon(UnicodeCharacters.skirmish_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("waiting-on-confirmation")))));
         PLAYER_CONFIRMED = UnicodeCharacters.createSuccessIcon(TextColor.color(46,125,50)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("player-confirmed")))));
         INVALID_INTEGER = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("invalid-number")))));
         INVALID_RANGE = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("invalid-range")))));
-        CREW_HAS_CHOSEN_PLAYER_AMOUNT = UnicodeCharacters.createTurfWarIcon(TextColor.color(232,194,59)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("crew-has-chosen-player-amount")))));
-        ENEMY_HAS_CHOSEN_PLAYER_AMOUNT = UnicodeCharacters.createTurfWarIcon(TextColor.color(232,194,59)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("enemy-has-chosen-player-amount")))));
-        PLAYERS_SITTING_OUT = UnicodeCharacters.createTurfWarIcon(TextColor.color(232,194,59)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("players-sitting-out")))));
-        MATCH_CANCELLED = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("match-cancelled")))));
+        CREW_HAS_CHOSEN_PLAYER_AMOUNT = UnicodeCharacters.createSkirmishIcon(TextColor.color(232,194,59)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("crew-has-chosen-player-amount")))));
+        ENEMY_HAS_CHOSEN_PLAYER_AMOUNT = UnicodeCharacters.createSkirmishIcon(TextColor.color(232,194,59)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("enemy-has-chosen-player-amount")))));
+        PLAYERS_SITTING_OUT = UnicodeCharacters.createSkirmishIcon(TextColor.color(232,194,59)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("players-sitting-out")))));
+        MATCH_CANCELLED_PLAYER_LEFT = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("match-cancelled-player-left")))));
+        MATCH_CANCELLED_DID_NOT_ACCEPT = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("match-cancelled-did-not-accept")))));
+        CREW_REMOVED_FROM_QUEUE = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("crew-removed-from-queue")))));
+        SECONDS_LEFT_TO_ACTION = UnicodeCharacters.createAlertIcon(TextColor.color(232,194,59)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("seconds-left-to-action")))));
+        SKIRMISH_STARTING = UnicodeCharacters.createSkirmishIcon(TextColor.color(232,194,59)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("skirmish-starting")))));
     }
 
     public static int COMMANDS_PER_PAGE;
@@ -183,12 +187,12 @@ public class ConfigManager {
     public static TextComponent ENFORCER_DEMOTE;
     public static TextComponent WAITING_FOR_MATCHUP;
 
-    /* Turf War */
+    /* Skirmish */
     public static TextComponent CREW_HAS_JOINED_QUEUE;
     public static TextComponent JOINED_QUEUE;
     public static TextComponent ALREADY_IN_QUEUE;
     public static TextComponent ONE_PLAYER_REQUIRED_FOR_QUEUE;
-    public static TextComponent TURF_WAR_STARTED;
+    public static TextComponent SKIRMISH_STARTED;
     public static TextComponent NOT_IN_QUEUE;
     public static TextComponent WAITING_ON_CONFIRMATION;
     public static TextComponent YOU_HAVE_CONFIRMED;
@@ -198,5 +202,10 @@ public class ConfigManager {
     public static TextComponent CREW_HAS_CHOSEN_PLAYER_AMOUNT;
     public static TextComponent ENEMY_HAS_CHOSEN_PLAYER_AMOUNT;
     public static TextComponent PLAYERS_SITTING_OUT;
-    public static TextComponent MATCH_CANCELLED;
+    public static TextComponent MATCH_CANCELLED_PLAYER_LEFT;
+    public static TextComponent MATCH_CANCELLED_DID_NOT_ACCEPT;
+    public static TextComponent CREW_REMOVED_FROM_QUEUE;
+    public static TextComponent SECONDS_LEFT_TO_ACTION;
+    public static TextComponent SKIRMISH_STARTING;
+
 }

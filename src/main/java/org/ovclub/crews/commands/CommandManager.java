@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
 import org.ovclub.crews.Crews;
 import org.ovclub.crews.commands.subcommands.*;
 
-import org.ovclub.crews.commands.subcommands.turfwar.*;
+import org.ovclub.crews.commands.subcommands.skirmish.*;
 import org.ovclub.crews.exceptions.NotInCrew;
 import org.ovclub.crews.managers.ConfigManager;
 import org.ovclub.crews.utilities.UnicodeCharacters;
@@ -27,7 +27,7 @@ public class CommandManager implements CommandExecutor {
     private final Map<String, SubCommand> enforcerCommands = new LinkedHashMap<>();
     private final Map<String, SubCommand> bossCommands = new LinkedHashMap<>();
     private final Map<String, SubCommand> allCommands = new LinkedHashMap<>();
-    private final Map<String, SubCommand> turfWarCommands = new LinkedHashMap<>();
+    private final Map<String, SubCommand> skirmishCommands = new LinkedHashMap<>();
 
     private void sendHelp(Player p, String icon, String helpTitle, TextColor titleColor, Map<String, SubCommand> commandListType, String[] args) {
         int commandsPerPage = ConfigManager.COMMANDS_PER_PAGE;
@@ -99,7 +99,7 @@ public class CommandManager implements CommandExecutor {
 		subCommands.put("list", new ListCommand());
 		subCommands.put("info", new InfoCommand());
         subCommands.put("who", new WhoCommand());
-        subCommands.put("turfwar", new TurfWarCommand());
+        subCommands.put("skirmish", new SkirmishCommand());
 		subCommands.put("shop", new ShopCommand());
 		subCommands.put("compound", new CompoundCommand());
 		subCommands.put("accept", new AcceptCommand());
@@ -121,10 +121,10 @@ public class CommandManager implements CommandExecutor {
 		bossCommands.put("ownership", new OnwershipCommand());
 		bossCommands.put("disband", new DisbandCommand());
 		bossCommands.put("upgrade", new UpgradeCommand());
-        turfWarCommands.put("turfwar queue", new TurfWarQueueCommand());
-        turfWarCommands.put("turfwar queue leave", new TurfWarQueueLeaveCommand());
-        turfWarCommands.put("turfwar stats", new TurfWarStatsCommand());
-        turfWarCommands.put("turfwar accept", new TurfWarAcceptCommand());
+        skirmishCommands.put("skirmish join", new SkirmishJoinCommand());
+        skirmishCommands.put("skirmish leave", new SkirmishLeaveCommand());
+        skirmishCommands.put("skirmish stats", new SkirmishStatsCommand());
+        skirmishCommands.put("skirmish accept", new SkirmishAcceptCommand());
         allCommands.putAll(subCommands);
         allCommands.putAll(enforcerCommands);
         allCommands.putAll(bossCommands);
@@ -142,12 +142,12 @@ public class CommandManager implements CommandExecutor {
         if (!allCommands.containsKey(argument)) {
             sendHelp(p, UnicodeCharacters.crews,"Crews Guide", UnicodeCharacters.plugin_color, subCommands, args);
             return true;
-        } else if(argument.equalsIgnoreCase("turfwar")) {
+        } else if(argument.equalsIgnoreCase("skirmish")) {
             if(pass.length == 0) {
-                sendHelp(p, UnicodeCharacters.turfwar_emoji, "Turf War Guide", UnicodeCharacters.turfwar_color, turfWarCommands, args);
+                sendHelp(p, UnicodeCharacters.skirmish_emoji, "Skirmish Guide", UnicodeCharacters.skirmish_color, skirmishCommands, args);
             } else {
-                String subCommandKey = "turfwar " + String.join(" ", pass);
-                SubCommand subCmd = turfWarCommands.get(subCommandKey);
+                String subCommandKey = "skirmish " + String.join(" ", pass);
+                SubCommand subCmd = skirmishCommands.get(subCommandKey);
                 if(subCmd != null) {
                     try {
                         subCmd.perform(p, pass, plugin);

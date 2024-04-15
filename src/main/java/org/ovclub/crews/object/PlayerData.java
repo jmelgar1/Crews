@@ -53,6 +53,18 @@ public class PlayerData {
         }
     }
 
+    public void removeFromSelectedForQueue(Crew pCrew, String pUUID) {
+        if (selectedForQueue.containsKey(pCrew)) {
+            ArrayList<String> uuidList = selectedForQueue.get(pCrew);
+            uuidList.remove(pUUID);
+            if (uuidList.isEmpty()) {
+                selectedForQueue.remove(pCrew);
+            }
+        } else {
+            System.out.println("No such crew in the queue or player was not in the queue.");
+        }
+    }
+
     /*
     Pending teleports
     */

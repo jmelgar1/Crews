@@ -19,7 +19,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.ovclub.crews.managers.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
-import org.ovclub.crews.object.turfwar.TurfWarQueueItem;
+import org.ovclub.crews.object.skirmish.SkirmishQueueItem;
 
 import java.util.*;
 
@@ -35,9 +35,9 @@ public class GUICreator {
         int requiredSponges = crew.getLevelUpCost();
         int influence = crew.getInfluence();
         int rating = crew.getRatingScore();
-        int turfWarWins = crew.getTurfWarWins();
-        int turfWarLosses = crew.getTurfWarLosses();
-        int turfWarDraws = crew.getTurfWarDraws();
+        int skirmishWins = crew.getSkirmishWins();
+        int skirmishLosses = crew.getSkirmishLosses();
+        int skirmishDraws = crew.getSkirmishDraws();
         ItemStack banner = Optional.ofNullable(crew.getBanner()).orElse(new ItemStack(Material.WHITE_BANNER));
         //OfflinePlayer chief = Bukkit.getServer().getOfflinePlayer(crewManager.getChief(crew));
 
@@ -93,9 +93,9 @@ public class GUICreator {
         }
 
 		inv.setItem(23, createGuiItem(Material.GOLDEN_SWORD,
-            ComponentUtilities.createComponentWithDecoration("CREW TURF WARS", NamedTextColor.GRAY, TextDecoration.BOLD),
+            ComponentUtilities.createComponentWithDecoration("CREW SKIRMISHES", NamedTextColor.GRAY, TextDecoration.BOLD),
             ComponentUtilities.createEmojiComponent(UnicodeCharacters.rating_emoji, "Rating: ", UnicodeCharacters.info_text_color, String.valueOf(rating), UnicodeCharacters.rating_color),
-            ComponentUtilities.createWinLossRatio(UnicodeCharacters.turfwar_emoji, UnicodeCharacters.emoji_text_color, "W/L Record: ", UnicodeCharacters.info_text_color, String.valueOf(turfWarWins), String.valueOf(turfWarDraws), String.valueOf(turfWarLosses))));
+            ComponentUtilities.createWinLossRatio(UnicodeCharacters.skirmish_emoji, UnicodeCharacters.emoji_text_color, "W/L Record: ", UnicodeCharacters.info_text_color, String.valueOf(skirmishWins), String.valueOf(skirmishDraws), String.valueOf(skirmishLosses))));
         List<String> unlockedUpgrades = crew.getUnlockedUpgrades();
         //can have nothing or ["discord", "chat", "mail"]
 
@@ -177,13 +177,13 @@ public class GUICreator {
 
         GUICreator.openInventory(p, data.getInventories().get(p.getUniqueId()));
     }
-    public static void createTurfWarQueueGUI(PlayerData data, Player p, int queueSize) {
-        Inventory inv = Bukkit.createInventory(null, 9, Component.text("Crew Turf Wars"));
+    public static void createSkirmishQueueGUI(PlayerData data, Player p, int queueSize) {
+        Inventory inv = Bukkit.createInventory(null, 9, Component.text("Crew Skirmishes"));
         data.getInventories().put(p.getUniqueId(), inv);
 
         NamedTextColor queueSizeColor = queueSize > 0 ? NamedTextColor.DARK_GREEN : NamedTextColor.DARK_GRAY;
         inv.setItem(4, createGuiItem(Material.DIAMOND_SWORD,
-            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.turfwar_emoji + "Turf Wars", UnicodeCharacters.turfwar_color, " - Queue", NamedTextColor.GRAY),
+            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.skirmish_emoji + "Skirmishes", UnicodeCharacters.skirmish_color, " - Queue", NamedTextColor.GRAY),
             Component.text(""),
             Component.text("There are currently ").color(NamedTextColor.GRAY)
                 .append(Component.text(queueSize).color(queueSizeColor)
@@ -193,8 +193,8 @@ public class GUICreator {
 
         GUICreator.openInventory(p, data.getInventories().get(p.getUniqueId()));
     }
-    public static void createTurfWarSelectPlayersGUI(PlayerData data, Player p, Crew pCrew) {
-        Inventory inv = Bukkit.createInventory(null, 27, Component.text("Turf War Setup"));
+    public static void createSkirmishSelectPlayersGUI(PlayerData data, Player p, Crew pCrew) {
+        Inventory inv = Bukkit.createInventory(null, 27, Component.text("Skirmish Setup"));
         data.getInventories().put(p.getUniqueId(), inv);
 
         ArrayList<String> onlineMembers = pCrew.getOnlinePlayerUUIDs();
@@ -220,8 +220,8 @@ public class GUICreator {
 
         GUICreator.openInventory(p, data.getInventories().get(p.getUniqueId()));
     }
-//    public static void createTurfWarMatchBalancingGUI(PlayerData data, Player p, TurfWarQueueItem team1, TurfWarQueueItem team2) {
-//        Inventory inv = Bukkit.createInventory(null, 27, Component.text("Turf War Match Balancing"));
+//    public static void createSkirmishMatchBalancingGUI(PlayerData data, Player p, SkirmishQueueItem team1, SkirmishQueueItem team2) {
+//        Inventory inv = Bukkit.createInventory(null, 27, Component.text("Skirmish Match Balancing"));
 //        data.getInventories().put(p.getUniqueId(), inv);
 //
 //        List<String> teamOnePlayerUUIDs = team1.getPlayers();

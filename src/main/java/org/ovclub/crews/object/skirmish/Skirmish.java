@@ -1,33 +1,33 @@
-package org.ovclub.crews.object.turfwar;
+package org.ovclub.crews.object.skirmish;
 
-public class TurfWar {
-    private final TurfWarQueueItem crew1;
-    private final TurfWarQueueItem crew2;
-    private TurfWarState state;
+public class Skirmish {
+    private final SkirmishQueueItem crew1;
+    private final SkirmishQueueItem crew2;
+    private SkirmishState state;
     private int scoreCrew1;
     private int scoreCrew2;
 
     // Constructor
-    public TurfWar(TurfWarQueueItem crew1, TurfWarQueueItem crew2) {
+    public Skirmish(SkirmishQueueItem crew1, SkirmishQueueItem crew2) {
         this.crew1 = crew1;
         this.crew2 = crew2;
-        this.state = TurfWarState.WAITING;
+        this.state = SkirmishState.WAITING;
         this.scoreCrew1 = 0;
         this.scoreCrew2 = 0;
     }
 
     public void start() {
-        this.state = TurfWarState.ACTIVE;
+        this.state = SkirmishState.ACTIVE;
         // initialize the arena, teleport players, and any other setup
     }
 
     public void end() {
-        this.state = TurfWarState.COMPLETED;
+        this.state = SkirmishState.COMPLETED;
         // determine winner, handle rewards, clean up, etc.
     }
 
     // Update score for a crew
-    public void updateScore(TurfWarQueueItem crewQueue, int points) {
+    public void updateScore(SkirmishQueueItem crewQueue, int points) {
         if (crewQueue.getCrew().equals(crew1.getCrew())) {
             scoreCrew1 += points;
         } else if (crewQueue.getCrew().equals(crew2.getCrew())) {
@@ -35,15 +35,15 @@ public class TurfWar {
         }
         // maybe more logic to check if the match should end based on score
     }
-    public TurfWarQueueItem getCrewModel1() {
+    public SkirmishQueueItem getCrewModel1() {
         return crew1;
     }
 
-    public TurfWarQueueItem getCrewModel2() {
+    public SkirmishQueueItem getCrewModel2() {
         return crew2;
     }
 
-    public TurfWarState getState() {
+    public SkirmishState getState() {
         return state;
     }
 

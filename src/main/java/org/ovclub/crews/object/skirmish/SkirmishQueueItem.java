@@ -1,10 +1,10 @@
-package org.ovclub.crews.object.turfwar;
+package org.ovclub.crews.object.skirmish;
 
 import org.ovclub.crews.object.Crew;
 
 import java.util.ArrayList;
 
-public class TurfWarQueueItem {
+public class SkirmishQueueItem {
     private Crew crew;
     private ArrayList<String> players;
     private boolean inConfirmation;

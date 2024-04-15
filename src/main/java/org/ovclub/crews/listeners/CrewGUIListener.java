@@ -17,7 +17,7 @@ import org.ovclub.crews.Crews;
 import org.ovclub.crews.managers.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
-import org.ovclub.crews.object.turfwar.TurfWarQueueItem;
+import org.ovclub.crews.object.skirmish.SkirmishQueueItem;
 import org.ovclub.crews.utilities.GUICreator;
 
 import java.util.*;
@@ -56,19 +56,18 @@ public class CrewGUIListener implements Listener {
             p.performCommand("crews shop");
         }
 
-        if(clickedItem.getType() == Material.DIAMOND_SWORD && e.getView().title().equals(Component.text("Crew Turf Wars"))) {
+        if(clickedItem.getType() == Material.DIAMOND_SWORD && e.getView().title().equals(Component.text("Crew Skirmishes"))) {
             p.closeInventory();
-            GUICreator.createTurfWarSelectPlayersGUI(data, p, pCrew);
+            GUICreator.createSkirmishSelectPlayersGUI(data, p, pCrew);
         }
 
-        if (clickedItem.getType() == Material.PLAYER_HEAD && e.getView().title().equals(Component.text("Turf War Setup"))) {
+        if (clickedItem.getType() == Material.PLAYER_HEAD && e.getView().title().equals(Component.text("Skirmish Setup"))) {
             ItemMeta meta = clickedItem.getItemMeta();
             if (meta != null && meta.hasDisplayName()) {
                 String playerName = PlainTextComponentSerializer.plainText().serialize(meta.displayName());
                 Player player = Bukkit.getPlayerExact(playerName);
 
                 if (player != null && player.isOnline()) {
-                    data.addToSelectedForQueue(pCrew, player.getUniqueId().toString());
                     List<Component> currentLore = meta.lore();
                     boolean isQueued = false;
                     if (currentLore != null) {
@@ -82,8 +81,10 @@ public class CrewGUIListener implements Listener {
                     List<Component> newLore = new ArrayList<>();
                     if (isQueued) {
                         newLore.add(Component.text("Click to select this member for the queue.").color(NamedTextColor.GRAY));
+                        data.removeFromSelectedForQueue(pCrew, player.getUniqueId().toString());
                     } else {
                         newLore.add(Component.text("Player is queued.").color(NamedTextColor.BLUE));
+                        data.addToSelectedForQueue(pCrew, player.getUniqueId().toString());
                     }
                     meta.lore(newLore);
                     clickedItem.setItemMeta(meta);
@@ -91,18 +92,18 @@ public class CrewGUIListener implements Listener {
             }
         }
 
-        if(clickedItem.getType() == Material.DIAMOND_SWORD && e.getView().title().equals(Component.text("Turf War Setup"))) {
-            if(plugin.getTurfWarManager().getQueue().isInQueue(pCrew)) {
+        if(clickedItem.getType() == Material.DIAMOND_SWORD && e.getView().title().equals(Component.text("Skirmish Setup"))) {
+            if(plugin.getSkirmishManager().getQueue().isInQueue(pCrew)) {
                 p.sendMessage(ConfigManager.ALREADY_IN_QUEUE);
                 return;
             }
             if(data.getSelectedForQueue().size() >= 1) {
                 p.closeInventory();
-                TurfWarQueueItem queueItem = new TurfWarQueueItem();
+                SkirmishQueueItem queueItem = new SkirmishQueueItem();
                 queueItem.setCrew(pCrew);
                 queueItem.setPlayers(data.getSelectedForQueue().get(pCrew));
                 data.getSelectedForQueue().remove(pCrew);
-                plugin.getTurfWarManager().queueCrew(queueItem);
+                plugin.getSkirmishManager().queueCrew(queueItem);
                 Bukkit.broadcast(ConfigManager.CREW_HAS_JOINED_QUEUE);
                 for(String stringUUID : queueItem.getPlayers()) {
                     UUID pUUID = UUID.fromString(stringUUID);

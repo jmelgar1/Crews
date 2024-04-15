@@ -2,7 +2,9 @@ package org.ovclub.crews.utilities;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.entity.Player;
 
 public class UnicodeCharacters {
 
@@ -18,7 +20,7 @@ public class UnicodeCharacters {
     public static String influence_emoji = "🌍 " ;
     public static String enforcers_emoji = "⛑ ";
     public static String members_emoji = "⚔ ";
-    public static String turfwar_emoji = "⚔ ";
+    public static String skirmish_emoji = "⚔ ";
     public static String compound_emoji = "🕋 ";
     public static String sponge_icon = "❐";
     public static String xp_emoji = "✨ ";
@@ -27,6 +29,7 @@ public class UnicodeCharacters {
     public static String rating_emoji = "🎖 ";
     public static String crew_chat_emoji = "💬 ";
     public static String discord_emoji = "🔊 ";
+    public static String siren_emoji = "🚨 ";
     public static String mail_emoji = "\uD83D\uDCEA ";
     public static String vault = "\uD83C\uDFE6";
     public static String foundedDate = "\uD83D\uDCDD";
@@ -60,7 +63,7 @@ public class UnicodeCharacters {
     public static TextColor economy_color = TextColor.fromHexString("#4CAF50");
     public static TextColor queue_color = TextColor.fromHexString("#F9A825");
     public static TextColor rating_color = TextColor.fromHexString("#FFEB3B");
-    public static TextColor turfwar_color = TextColor.fromHexString("#EF5350");
+    public static TextColor skirmish_color = TextColor.fromHexString("#EF5350");
     public static TextColor boss_color = TextColor.fromHexString("#3F51B5");
     public static TextColor enforcers_color = TextColor.fromHexString("#80DEEA");
     public static TextColor members_color = TextColor.fromHexString("#B2DFDB");
@@ -110,5 +113,69 @@ public class UnicodeCharacters {
     public static TextComponent createDisbandIcon(TextColor color) {return Component.text("[💥] ").color(color);}
     public static TextComponent createCrewsIcon(TextColor color) {return Component.text("[👥] ").color(color);}
     public static TextComponent createQueueIcon(TextColor color) {return Component.text("[⏳] ").color(color);}
-    public static TextComponent createTurfWarIcon(TextColor color) {return Component.text("[⚔] ").color(color);}
+    public static TextComponent createSkirmishIcon(TextColor color) {return Component.text("[⚔] ").color(color);}
+
+    public static void sendInfoMessage(Player p, String prefixEmoji, String prefix, String text, TextColor color) {
+        p.sendMessage(Component.text("│ ").color(UnicodeCharacters.logo_color)
+            .append(Component.text(prefixEmoji).color(UnicodeCharacters.emoji_text_color))
+            .append(Component.text(prefix).color(UnicodeCharacters.info_text_color))
+            .append(Component.text(text).color(color)));
+    }
+
+    public static  void sendInfluenceMessage(Player p, String prefixEmoji, String influence) {
+        p.sendMessage(Component.text("│ ").color(UnicodeCharacters.logo_color)
+            .append(Component.text(prefixEmoji).color(UnicodeCharacters.emoji_text_color))
+            .append(Component.text("Influence: ").color(UnicodeCharacters.info_text_color))
+            .append(Component.text("[").color(UnicodeCharacters.influence_outline_color))
+            .append(Component.text(influence).color(UnicodeCharacters.influence_color))
+            .append(Component.text("]").color(UnicodeCharacters.influence_outline_color)));
+    }
+
+    public static  void sendMessageWithHeader(Player p, String prefix, String headerText, String suffix) {
+        p.sendMessage(Component.text(prefix).color(UnicodeCharacters.logo_color)
+            .append(Component.text(headerText).color(UnicodeCharacters.plugin_color))
+            .append(Component.text(suffix).color(UnicodeCharacters.logo_color)));
+    }
+
+    public static void sendUnbalancedMessage(Player p, int smallSize, int largeSize, boolean smallerTeam) {
+        Component messageComponent;
+        String orderOne;
+        String orderTwo;
+
+        if(smallerTeam) {
+            messageComponent = Component.text()
+                .append(Component.text("Since you are the smaller team please type the amount\n").color(NamedTextColor.WHITE))
+                .append(Component.text("│ ").color(UnicodeCharacters.logo_color))
+                .append(Component.text("of opponents you would like to fight!").color(NamedTextColor.WHITE))
+                .build();
+            orderOne = "- Your Team Size: ";
+            orderTwo = "- Opponent's Team Size: ";
+        } else {
+            messageComponent = Component.text()
+                .append(Component.text("Since you are the larger team please wait for the other\n").color(NamedTextColor.WHITE))
+                .append(Component.text("│ ").color(UnicodeCharacters.logo_color))
+                .append(Component.text("team to determine your team size!").color(NamedTextColor.WHITE))
+                .build();
+            orderOne = "- Opponent's Team Size: ";
+            orderTwo = "- Your Team Size: ";
+        }
+
+        p.sendMessage(Component.text()
+            .append(Component.text("┌──────────────────◓ \n").color(UnicodeCharacters.logo_color))
+            .append(Component.text("│ ").color(UnicodeCharacters.logo_color))
+            .append(Component.text(UnicodeCharacters.siren_emoji).color(NamedTextColor.RED))
+            .append(Component.text("ALERT: ").color(NamedTextColor.YELLOW))
+            .append(Component.text("Unbalanced Match! \n").color(NamedTextColor.GRAY))
+            .append(Component.text("│ ").color(UnicodeCharacters.logo_color))
+            .append(messageComponent)
+            .append(Component.text("\n│ ").color(UnicodeCharacters.logo_color))
+            .append(Component.text(orderOne).color(NamedTextColor.GRAY))
+            .append(Component.text(Integer.toString(smallSize)).color(NamedTextColor.DARK_GREEN))
+            .append(Component.text("\n│ ").color(UnicodeCharacters.logo_color))
+            .append(Component.text(orderTwo).color(NamedTextColor.GRAY))
+            .append(Component.text(Integer.toString(largeSize)).color(NamedTextColor.DARK_GREEN))
+            .append(Component.text("\n└──────────────────◒").color(UnicodeCharacters.logo_color))
+            .build());
+    }
+
 }

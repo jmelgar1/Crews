@@ -62,14 +62,14 @@ public class Crew implements ConfigurationSerializable {
     private final int ratingScore;
     public int getRatingScore() { return this.ratingScore;}
 
-    private int turfWarWins;
-    public int getTurfWarWins() { return this.turfWarWins;}
+    private int skirmishWins;
+    public int getSkirmishWins() { return this.skirmishWins;}
 
-    private int turfWarDraws;
-    public int getTurfWarDraws() { return this.turfWarDraws;}
+    private int skirmishDraws;
+    public int getSkirmishDraws() { return this.skirmishDraws;}
 
-    private int turfWarLosses;
-    public int getTurfWarLosses() { return this.turfWarLosses;}
+    private int skirmishLosses;
+    public int getSkirmishLosses() { return this.skirmishLosses;}
 
     //description
     private String description;
@@ -331,16 +331,16 @@ public class Crew implements ConfigurationSerializable {
     }
 
     public void showInfo(final Player p, boolean inCrew) {
-        sendMessageWithHeader(p, "┌──────[ ", this.name, " ]───────◓");
+        UnicodeCharacters.sendMessageWithHeader(p, "┌──────[ ", this.name, " ]───────◓");
         if(this.description == null) {
             this.description = "No description set";
         }
-        sendInfoMessage(p, UnicodeCharacters.founded_emoji, "Founded: ", this.dateFounded, UnicodeCharacters.founded_color);
-        sendInfoMessage(p, UnicodeCharacters.description_emoji, "Description: ", this.description, UnicodeCharacters.description_color);
-        sendInfoMessage(p, UnicodeCharacters.level_emoji, "Level: ", String.valueOf(this.level), UnicodeCharacters.level_color);
-        sendInfoMessage(p, UnicodeCharacters.vault_emoji, "Vault: ", UnicodeCharacters.sponge_icon + this.vault, UnicodeCharacters.sponge_color);
-        sendInfluenceMessage(p, UnicodeCharacters.influence_emoji, String.valueOf(this.influence));
-        sendInfoMessage(p, UnicodeCharacters.boss_emoji, "Boss: ", getPlayerName(UUID.fromString(this.boss)), UnicodeCharacters.boss_color);
+        UnicodeCharacters.sendInfoMessage(p, UnicodeCharacters.founded_emoji, "Founded: ", this.dateFounded, UnicodeCharacters.founded_color);
+        UnicodeCharacters.sendInfoMessage(p, UnicodeCharacters.description_emoji, "Description: ", this.description, UnicodeCharacters.description_color);
+        UnicodeCharacters.sendInfoMessage(p, UnicodeCharacters.level_emoji, "Level: ", String.valueOf(this.level), UnicodeCharacters.level_color);
+        UnicodeCharacters.sendInfoMessage(p, UnicodeCharacters.vault_emoji, "Vault: ", UnicodeCharacters.sponge_icon + this.vault, UnicodeCharacters.sponge_color);
+        UnicodeCharacters.sendInfluenceMessage(p, UnicodeCharacters.influence_emoji, String.valueOf(this.influence));
+        UnicodeCharacters.sendInfoMessage(p, UnicodeCharacters.boss_emoji, "Boss: ", getPlayerName(UUID.fromString(this.boss)), UnicodeCharacters.boss_color);
 
         StringBuilder enforcersList = new StringBuilder();
         for (String enforcer : this.enforcers) {
@@ -353,7 +353,7 @@ public class Crew implements ConfigurationSerializable {
                 enforcersList.append(playerName);
             }
         }
-        sendInfoMessage(p, UnicodeCharacters.enforcers_emoji, "Enforcers: ", enforcersList.toString(), UnicodeCharacters.enforcers_color);
+        UnicodeCharacters.sendInfoMessage(p, UnicodeCharacters.enforcers_emoji, "Enforcers: ", enforcersList.toString(), UnicodeCharacters.enforcers_color);
 
         StringBuilder membersList = new StringBuilder();
         for (String member : this.members) {
@@ -366,7 +366,7 @@ public class Crew implements ConfigurationSerializable {
                 membersList.append(playerName);
             }
         }
-        sendInfoMessage(p, UnicodeCharacters.members_emoji, "Members: ", membersList.toString(), UnicodeCharacters.members_color);
+        UnicodeCharacters.sendInfoMessage(p, UnicodeCharacters.members_emoji, "Members: ", membersList.toString(), UnicodeCharacters.members_color);
 
         if(inCrew) {
             TextColor activeColor = TextColor.fromHexString("#00FF00");
@@ -375,7 +375,7 @@ public class Crew implements ConfigurationSerializable {
             String statusText = (hasCompound()) ? "ACTIVE" : "INACTIVE";
             TextColor statusColor = (hasCompound()) ? activeColor : inactiveColor;
 
-            sendInfoMessage(p, UnicodeCharacters.compound_emoji, "Compound: ", statusText, statusColor);
+            UnicodeCharacters.sendInfoMessage(p, UnicodeCharacters.compound_emoji, "Compound: ", statusText, statusColor);
         }
         p.sendMessage(Component.text("└────────────────────◒").color(UnicodeCharacters.logo_color));
     }
@@ -394,28 +394,6 @@ public class Crew implements ConfigurationSerializable {
         }
         Bukkit.broadcast(ConfigManager.CREW_DISBAND.replaceText(builder -> builder.matchLiteral("{crew}").replacement(this.name)));
         plugin.getData().removeCrew(this);
-    }
-
-    private void sendInfoMessage(Player p, String prefixEmoji, String prefix, String text, TextColor color) {
-        p.sendMessage(Component.text("│ ").color(UnicodeCharacters.logo_color)
-                .append(Component.text(prefixEmoji).color(UnicodeCharacters.emoji_text_color))
-            .append(Component.text(prefix).color(UnicodeCharacters.info_text_color))
-            .append(Component.text(text).color(color)));
-    }
-
-    private void sendInfluenceMessage(Player p, String prefixEmoji, String influence) {
-        p.sendMessage(Component.text("│ ").color(UnicodeCharacters.logo_color)
-            .append(Component.text(prefixEmoji).color(UnicodeCharacters.emoji_text_color))
-            .append(Component.text("Influence: ").color(UnicodeCharacters.info_text_color))
-            .append(Component.text("[").color(UnicodeCharacters.influence_outline_color))
-            .append(Component.text(influence).color(UnicodeCharacters.influence_color))
-            .append(Component.text("]").color(UnicodeCharacters.influence_outline_color)));
-    }
-
-    private void sendMessageWithHeader(Player p, String prefix, String headerText, String suffix) {
-        p.sendMessage(Component.text(prefix).color(UnicodeCharacters.logo_color)
-            .append(Component.text(headerText).color(UnicodeCharacters.plugin_color))
-            .append(Component.text(suffix).color(UnicodeCharacters.logo_color)));
     }
 
     private String getOnlinePlayerName(UUID playerId) {
@@ -620,9 +598,9 @@ public class Crew implements ConfigurationSerializable {
         if(map.get("ratingScore") == null) this.ratingScore = 0; else this.ratingScore = (int) ((double) map.get("ratingScore"));
         if(map.get("enforcerLimit") == null) this.enforcerLimit = 1; else this.enforcerLimit = (int) map.get("enforcerLimit");
         if(map.get("memberLimit") == null) this.memberLimit = 3; else this.memberLimit = (int) map.get("memberLimit");
-        if(map.get("turfWarWins") == null) this.turfWarWins = 0; else this.turfWarWins = (int) map.get("turfWarWins");
-        if(map.get("turfWarDraws") == null) this.turfWarDraws = 0; else this.turfWarDraws = (int) map.get("turfWarDraws");
-        if(map.get("turfWarLosses") == null) this.turfWarLosses = 0; else this.turfWarLosses = (int) map.get("turfWarLosses");
+        if(map.get("skirmishWins") == null) this.skirmishWins = 0; else this.skirmishWins = (int) map.get("skirmishWins");
+        if(map.get("skirmishDraws") == null) this.skirmishDraws = 0; else this.skirmishDraws = (int) map.get("skirmishDraws");
+        if(map.get("skirmishLosses") == null) this.skirmishLosses = 0; else this.skirmishLosses = (int) map.get("skirmishLosses");
         if(map.get("banner") == null) this.banner = new ItemStack(Material.WHITE_BANNER); else this.banner = (ItemStack) map.get("banner");
     }
 }

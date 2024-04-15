@@ -14,12 +14,11 @@ import org.ovclub.crews.file.CrewsFile;
 import org.ovclub.crews.listeners.CrewGUIListener;
 import org.ovclub.crews.listeners.PlayerEvents;
 import org.ovclub.crews.managers.ConfigManager;
-import org.ovclub.crews.managers.TurfWarManager;
+import org.ovclub.crews.managers.skirmish.SkirmishManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 
 import com.google.gson.*;
-import org.ovclub.crews.runnables.AskToConfirmTask;
 import org.ovclub.crews.runnables.MatchSearchTask;
 
 public final class Crews extends JavaPlugin implements Listener {
@@ -34,17 +33,12 @@ public final class Crews extends JavaPlugin implements Listener {
         return crewsFile;
     }
 
-    private TurfWarManager turfWarManager;
-    public TurfWarManager getTurfWarManager(){return turfWarManager;}
+    private SkirmishManager skirmishManager;
+    public SkirmishManager getSkirmishManager(){return skirmishManager;}
 
     private MatchSearchTask matchSearchTask;
     public MatchSearchTask getMatchSearchTask(){
         return this.matchSearchTask;
-    }
-
-    private AskToConfirmTask askToConfirmTask;
-    public AskToConfirmTask getAskToConfirmTask(){
-        return this.askToConfirmTask;
     }
 
 //    private ProtocolManager protocolManager;
@@ -80,9 +74,8 @@ public final class Crews extends JavaPlugin implements Listener {
         /* Crews Startup */
         System.out.println("Crews Enabled!");
         this.playerData = new PlayerData();
-        this.turfWarManager = new TurfWarManager(this);
+        this.skirmishManager = new SkirmishManager(this);
         this.matchSearchTask = new MatchSearchTask(this);
-        this.askToConfirmTask = new AskToConfirmTask(this);
         getCommand("crews").setExecutor(new CommandManager(this));
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
@@ -96,7 +89,6 @@ public final class Crews extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new CrewGUIListener(this), this);
 
         matchSearchTask.runTaskTimer(this, 0L, 20L * 60);
-        askToConfirmTask.runTaskTimer(this, 0L, 20L * 5);
 
         //protocolManager = ProtocolLibrary.getProtocolManager();
 

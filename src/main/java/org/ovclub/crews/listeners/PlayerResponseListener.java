@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.ovclub.crews.managers.ConfigManager;
-import org.ovclub.crews.object.turfwar.TurfWarQueueItem;
+import org.ovclub.crews.object.skirmish.SkirmishQueueItem;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -15,15 +15,17 @@ import java.util.UUID;
 public class PlayerResponseListener implements Listener {
     private final JavaPlugin plugin;
     private final UUID playerUUID;
-    private final TurfWarQueueItem smallerTeam;
-    private final TurfWarQueueItem largerTeam;
+    private final SkirmishQueueItem smallerTeam;
+    private final SkirmishQueueItem largerTeam;
+    private long responseStartTime;
     private boolean awaitingResponse;
 
-    public PlayerResponseListener(JavaPlugin plugin, UUID playerUUID, TurfWarQueueItem smallerTeam, TurfWarQueueItem largerTeam) {
+    public PlayerResponseListener(JavaPlugin plugin, UUID playerUUID, SkirmishQueueItem smallerTeam, SkirmishQueueItem largerTeam) {
         this.plugin = plugin;
         this.playerUUID = playerUUID;
         this.smallerTeam = smallerTeam;
         this.largerTeam = largerTeam;
+        this.responseStartTime = System.currentTimeMillis();
         this.awaitingResponse = true;
     }
 
@@ -83,5 +85,9 @@ public class PlayerResponseListener implements Listener {
 
     public boolean isAwaitingResponse() {
         return awaitingResponse;
+    }
+
+    public long getResponseStartTime() {
+        return responseStartTime;
     }
 }
