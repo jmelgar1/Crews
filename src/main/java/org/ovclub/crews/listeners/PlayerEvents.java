@@ -24,8 +24,8 @@ public class PlayerEvents implements Listener {
     }
 
     @EventHandler
-    public void onPlayerChat(AsyncPlayerChatEvent event){
-        Player p = event.getPlayer();
+    public void onPlayerChat(AsyncPlayerChatEvent e){
+        Player p = e.getPlayer();
         UUID uuid = p.getUniqueId();
 
         Crew targetCrew = plugin.getData().getCrew(p);
@@ -33,24 +33,24 @@ public class PlayerEvents implements Listener {
         if(targetCrew != null) {
             String crewChatPrefix = ChatColor.GREEN + "(" + ChatColor.DARK_GREEN + targetCrew.getName() + ChatColor.GREEN + ") ";
 
-            String sentMessage = event.getMessage();
+            String sentMessage = e.getMessage();
             String playerName = p.getDisplayName();
             String newMessage = crewChatPrefix + ChatColor.WHITE + "<" + playerName + "> " + sentMessage;
 
             //if crew chat is enabled only send message to crew members
             if (crewChatStatus.get(uuid) != null && crewChatStatus.get(uuid)) {
-                event.setCancelled(true);
+                e.setCancelled(true);
                 targetCrew.broadcast(Component.text(newMessage));
             }
 
             //logic for renaming crew
             if (ShopCommand.waitingForInputPlayer != null && p == ShopCommand.waitingForInputPlayer) {
-                event.setCancelled(true);
+                e.setCancelled(true);
                 new BukkitRunnable() {
                     @Override
                     public void run() {
                         // Handle the user input (in this case, it's the new crew name)
-                        String newcrewName = event.getMessage();
+                        String newcrewName = e.getMessage();
 
                         p.performCommand("crews rename " + newcrewName);
 
@@ -62,12 +62,12 @@ public class PlayerEvents implements Listener {
 
             //logic for getting discord name
             if (ShopCommand.getDiscordName != null && p == ShopCommand.getDiscordName) {
-                event.setCancelled(true);
+                e.setCancelled(true);
                 new BukkitRunnable() {
                     @Override
                     public void run() {
                         // Handle the user input (in this case, it's the new crew name)
-                        String discordName = event.getMessage();
+                        String discordName = e.getMessage();
 
                         //new DiscordManager(crewManager.getPlayercrew(p), p, discordName);
 
@@ -80,10 +80,10 @@ public class PlayerEvents implements Listener {
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event){
+    public void onPlayerJoin(PlayerJoinEvent e){
         for (Crew c : plugin.getData().getCrews()) {
-            if (c.hasMember(event.getPlayer())) {
-                plugin.getData().addCPlayer(event.getPlayer(), c);
+            if (c.hasMember(e.getPlayer())) {
+                plugin.getData().addCPlayer(e.getPlayer(), c);
                 break;
             }
         }
@@ -121,7 +121,7 @@ public class PlayerEvents implements Listener {
     }
 
     @EventHandler
-    private void onLeave(PlayerQuitEvent event) {
-        plugin.getData().removeCPlayer(event.getPlayer());
+    private void onLeave(PlayerQuitEvent e) {
+        plugin.getData().removeCPlayer(e.getPlayer());
     }
 }

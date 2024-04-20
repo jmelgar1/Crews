@@ -7,12 +7,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SkirmishQueue {
-    private final List<SkirmishQueueItem> queue = new LinkedList<>();
+    private final List<SkirmishTeam> queue = new LinkedList<>();
 
-    public synchronized void addToQueue(SkirmishQueueItem crewQueue) {
+    public synchronized void addToQueue(SkirmishTeam crewQueue) {
         queue.add(crewQueue);
     }
-    public synchronized SkirmishQueueItem removeFromQueue() {
+    public synchronized SkirmishTeam removeFromQueue() {
         if (!queue.isEmpty()) {
             return queue.remove(0);
         }
@@ -24,16 +24,16 @@ public class SkirmishQueue {
         }
     }
 
-    public synchronized void removeFromQueue(SkirmishQueueItem queueItem) {
+    public synchronized void removeFromQueue(SkirmishTeam queueItem) {
         if (!queue.isEmpty()) {
             queue.removeIf(item -> item.equals(queueItem));
         }
     }
-    public synchronized int getQueuePosition(SkirmishQueueItem crew) {
+    public synchronized int getQueuePosition(SkirmishTeam crew) {
         return queue.indexOf(crew) + 1;
     }
     public synchronized boolean isInQueue(Crew crew) {
-        for (SkirmishQueueItem item : queue) {
+        for (SkirmishTeam item : queue) {
             if (item.getCrew().equals(crew)) {
                 return true;
             }
@@ -43,7 +43,7 @@ public class SkirmishQueue {
     public synchronized int size() {
         return queue.size();
     }
-    public synchronized List<SkirmishQueueItem> getAllItemsInQueue() {
+    public synchronized List<SkirmishTeam> getAllItemsInQueue() {
         return new ArrayList<>(queue);
     }
 }

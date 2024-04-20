@@ -1,19 +1,17 @@
 package org.ovclub.crews.object.skirmish;
 
 public class Skirmish {
-    private final SkirmishQueueItem crew1;
-    private final SkirmishQueueItem crew2;
+    private SkirmishMatchup matchup;
     private SkirmishState state;
-    private int scoreCrew1;
-    private int scoreCrew2;
+    private int blueTeamScore;
+    private int redTeamScore;
 
     // Constructor
-    public Skirmish(SkirmishQueueItem crew1, SkirmishQueueItem crew2) {
-        this.crew1 = crew1;
-        this.crew2 = crew2;
+    public Skirmish(SkirmishMatchup matchup) {
+        this.matchup = matchup;
         this.state = SkirmishState.WAITING;
-        this.scoreCrew1 = 0;
-        this.scoreCrew2 = 0;
+        this.blueTeamScore = 0;
+        this.redTeamScore = 0;
     }
 
     public void start() {
@@ -27,32 +25,35 @@ public class Skirmish {
     }
 
     // Update score for a crew
-    public void updateScore(SkirmishQueueItem crewQueue, int points) {
-        if (crewQueue.getCrew().equals(crew1.getCrew())) {
-            scoreCrew1 += points;
-        } else if (crewQueue.getCrew().equals(crew2.getCrew())) {
-            scoreCrew2 += points;
+    public void updateScore(SkirmishTeam crewQueue, int points) {
+        if (crewQueue.getCrew().equals(matchup.getBlueTeam().getCrew())) {
+            blueTeamScore += points;
+        } else if (crewQueue.getCrew().equals(matchup.getRedTeam().getCrew())) {
+            redTeamScore += points;
         }
         // maybe more logic to check if the match should end based on score
     }
-    public SkirmishQueueItem getCrewModel1() {
-        return crew1;
-    }
 
-    public SkirmishQueueItem getCrewModel2() {
-        return crew2;
-    }
+    public SkirmishMatchup getMatchup() { return this.matchup; }
 
     public SkirmishState getState() {
         return state;
     }
 
-    public int getScoreCrew1() {
-        return scoreCrew1;
+    public int getBlueTeamScore() {
+        return blueTeamScore;
     }
 
-    public int getScoreCrew2() {
-        return scoreCrew2;
+    public void setBlueTeamScore(int value) {
+        this.blueTeamScore = value;
+    }
+
+    public void setRedTeamScore(int value) {
+        this.redTeamScore = value;
+    }
+
+    public int getRedTeamScore() {
+        return redTeamScore;
     }
 
     //add more methods here for match management, like time checks, player deaths, etc.

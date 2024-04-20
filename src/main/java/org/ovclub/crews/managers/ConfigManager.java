@@ -23,6 +23,11 @@ public class ConfigManager {
         UPGRADE_DISCORD_COST = config.getInt("upgrade-discord-cost");
         INFLUENCE_PER_PLAYER = config.getInt("influence-per-player");
 
+        /* Skirmish Stuff */
+        ARENA_RADIUS = config.getInt("arena-radius");
+        WALL_BUFFER = config.getInt("wall-buffer");
+        WALL_HEIGHT = config.getInt("wall-height");
+        WALL_WIDTH = config.getInt("wall-width");
 
         /* Text Components */
         ALREADY_IN_CREW = UnicodeCharacters.createXIcon(TextColor.fromHexString("#F44336")).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("already-in-crew")))));
@@ -98,6 +103,8 @@ public class ConfigManager {
 
         /* Skirmish Started */
         SKIRMISH_STARTED = UnicodeCharacters.createSkirmishIcon(UnicodeCharacters.skirmish_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("skirmish-started")))));
+        SKIRMISH_ENDED = UnicodeCharacters.createSkirmishIcon(UnicodeCharacters.rating_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("skirmish-ended")))));
+        SKIRMISH_DRAW = UnicodeCharacters.createSkirmishIcon(UnicodeCharacters.rating_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("skirmish-draw")))));
         NOT_IN_QUEUE = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("not-in-queue")))));
         YOU_HAVE_CONFIRMED = UnicodeCharacters.createSuccessIcon(TextColor.color(46,125,50)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("you-have-confirmed")))));
         WAITING_ON_CONFIRMATION = UnicodeCharacters.createQueueIcon(UnicodeCharacters.skirmish_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("waiting-on-confirmation")))));
@@ -124,6 +131,10 @@ public class ConfigManager {
     public static int UPGRADE_MAIL_COST;
     public static int UPGRADE_DISCORD_COST;
     public static int INFLUENCE_PER_PLAYER;
+    public static int ARENA_RADIUS;
+    public static int WALL_BUFFER;
+    public static int WALL_HEIGHT;
+    public static int WALL_WIDTH;
     public static TextComponent ALREADY_INVITED;
     public static TextComponent ALREADY_ENFORCER;
     public static TextComponent CREW_DISBAND;
@@ -193,6 +204,8 @@ public class ConfigManager {
     public static TextComponent ALREADY_IN_QUEUE;
     public static TextComponent ONE_PLAYER_REQUIRED_FOR_QUEUE;
     public static TextComponent SKIRMISH_STARTED;
+    public static TextComponent SKIRMISH_ENDED;
+    public static TextComponent SKIRMISH_DRAW;
     public static TextComponent NOT_IN_QUEUE;
     public static TextComponent WAITING_ON_CONFIRMATION;
     public static TextComponent YOU_HAVE_CONFIRMED;

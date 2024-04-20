@@ -19,7 +19,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.ovclub.crews.managers.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
-import org.ovclub.crews.object.skirmish.SkirmishQueueItem;
 
 import java.util.*;
 
@@ -220,7 +219,7 @@ public class GUICreator {
 
         GUICreator.openInventory(p, data.getInventories().get(p.getUniqueId()));
     }
-//    public static void createSkirmishMatchBalancingGUI(PlayerData data, Player p, SkirmishQueueItem team1, SkirmishQueueItem team2) {
+//    public static void createSkirmishMatchBalancingGUI(PlayerData data, Player p, SkirmishTeam team1, SkirmishTeam team2) {
 //        Inventory inv = Bukkit.createInventory(null, 27, Component.text("Skirmish Match Balancing"));
 //        data.getInventories().put(p.getUniqueId(), inv);
 //

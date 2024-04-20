@@ -9,7 +9,7 @@ import org.ovclub.crews.managers.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 import org.ovclub.crews.object.skirmish.SkirmishQueue;
-import org.ovclub.crews.object.skirmish.SkirmishQueuePair;
+import org.ovclub.crews.object.skirmish.SkirmishMatchup;
 
 import java.util.UUID;
 
@@ -41,7 +41,7 @@ public class SkirmishAcceptCommand implements SubCommand {
             p.sendMessage(ConfigManager.NOT_IN_CREW);
             return;
         }
-        SkirmishQueuePair pair = plugin.getSkirmishManager().findQueuePairForCrew(pCrew);
+        SkirmishMatchup pair = plugin.getSkirmishManager().getMatchupFromCrew(pCrew);
         if (!queue.isInQueue(pCrew) || pair == null) {
             p.sendMessage(ConfigManager.NOT_IN_QUEUE);
             return;

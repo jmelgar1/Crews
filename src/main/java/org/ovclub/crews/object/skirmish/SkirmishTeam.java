@@ -4,7 +4,7 @@ import org.ovclub.crews.object.Crew;
 
 import java.util.ArrayList;
 
-public class SkirmishQueueItem {
+public class SkirmishTeam {
     private Crew crew;
     private ArrayList<String> players;
     private boolean inConfirmation;

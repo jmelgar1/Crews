@@ -59,17 +59,21 @@ public class Crew implements ConfigurationSerializable {
     }
 
     //score (add up to influence)
-    private final int ratingScore;
-    public int getRatingScore() { return this.ratingScore;}
+    private int ratingScore;
+    public int getRating() { return this.ratingScore;}
+    public void setRating(int value) { this.ratingScore = value;}
 
     private int skirmishWins;
     public int getSkirmishWins() { return this.skirmishWins;}
+    public void addSkirmishWins(int amount) { this.skirmishWins += this.skirmishWins + amount;}
 
     private int skirmishDraws;
     public int getSkirmishDraws() { return this.skirmishDraws;}
+    public void addSkirmishDraws(int amount) { this.skirmishDraws += this.skirmishDraws + amount;}
 
     private int skirmishLosses;
     public int getSkirmishLosses() { return this.skirmishLosses;}
+    public void addSkirmishLosses(int amount) { this.skirmishLosses += this.skirmishLosses + amount;}
 
     //description
     private String description;

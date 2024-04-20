@@ -1,31 +1,21 @@
 package org.ovclub.crews.managers.skirmish;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.ovclub.crews.Crews;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.ovclub.crews.managers.ConfigManager;
+import org.ovclub.crews.object.skirmish.Arena;
+import org.ovclub.crews.object.skirmish.Skirmish;
+import org.ovclub.crews.object.skirmish.SkirmishMatchup;
+import org.ovclub.crews.object.skirmish.SkirmishTeam;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
-public class ArenaManager implements Listener {
-    private final World world;
+public class ArenaManager {
+    private final ArrayList<Arena> arenas = new ArrayList<>();
+    private final World world = Bukkit.getWorld("world");
     private final Random random = new Random();
-    private Location arenaCenter;
-    private int radius = 25;  // Half of 50 for a 50x50 area
-    private int glassBuffer = 2;  // Change to desired threshold for showing glass walls
-
-    public ArenaManager(World world, Crews plugin) {
-        this.world = world;
-        Bukkit.getPluginManager().registerEvents(this, plugin);
-    }
 
     public Location getRandomArenaLocation() {
         int x = random.nextInt(3001) - 1500;
@@ -33,53 +23,133 @@ public class ArenaManager implements Listener {
         return new Location(world, x, world.getHighestBlockYAt(x, z), z);
     }
 
-    public void setupArena(Location center) {
-        this.arenaCenter = center;
+    public void setupArena(SkirmishMatchup matchup) {
+        Location center = getRandomArenaLocation();
+        double radius = ConfigManager.ARENA_RADIUS;
+        double maxInwardOffset = Math.sqrt(2) * radius / 2;
+        int diagonalInward = (int) (maxInwardOffset - 1);
+
+        Location corner1 = new Location(center.getWorld(),
+            center.getX() - radius + diagonalInward,
+            center.getY(),
+            center.getZ() - radius + diagonalInward);
+
+        Location corner2 = new Location(center.getWorld(),
+            center.getX() + radius - diagonalInward,
+            center.getY(),
+            center.getZ() + radius - diagonalInward);
+
+        // Adjusting Y to be at the highest block at each location
+        corner1.setY(center.getWorld().getHighestBlockYAt(corner1));
+        corner2.setY(center.getWorld().getHighestBlockYAt(corner2));
+
+        Skirmish skirmish = new Skirmish(matchup);
+        Arena arena = new Arena(world, center, ConfigManager.ARENA_RADIUS, skirmish, true);
+        arenas.add(arena);
+
+        // Teleport each team to the calculated corners
+        teleportTeamToArena(matchup.getBlueTeam(), corner1, arena, true);
+        teleportTeamToArena(matchup.getRedTeam(), corner2, arena, false);
+
+        arena.setHasBeenTeleported(true);
+
         Bukkit.broadcastMessage("An arena has been setup at " + formatLocation(center) + " for the upcoming skirmish!");
     }
 
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-        Location to = event.getTo();
-        if (this.arenaCenter != null && to.getWorld().equals(world)) {
-            if (isNearBoundary(to)) {
-                showGlassWall(player, to);
-            } else {
-                hideGlassWall(player, to);
+    public void teleportTeamToArena(SkirmishTeam team, Location location, Arena arena, boolean isTeamOne) {
+        for (String playerUUID : team.getPlayers()) {
+            Player player = Bukkit.getPlayer(UUID.fromString(playerUUID));
+            if (player != null) {
+                arena.addPlayerReturnPoint(player.getUniqueId(), player.getLocation());
+
+                Location safeLocation = getSafeLocation(location);
+                float yaw = getYaw(safeLocation, arena.getCenter());
+                safeLocation.setYaw(yaw);
+                player.teleport(safeLocation);
+
+                // Set team color based on whether it's Team One or not
+                ChatColor color = isTeamOne ? ChatColor.BLUE : ChatColor.RED;
+                arena.setTeamColor(player, color);
+
+                // Apply the glowing effect
+                PotionEffect glowingEffect = new PotionEffect(PotionEffectType.GLOWING, 200, 0, false, false, true);
+                player.addPotionEffect(glowingEffect);
+                player.sendMessage("You have been teleported to the arena!");
             }
         }
     }
 
-    private boolean isNearBoundary(Location loc) {
-        int distX = Math.abs(loc.getBlockX() - arenaCenter.getBlockX());
-        int distZ = Math.abs(loc.getBlockZ() - arenaCenter.getBlockZ());
-        return distX >= radius - glassBuffer && distX <= radius || distZ >= radius - glassBuffer && distZ <= radius;
-    }
-
-    private void showGlassWall(Player player, Location loc) {
-        int yStart = 0;  // Bedrock level
-        int yEnd = world.getMaxHeight();  // Sky limit
-        for (int y = yStart; y < yEnd; y++) {
-            Location blockLoc = new Location(world, loc.getBlockX(), y, loc.getBlockZ());
-            if (blockLoc.getBlock().getType() == Material.AIR) {
-                player.sendBlockChange(blockLoc, Material.GLASS.createBlockData());
+    public void teleportPlayersToReturnPoints(Arena arena) {
+        HashMap<UUID, Location> playerReturnPoints = arena.getPlayerReturnPoint();
+        for (String playerUUID : arena.getMatchup().getParticipants()) {
+            UUID uuid = UUID.fromString(playerUUID);
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null && playerReturnPoints.containsKey(uuid)) {
+                Location returnLocation = playerReturnPoints.get(uuid);
+                player.teleport(returnLocation);
             }
         }
     }
 
-    private void hideGlassWall(Player player, Location loc) {
-        int yStart = 0;
-        int yEnd = world.getMaxHeight();
-        for (int y = yStart; y < yEnd; y++) {
-            Location blockLoc = new Location(world, loc.getBlockX(), y, loc.getBlockZ());
-            if (blockLoc.getBlock().getType() == Material.GLASS) {
-                player.sendBlockChange(blockLoc, Material.AIR.createBlockData());
+    private Location getSafeLocation(Location original) {
+        World world = original.getWorld();
+        int x = original.getBlockX();
+        int z = original.getBlockZ();
+        int y = world.getHighestBlockYAt(x, z);
+
+        while (y < world.getMaxHeight()) {
+            Material below = world.getBlockAt(x, y - 1, z).getType();
+            Material ground = world.getBlockAt(x, y, z).getType();
+            Material above = world.getBlockAt(x, y + 1, z).getType();
+
+            if (isNonSolid(ground) && isNonSolid(above) && isSolid(below)) {
+                return new Location(world, x + 0.5, y, z + 0.5, original.getYaw(), original.getPitch());
             }
+            y++;
         }
+        return new Location(world, x + 0.5, world.getHighestBlockYAt(x, z) + 1, z + 0.5, original.getYaw(), original.getPitch()); // Fallback to the highest block + 1
     }
 
+    private boolean isNonSolid(Material mat) {
+        return !mat.isSolid();
+    }
+
+    private boolean isSolid(Material mat) {
+        return mat.isSolid() && mat != Material.LAVA && mat != Material.WATER;
+    }
+
+    private float getYaw(Location from, Location to) {
+        double deltaX = to.getX() - from.getX();
+        double deltaZ = to.getZ() - from.getZ();
+        double angle = Math.atan2(deltaZ, deltaX);
+
+        return (float)Math.toDegrees(angle) - 90;
+    }
+    public Arena getArenaByMatchup(SkirmishMatchup matchup) {
+        if(!arenas.isEmpty()) {
+            for (Arena arena : arenas) {
+                if(matchup.equals(arena.getSkirmish().getMatchup())) {
+                    return arena;
+                }
+            }
+        }
+        return null;
+    }
     private String formatLocation(Location loc) {
         return "X: " + loc.getBlockX() + ", Y: " + loc.getBlockY() + ", Z: " + loc.getBlockZ();
+    }
+    public Arena getArenaByPlayer(Player p) {
+        if(!arenas.isEmpty()) {
+            for (Arena arena : arenas) {
+                SkirmishMatchup matchup = arena.getSkirmish().getMatchup();
+                if(matchup.getParticipants().contains(String.valueOf(p.getUniqueId()))) {
+                    return arena;
+                }
+            }
+        }
+        return null;
+    }
+    public void removeArena(Arena arena) {
+        this.arenas.remove(arena);
     }
 }

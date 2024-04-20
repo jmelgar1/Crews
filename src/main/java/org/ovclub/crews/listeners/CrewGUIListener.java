@@ -17,7 +17,7 @@ import org.ovclub.crews.Crews;
 import org.ovclub.crews.managers.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
-import org.ovclub.crews.object.skirmish.SkirmishQueueItem;
+import org.ovclub.crews.object.skirmish.SkirmishTeam;
 import org.ovclub.crews.utilities.GUICreator;
 
 import java.util.*;
@@ -99,7 +99,7 @@ public class CrewGUIListener implements Listener {
             }
             if(data.getSelectedForQueue().size() >= 1) {
                 p.closeInventory();
-                SkirmishQueueItem queueItem = new SkirmishQueueItem();
+                SkirmishTeam queueItem = new SkirmishTeam();
                 queueItem.setCrew(pCrew);
                 queueItem.setPlayers(data.getSelectedForQueue().get(pCrew));
                 data.getSelectedForQueue().remove(pCrew);

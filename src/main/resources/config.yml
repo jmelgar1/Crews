@@ -14,6 +14,12 @@ upgrade-mail-cost: 250 #Cost to get the crew mail upgrade
 upgrade-discord-cost: 250 #Cost to get the crew discord upgrade
 influence-per-player: 300 #Amount of influence per player in crew
 
+#Skirmish Values
+arena-radius: 15 #Radius of arenas subject to cehange
+wall-buffer: 5 #Space between player and border where glass will show
+wall-height: 10 #Height of the barrier shown
+wall-width: 10 #Width of the barrier shown
+
 #Messages
 #TextComponents
 already-in-crew: "&#E57373You are already in a crew! &#E5CB70To leave use '/crews leave'"
@@ -87,6 +93,8 @@ remove-from-vault: "&6(&e{player}&6) &6Crew Vault: &#E3D272{current_amount} &4(&
 
 #Skirmish
 skirmish-started: "&#BE5350A skirmish between &#EF7550{crew1} &#BE5350and &#EF7550{crew2} &#BE5350has started!"
+skirmish-ended: "&#FFAE3B{winner} &#FFD33Bhas defeated &#FFAE3B{loser} &#FFD33Bwith a score of &#FF8F3B{points1} - {points2}!"
+skirmish-draw: "&#FFAE3B{team1} &#FFD33Bhas come to a stalemate with &#FFAE3B{team2} &#FFD33Bwith a score of &#FF8F3B{points1} - {points2}!"
 not-in-queue: "&#E57373You are not currently in the queue!"
 waiting-on-confirmation: "&eMATCH FOUND: &#EF7550Waiting on a confirmation for the skirmish match! &#FFEB3B'/c skirmish accept'"
 you-have-confirmed: "&#60E462You have accepted the match-up!"

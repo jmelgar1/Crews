@@ -13,13 +13,16 @@ import org.ovclub.crews.commands.CommandManager;
 import org.ovclub.crews.file.CrewsFile;
 import org.ovclub.crews.listeners.CrewGUIListener;
 import org.ovclub.crews.listeners.PlayerEvents;
+import org.ovclub.crews.listeners.skirmish.ArenaListener;
 import org.ovclub.crews.managers.ConfigManager;
+import org.ovclub.crews.managers.skirmish.ArenaManager;
 import org.ovclub.crews.managers.skirmish.SkirmishManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 
 import com.google.gson.*;
 import org.ovclub.crews.runnables.MatchSearchTask;
+import org.ovclub.crews.runnables.UpdateScoreboard;
 
 public final class Crews extends JavaPlugin implements Listener {
     /* New Stuff  */
@@ -36,9 +39,17 @@ public final class Crews extends JavaPlugin implements Listener {
     private SkirmishManager skirmishManager;
     public SkirmishManager getSkirmishManager(){return skirmishManager;}
 
+    private ArenaManager arenaManager;
+    public ArenaManager getArenaManager() { return arenaManager; }
+
     private MatchSearchTask matchSearchTask;
     public MatchSearchTask getMatchSearchTask(){
         return this.matchSearchTask;
+    }
+
+    private UpdateScoreboard updateScoreboard;
+    public UpdateScoreboard getUpdateScoreboard(){
+        return this.updateScoreboard;
     }
 
 //    private ProtocolManager protocolManager;
@@ -74,8 +85,10 @@ public final class Crews extends JavaPlugin implements Listener {
         /* Crews Startup */
         System.out.println("Crews Enabled!");
         this.playerData = new PlayerData();
+        this.arenaManager = new ArenaManager();
         this.skirmishManager = new SkirmishManager(this);
         this.matchSearchTask = new MatchSearchTask(this);
+        this.updateScoreboard = new UpdateScoreboard(this);
         getCommand("crews").setExecutor(new CommandManager(this));
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
@@ -87,6 +100,7 @@ public final class Crews extends JavaPlugin implements Listener {
 
         getServer().getPluginManager().registerEvents(new PlayerEvents(this), this);
         getServer().getPluginManager().registerEvents(new CrewGUIListener(this), this);
+        getServer().getPluginManager().registerEvents(new ArenaListener(this), this);
 
         matchSearchTask.runTaskTimer(this, 0L, 20L * 60);
 

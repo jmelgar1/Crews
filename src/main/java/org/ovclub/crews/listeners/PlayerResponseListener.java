@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.ovclub.crews.managers.ConfigManager;
-import org.ovclub.crews.object.skirmish.SkirmishQueueItem;
+import org.ovclub.crews.object.skirmish.SkirmishTeam;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -15,12 +15,12 @@ import java.util.UUID;
 public class PlayerResponseListener implements Listener {
     private final JavaPlugin plugin;
     private final UUID playerUUID;
-    private final SkirmishQueueItem smallerTeam;
-    private final SkirmishQueueItem largerTeam;
+    private final SkirmishTeam smallerTeam;
+    private final SkirmishTeam largerTeam;
     private long responseStartTime;
     private boolean awaitingResponse;
 
-    public PlayerResponseListener(JavaPlugin plugin, UUID playerUUID, SkirmishQueueItem smallerTeam, SkirmishQueueItem largerTeam) {
+    public PlayerResponseListener(JavaPlugin plugin, UUID playerUUID, SkirmishTeam smallerTeam, SkirmishTeam largerTeam) {
         this.plugin = plugin;
         this.playerUUID = playerUUID;
         this.smallerTeam = smallerTeam;
