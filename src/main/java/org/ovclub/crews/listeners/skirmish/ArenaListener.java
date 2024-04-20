@@ -2,13 +2,18 @@ package org.ovclub.crews.listeners.skirmish;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.projectiles.ProjectileSource;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.Vector;
 import org.ovclub.crews.Crews;
 import org.ovclub.crews.managers.skirmish.ArenaManager;
 import org.ovclub.crews.object.skirmish.Arena;
@@ -112,4 +117,57 @@ public class ArenaListener implements Listener {
             arena.updateTeamScore(false, newScore);
         }
     }
+
+
+    /*/
+    ================================================================================
+    ===============================================================================
+    =============================================================================
+    TEMP TEMP TEMP==================================================================
+    ===================================================================================
+    /*/
+    @EventHandler
+    public void onEntityDamage(EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof Arrow arrow && event.getEntity() instanceof Player player) {
+
+            if (isHeadshot(arrow, player)) {
+                double distance = arrow.getLocation().distance(player.getLocation());
+                double damage = calculateDamage(distance);
+                event.setDamage(damage);
+                player.sendMessage("You got shot!");
+
+                ProjectileSource shooter = arrow.getShooter();
+                if (shooter instanceof Player shootingPlayer) {
+                    shootingPlayer.sendMessage("[🗣️] Headshot! + " + damage + " damage done.");
+                }
+            }
+        }
+    }
+
+    private boolean isHeadshot(Arrow arrow, Player player) {
+        BoundingBox playerBox = player.getBoundingBox();
+        double headHeight = 1.6;
+        double headMinY = playerBox.getMaxY() - headHeight;
+
+        BoundingBox headBox = new BoundingBox(
+            playerBox.getMinX(), headMinY, playerBox.getMinZ(),
+            playerBox.getMaxX(), playerBox.getMaxY(), playerBox.getMaxZ()
+        );
+
+        Vector arrowImpact = arrow.getLocation().toVector();
+        System.out.println("Checking headshot: Arrow at " + arrowImpact + ", Head Box " + headBox);
+
+        return headBox.contains(arrowImpact.getX(), arrowImpact.getY(), arrowImpact.getZ());
+    }
+
+
+    private double calculateDamage(double distance) {
+        double baseDamage = 9;
+        double scalingFactor = 1.5;
+        double minDistanceForExtraDamage = 5.0;
+        double additionalDamage = distance > minDistanceForExtraDamage ? (distance - minDistanceForExtraDamage) * scalingFactor : 0;
+        double totalDamage = baseDamage + additionalDamage;
+        return Math.min(totalDamage, 50); // Max damage cap
+    }
 }
+

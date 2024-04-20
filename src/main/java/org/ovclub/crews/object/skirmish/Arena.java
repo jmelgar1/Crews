@@ -10,10 +10,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 import org.ovclub.crews.managers.ConfigManager;
 import org.ovclub.crews.object.Crew;
+import org.ovclub.crews.utilities.MatchResult;
 import org.ovclub.crews.utilities.RatingUtilities;
 import org.ovclub.crews.utilities.UnicodeCharacters;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class Arena {
@@ -29,8 +31,10 @@ public class Arena {
     private boolean hasBeenTeleported;
     private boolean isInCountdown;
     //private int gameTime = 600;
-    private int gameTime = 60;
+    private int gameTime = 10;
     private final HashMap<UUID, Location> playerReturnPoints = new HashMap<>();
+
+    private Map<Integer, Integer> kFactors;
 
     public Arena(World world, Location center, int radius, Skirmish skirmish, boolean isInCountdown) {
         this.world = world;
@@ -38,6 +42,12 @@ public class Arena {
         this.radius = radius;
         this.skirmish = skirmish;
         this.isInCountdown = isInCountdown;
+
+        kFactors = new HashMap<>();
+        kFactors.put(1000, 25);
+        kFactors.put(2000, 16);
+        kFactors.put(3000, 10);
+        kFactors.put(4500, 5);
     }
 
     public Location getCenter() {
@@ -217,41 +227,89 @@ public class Arena {
     }
 
     public void determineOutcome() {
-        int blueScore = this.skirmish.getBlueTeamScore();
-        int redScore = this.skirmish.getRedTeamScore();
-        SkirmishTeam blueTeam = this.skirmish.getMatchup().getBlueTeam();
-        SkirmishTeam redTeam = this.skirmish.getMatchup().getRedTeam();
-        Crew blueCrew =  blueTeam.getCrew();
-        Crew redCrew =  redTeam.getCrew();
+        int teamA_score = this.skirmish.getBlueTeamScore();
+        int teamB_score = this.skirmish.getRedTeamScore();
+        SkirmishTeam teamA = this.skirmish.getMatchup().getBlueTeam();
+        SkirmishTeam teamB = this.skirmish.getMatchup().getRedTeam();
+        Crew crewA =  teamA.getCrew();
+        Crew crewB =  teamB.getCrew();
 
-        if(blueScore > redScore) {
-            blueCrew.addSkirmishWins(1);
-            redCrew.addSkirmishLosses(1);
-            Bukkit.broadcast(ConfigManager.SKIRMISH_ENDED
-                .replaceText(builder -> builder.matchLiteral("{winner}").replacement(blueCrew.getName()))
-                .replaceText(builder -> builder.matchLiteral("{loser}").replacement(redCrew.getName()))
-                .replaceText(builder -> builder.matchLiteral("{points1}").replacement(String.valueOf(blueScore)))
-                .replaceText(builder -> builder.matchLiteral("{points2}").replacement(String.valueOf(redScore))));
+        int result = Integer.compare(teamA_score, teamB_score);
+        int teamA_rating = teamA.getCrew().getRating();
+        int teamB_rating = teamB.getCrew().getRating();
+        Rating rating = new Rating(teamA.getCrew().getRating(), teamB.getCrew().getRating(), result, kFactors);
+        Map<String, Double> newRatings = rating.getNewRatings();
+        int teamA_newRating= newRatings.get("a").intValue();
+        int teamB_newRating= newRatings.get("b").intValue();
 
-            org.ovclub.crews.utilities.RatingUtilities.updateRatings();
-        } else if(redScore > blueScore) {
-            redCrew.addSkirmishWins(1);
-            blueCrew.addSkirmishLosses(1);
+        if(teamA_score > teamB_score) {
+            crewA.addSkirmishWins(1);
+            crewB.addSkirmishLosses(1);
             Bukkit.broadcast(ConfigManager.SKIRMISH_ENDED
-                .replaceText(builder -> builder.matchLiteral("{winner}").replacement(redCrew.getName()))
-                .replaceText(builder -> builder.matchLiteral("{loser}").replacement(blueCrew.getName()))
-                .replaceText(builder -> builder.matchLiteral("{points1}").replacement(String.valueOf(redScore)))
-                .replaceText(builder -> builder.matchLiteral("{points2}").replacement(String.valueOf(blueScore))));
+                .replaceText(builder -> builder.matchLiteral("{winner}").replacement(crewA.getName()))
+                .replaceText(builder -> builder.matchLiteral("{loser}").replacement(crewB.getName()))
+                .replaceText(builder -> builder.matchLiteral("{points1}").replacement(String.valueOf(teamA_score)))
+                .replaceText(builder -> builder.matchLiteral("{points2}").replacement(String.valueOf(teamB_score))));
+
+            crewA.broadcast(ConfigManager.GAINED_RATING
+                .replaceText(builder -> builder.matchLiteral("{oldRating}").replacement(String.valueOf(teamA_rating)))
+                .replaceText(builder -> builder.matchLiteral("{change}").replacement(String.valueOf(teamA_newRating - teamA_rating)))
+                .replaceText(builder -> builder.matchLiteral("{total}").replacement(String.valueOf(teamA_newRating))));
+            crewB.broadcast(ConfigManager.LOST_RATING
+                .replaceText(builder -> builder.matchLiteral("{oldRating}").replacement(String.valueOf(teamB_rating)))
+                .replaceText(builder -> builder.matchLiteral("{change}").replacement(String.valueOf(teamB_rating - teamB_newRating)))
+                .replaceText(builder -> builder.matchLiteral("{total}").replacement(String.valueOf(teamB_newRating))));
+        } else if(teamB_score > teamA_score) {
+            crewB.addSkirmishWins(1);
+            crewA.addSkirmishLosses(1);
+            Bukkit.broadcast(ConfigManager.SKIRMISH_ENDED
+                .replaceText(builder -> builder.matchLiteral("{winner}").replacement(crewB.getName()))
+                .replaceText(builder -> builder.matchLiteral("{loser}").replacement(crewA.getName()))
+                .replaceText(builder -> builder.matchLiteral("{points1}").replacement(String.valueOf(teamB_score)))
+                .replaceText(builder -> builder.matchLiteral("{points2}").replacement(String.valueOf(teamA_score))));
+
+            crewB.broadcast(ConfigManager.GAINED_RATING
+                .replaceText(builder -> builder.matchLiteral("{oldRating}").replacement(String.valueOf(teamB_rating)))
+                .replaceText(builder -> builder.matchLiteral("{change}").replacement(String.valueOf(teamB_newRating - teamB_rating)))
+                .replaceText(builder -> builder.matchLiteral("{change}").replacement(String.valueOf(teamB_newRating))));
+            crewA.broadcast(ConfigManager.LOST_RATING
+                .replaceText(builder -> builder.matchLiteral("{oldRating}").replacement(String.valueOf(teamA_rating)))
+                .replaceText(builder -> builder.matchLiteral("{change}").replacement(String.valueOf(teamA_rating - teamA_newRating)))
+                .replaceText(builder -> builder.matchLiteral("{total}").replacement(String.valueOf(teamA_newRating))));
         } else {
-            blueCrew.addSkirmishDraws(1);
-            redCrew.addSkirmishDraws(1);
+            crewA.addSkirmishDraws(1);
+            crewB.addSkirmishDraws(1);
             Bukkit.broadcast(ConfigManager.SKIRMISH_DRAW
-                .replaceText(builder -> builder.matchLiteral("{team1}").replacement(blueCrew.getName()))
-                .replaceText(builder -> builder.matchLiteral("{team2}").replacement(redCrew.getName()))
-                .replaceText(builder -> builder.matchLiteral("{points1}").replacement(String.valueOf(blueScore)))
-                .replaceText(builder -> builder.matchLiteral("{points2}").replacement(String.valueOf(redScore))));
-        }
-    }
+                .replaceText(builder -> builder.matchLiteral("{team1}").replacement(crewA.getName()))
+                .replaceText(builder -> builder.matchLiteral("{team2}").replacement(crewB.getName()))
+                .replaceText(builder -> builder.matchLiteral("{points1}").replacement(String.valueOf(teamA_score)))
+                .replaceText(builder -> builder.matchLiteral("{points2}").replacement(String.valueOf(teamB_score))));
 
-    private void RatingUtilities.updateRatings(arena.getMatchup().);
+            if(teamA_newRating > teamB_newRating) {
+                crewA.broadcast(ConfigManager.GAINED_RATING
+                    .replaceText(builder -> builder.matchLiteral("{oldRating}").replacement(String.valueOf(teamA_rating)))
+                    .replaceText(builder -> builder.matchLiteral("{change}").replacement(String.valueOf(teamA_newRating - teamA_rating)))
+                    .replaceText(builder -> builder.matchLiteral("{total}").replacement(String.valueOf(teamA_newRating))));
+                crewB.broadcast(ConfigManager.LOST_RATING
+                    .replaceText(builder -> builder.matchLiteral("{oldRating}").replacement(String.valueOf(teamB_rating)))
+                    .replaceText(builder -> builder.matchLiteral("{change}").replacement(String.valueOf(teamB_rating - teamB_newRating)))
+                    .replaceText(builder -> builder.matchLiteral("{total}").replacement(String.valueOf(teamB_newRating))));
+            } else if(teamB_newRating > teamA_newRating){
+                crewB.broadcast(ConfigManager.GAINED_RATING
+                    .replaceText(builder -> builder.matchLiteral("{oldRating}").replacement(String.valueOf(teamB_rating)))
+                    .replaceText(builder -> builder.matchLiteral("{change}").replacement(String.valueOf(teamB_newRating - teamB_rating)))
+                    .replaceText(builder -> builder.matchLiteral("{total}").replacement(String.valueOf(teamB_newRating))));
+                crewA.broadcast(ConfigManager.LOST_RATING
+                    .replaceText(builder -> builder.matchLiteral("{oldRating}").replacement(String.valueOf(teamA_rating)))
+                    .replaceText(builder -> builder.matchLiteral("{change}").replacement(String.valueOf(teamA_rating - teamA_newRating)))
+                    .replaceText(builder -> builder.matchLiteral("{total}").replacement(String.valueOf(teamA_newRating))));
+            } else {
+                crewA.broadcast(ConfigManager.NO_CHANGE_IN_RATING);
+                crewB.broadcast(ConfigManager.NO_CHANGE_IN_RATING);
+            }
+        }
+
+        teamA.getCrew().setRating(newRatings.get("a").intValue());
+        teamB.getCrew().setRating(newRatings.get("b").intValue());
+    }
 }

@@ -114,6 +114,8 @@ public class UnicodeCharacters {
     public static TextComponent createCrewsIcon(TextColor color) {return Component.text("[👥] ").color(color);}
     public static TextComponent createQueueIcon(TextColor color) {return Component.text("[⏳] ").color(color);}
     public static TextComponent createSkirmishIcon(TextColor color) {return Component.text("[⚔] ").color(color);}
+    public static TextComponent createRatingIcon(TextColor color) {return Component.text("[🎖] ").color(color);}
+
 
     public static void sendInfoMessage(Player p, String prefixEmoji, String prefix, String text, TextColor color) {
         p.sendMessage(Component.text("│ ").color(UnicodeCharacters.logo_color)

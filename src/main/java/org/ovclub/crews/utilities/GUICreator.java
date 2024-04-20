@@ -33,7 +33,7 @@ public class GUICreator {
         int vault = crew.getVault();
         int requiredSponges = crew.getLevelUpCost();
         int influence = crew.getInfluence();
-        int rating = crew.getRatingScore();
+        int rating = crew.getRating();
         int skirmishWins = crew.getSkirmishWins();
         int skirmishLosses = crew.getSkirmishLosses();
         int skirmishDraws = crew.getSkirmishDraws();

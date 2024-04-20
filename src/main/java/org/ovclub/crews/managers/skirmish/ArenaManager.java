@@ -95,19 +95,32 @@ public class ArenaManager {
         World world = original.getWorld();
         int x = original.getBlockX();
         int z = original.getBlockZ();
-        int y = world.getHighestBlockYAt(x, z);
+        int radius = 5; // Checks a 10x10 area centered on the original location
 
-        while (y < world.getMaxHeight()) {
-            Material below = world.getBlockAt(x, y - 1, z).getType();
-            Material ground = world.getBlockAt(x, y, z).getType();
-            Material above = world.getBlockAt(x, y + 1, z).getType();
+        while (true) {
+            int waterCount = 0;
+            int totalCount = 0;
 
-            if (isNonSolid(ground) && isNonSolid(above) && isSolid(below)) {
-                return new Location(world, x + 0.5, y, z + 0.5, original.getYaw(), original.getPitch());
+            for (int dx = -radius; dx <= radius; dx++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    int currentY = world.getHighestBlockYAt(x + dx, z + dz);
+                    Material topMaterial = world.getBlockAt(x + dx, currentY, z + dz).getType();
+                    if (topMaterial == Material.WATER || topMaterial == Material.SEAGRASS) {
+                        waterCount++;
+                    }
+                    totalCount++;
+                }
             }
-            y++;
+
+            double waterRatio = (double) waterCount / totalCount;
+            if (waterRatio < 0.5) { // Less than 50% of the area is water
+                int safeY = world.getHighestBlockYAt(x, z);
+                return new Location(world, x + 0.5, safeY+1, z + 0.5, original.getYaw(), original.getPitch());
+            } else {
+                // Adjust the location and try again if too much water
+                x += 10; // Move 10 blocks over on each check, could be randomized or iterated differently
+            }
         }
-        return new Location(world, x + 0.5, world.getHighestBlockYAt(x, z) + 1, z + 0.5, original.getYaw(), original.getPitch()); // Fallback to the highest block + 1
     }
 
     private boolean isNonSolid(Material mat) {

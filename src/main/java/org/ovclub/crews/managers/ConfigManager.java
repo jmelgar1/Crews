@@ -119,7 +119,11 @@ public class ConfigManager {
         CREW_REMOVED_FROM_QUEUE = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("crew-removed-from-queue")))));
         SECONDS_LEFT_TO_ACTION = UnicodeCharacters.createAlertIcon(TextColor.color(232,194,59)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("seconds-left-to-action")))));
         SKIRMISH_STARTING = UnicodeCharacters.createSkirmishIcon(TextColor.color(232,194,59)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("skirmish-starting")))));
+        GAINED_RATING = UnicodeCharacters.createRatingIcon(TextColor.color(232,194,59)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("gained-rating")))));
+        LOST_RATING = UnicodeCharacters.createRatingIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("lost-rating")))));
+        NO_CHANGE_IN_RATING = UnicodeCharacters.createRatingIcon(TextColor.color(114, 107, 107)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("no-change-rating")))));
     }
+
 
     public static int COMMANDS_PER_PAGE;
     public static int MAX_MEMBERS;
@@ -220,5 +224,8 @@ public class ConfigManager {
     public static TextComponent CREW_REMOVED_FROM_QUEUE;
     public static TextComponent SECONDS_LEFT_TO_ACTION;
     public static TextComponent SKIRMISH_STARTING;
+    public static TextComponent GAINED_RATING;
+    public static TextComponent LOST_RATING;
+    public static TextComponent NO_CHANGE_IN_RATING;
 
 }

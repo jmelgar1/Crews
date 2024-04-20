@@ -219,7 +219,7 @@ public class PlayerData {
         int vault = crew.getVault();
         int totalPlayers = crew.getMembers().size() + crew.getEnforcers().size() + 1;
         int playerPower = totalPlayers * ConfigManager.INFLUENCE_PER_PLAYER;
-        int rating = crew.getRatingScore();
+        int rating = crew.getRating();
         int influence = vault + playerPower + rating;
         crew.setInfluence(influence);
     }

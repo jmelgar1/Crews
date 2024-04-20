@@ -65,15 +65,19 @@ public class Crew implements ConfigurationSerializable {
 
     private int skirmishWins;
     public int getSkirmishWins() { return this.skirmishWins;}
-    public void addSkirmishWins(int amount) { this.skirmishWins += this.skirmishWins + amount;}
+    public void addSkirmishWins(int amount) { this.skirmishWins += amount;}
 
     private int skirmishDraws;
     public int getSkirmishDraws() { return this.skirmishDraws;}
-    public void addSkirmishDraws(int amount) { this.skirmishDraws += this.skirmishDraws + amount;}
+    public void addSkirmishDraws(int amount) { this.skirmishDraws += amount;}
 
     private int skirmishLosses;
     public int getSkirmishLosses() { return this.skirmishLosses;}
-    public void addSkirmishLosses(int amount) { this.skirmishLosses += this.skirmishLosses + amount;}
+    public void addSkirmishLosses(int amount) { this.skirmishLosses += amount;}
+
+    public int getGamesPlayed() {
+        return this.skirmishDraws + this.skirmishWins + this.skirmishLosses;
+    }
 
     //description
     private String description;
@@ -522,7 +526,7 @@ public class Crew implements ConfigurationSerializable {
         this.level = 1;
         this.influence = 300;
         this.levelUpCost = 25;
-        this.ratingScore = 0;
+        this.ratingScore = 100;
         this.enforcerLimit = 1;
         this.memberLimit = 3;
         this.unlockedUpgrades = new ArrayList<>();
@@ -599,7 +603,7 @@ public class Crew implements ConfigurationSerializable {
         if(map.get("influence") == null) this.influence = 0; else this.influence = (int) ((double) map.get("influence"));
         if(map.get("level") == null) this.level = 1; else this.level = (int) ((double) map.get("level"));
         if(map.get("levelUpCost") == null) this.levelUpCost = 25; else this.levelUpCost = (int) map.get("levelUpCost");
-        if(map.get("ratingScore") == null) this.ratingScore = 0; else this.ratingScore = (int) ((double) map.get("ratingScore"));
+        if(map.get("ratingScore") == null) this.ratingScore = 100; else this.ratingScore = (int) ((double) map.get("ratingScore"));
         if(map.get("enforcerLimit") == null) this.enforcerLimit = 1; else this.enforcerLimit = (int) map.get("enforcerLimit");
         if(map.get("memberLimit") == null) this.memberLimit = 3; else this.memberLimit = (int) map.get("memberLimit");
         if(map.get("skirmishWins") == null) this.skirmishWins = 0; else this.skirmishWins = (int) map.get("skirmishWins");
