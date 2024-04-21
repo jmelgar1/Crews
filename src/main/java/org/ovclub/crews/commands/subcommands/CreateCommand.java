@@ -1,5 +1,7 @@
 package org.ovclub.crews.commands.subcommands;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.ovclub.crews.Crews;
@@ -10,6 +12,7 @@ import org.ovclub.crews.managers.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 import org.ovclub.crews.utilities.ChatUtilities;
+import org.ovclub.crews.utilities.SoundUtilities;
 
 public class CreateCommand implements SubCommand {
 
@@ -45,8 +48,10 @@ public class CreateCommand implements SubCommand {
         if (data.isValidCrewName(p, proposedCrewName)) {
             Crew newCrew = new Crew(args[0], p, plugin);
             data.addCrew(newCrew);
-            Bukkit.broadcast(ConfigManager.CREW_FOUNDED.replaceText(builder -> builder.matchLiteral("{crew}").replacement(newCrew.getName()))
-                .replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName())));
+            Bukkit.broadcast(ConfigManager.CREW_FOUNDED
+                .replaceText(builder -> builder.matchLiteral("{crew}").replacement(Component.text(newCrew.getName()).decorate(TextDecoration.BOLD)))
+                .replaceText(builder -> builder.matchLiteral("{player}").replacement(Component.text(p.getName()).decorate(TextDecoration.BOLD))));
+            SoundUtilities.playSoundToAllPlayers(SoundUtilities.crewCreateSound, 0.45F, 0.8F);
         }
     }
 }

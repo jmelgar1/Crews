@@ -1,25 +1,30 @@
 package org.ovclub.crews.listeners.skirmish;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.projectiles.ProjectileSource;
-import org.bukkit.util.BoundingBox;
-import org.bukkit.util.Vector;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
 import org.ovclub.crews.Crews;
+import org.ovclub.crews.managers.ConfigManager;
 import org.ovclub.crews.managers.skirmish.ArenaManager;
 import org.ovclub.crews.object.skirmish.Arena;
 import org.ovclub.crews.object.skirmish.Skirmish;
 import org.ovclub.crews.object.skirmish.SkirmishTeam;
 import org.ovclub.crews.utilities.ArenaUtilities;
+import org.ovclub.crews.utilities.SoundUtilities;
+
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class ArenaListener implements Listener {
     private final Crews plugin;
@@ -30,6 +35,12 @@ public class ArenaListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {
         Player player = e.getPlayer();
+        Arena arena = plugin.getArenaManager().getArenaByPlayer(player);
+        if(arena != null) {
+            if(arena.getIsInCountdown()) {
+                e.setCancelled(true);
+            }
+        }
         Location blockLoc = e.getBlock().getLocation();
         if (ArenaUtilities.isGlassWallBlock(blockLoc, player)) {
             e.setCancelled(true);
@@ -39,6 +50,12 @@ public class ArenaListener implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent e) {
         Player player = e.getPlayer();
+        Arena arena = plugin.getArenaManager().getArenaByPlayer(player);
+        if(arena != null) {
+            if(arena.getIsInCountdown()) {
+                e.setCancelled(true);
+            }
+        }
         Location blockLoc = e.getBlockPlaced().getLocation();
         if (ArenaUtilities.isGlassWallBlock(blockLoc, player)) {
             e.setCancelled(true);
@@ -57,10 +74,11 @@ public class ArenaListener implements Listener {
             World world = arena.getWorld();
             if (arenaCenter != null && to.getWorld().equals(world) && arena.getHasBeenTeleported()) {
                 if (arena.getIsInCountdown()) {
-                    if (from.getX() != to.getX() || from.getY() != to.getY() || from.getZ() != to.getZ()) {
+                    if (from.getX() != to.getX() || from.getZ() != to.getZ()) {
                         Location newLocation = from.clone();
                         newLocation.setPitch(to.getPitch());
                         newLocation.setYaw(to.getYaw());
+                        newLocation.setY(to.getY());
                         e.setTo(newLocation);
                     }
                 } else {
@@ -84,6 +102,13 @@ public class ArenaListener implements Listener {
             return;
         }
 
+        for(String uuid : arena.getSkirmish().getMatchup().getParticipants()) {
+            Player p = Bukkit.getPlayer(UUID.fromString(uuid));
+            if (p != null && p.isOnline()) {
+                SoundUtilities.playDeathSound(p);
+            }
+        }
+
         if (killer != null && arena.equals(arenaManager.getArenaByPlayer(killer))) {
             handleKill(killer, arena);
         } else {
@@ -91,16 +116,78 @@ public class ArenaListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent e) {
+        Player player = e.getPlayer();
+        Arena arena = plugin.getArenaManager().getArenaByPlayer(player);
+        if(arena == null) {
+            return;
+        }
+        Location arenaCenter = arena.getCenter();
+        SkirmishTeam pTeam = arena.getPlayerTeam(player);
+        ArrayList<Location> enemyLocations = new ArrayList<>();
+        for(String uuid : arena.getSkirmish().getMatchup().getParticipants()) {
+            Player p = Bukkit.getPlayer(UUID.fromString(uuid));
+            if(p != null && p.isOnline()) {
+                if(!arena.getPlayerTeam(p).equals(pTeam)) {
+                    enemyLocations.add(p.getLocation());
+                }
+            }
+        }
+        Location respawnLocation = getFarthestLocation(arenaCenter, enemyLocations);
+        float yaw = plugin.getArenaManager().getYaw(respawnLocation, arena.getCenter());
+        respawnLocation.setYaw(yaw);
+        e.setRespawnLocation(respawnLocation);
+    }
+
+    @EventHandler
+    public void onPlayerToggleGlide(EntityToggleGlideEvent event) {
+        if (event.getEntity() instanceof Player player) {
+            Arena arena = plugin.getArenaManager().getArenaByPlayer(player);
+            if (arena == null) {
+                return;
+            }
+            if (event.isGliding()) {
+                ItemStack chestplate = player.getInventory().getChestplate();
+                if (chestplate != null && chestplate.getType() == Material.ELYTRA) {
+                    event.setCancelled(true);
+                    player.sendMessage(ConfigManager.DISABLED_IN_SKIRMISH);
+                }
+            }
+        }
+    }
+
+    private Location getFarthestLocation(Location arenaCenter, ArrayList<Location> enemyLocations) {
+        Location bestLocation = arenaCenter;
+        double bestDistance = -1;
+        for (int dx = -ConfigManager.ARENA_RADIUS; dx <= ConfigManager.ARENA_RADIUS; dx++) {
+            for (int dz = -ConfigManager.ARENA_RADIUS; dz <= ConfigManager.ARENA_RADIUS; dz++) {
+                Location candidate = new Location(arenaCenter.getWorld(), arenaCenter.getX() + dx, arenaCenter.getWorld().getHighestBlockYAt(arenaCenter.getBlockX() + dx, arenaCenter.getBlockZ() + dz), arenaCenter.getZ() + dz);
+                if (ArenaUtilities.isInsideBounds(candidate, arenaCenter)) {
+                    double minDistance = enemyLocations.stream()
+                        .mapToDouble(loc -> loc.distanceSquared(candidate))
+                        .min()
+                        .orElse(Double.MAX_VALUE);
+                    if (minDistance > bestDistance) {
+                        bestDistance = minDistance;
+                        bestLocation = candidate;
+                    }
+                }
+            }
+        }
+        return bestLocation;
+    }
+
     private void handleKill(Player killer, Arena arena) {
         SkirmishTeam killerTeam = arena.getPlayerTeam(killer);
-        SkirmishTeam blueTeam = arena.getSkirmish().getMatchup().getBlueTeam();
+        SkirmishTeam blueTeam = arena.getSkirmish().getMatchup().getATeam();
 
         updateScore(arena, killerTeam.equals(blueTeam), 1);
     }
 
     private void handleDeathWithoutKiller(Player deceased, Arena arena) {
         SkirmishTeam deceasedTeam = arena.getPlayerTeam(deceased);
-        SkirmishTeam blueTeam = arena.getSkirmish().getMatchup().getBlueTeam();
+        SkirmishTeam blueTeam = arena.getSkirmish().getMatchup().getATeam();
 
         updateScore(arena, deceasedTeam.equals(blueTeam), -1);
     }
@@ -116,58 +203,6 @@ public class ArenaListener implements Listener {
             skirmish.setRedTeamScore(newScore);
             arena.updateTeamScore(false, newScore);
         }
-    }
-
-
-    /*/
-    ================================================================================
-    ===============================================================================
-    =============================================================================
-    TEMP TEMP TEMP==================================================================
-    ===================================================================================
-    /*/
-    @EventHandler
-    public void onEntityDamage(EntityDamageByEntityEvent event) {
-        if (event.getDamager() instanceof Arrow arrow && event.getEntity() instanceof Player player) {
-
-            if (isHeadshot(arrow, player)) {
-                double distance = arrow.getLocation().distance(player.getLocation());
-                double damage = calculateDamage(distance);
-                event.setDamage(damage);
-                player.sendMessage("You got shot!");
-
-                ProjectileSource shooter = arrow.getShooter();
-                if (shooter instanceof Player shootingPlayer) {
-                    shootingPlayer.sendMessage("[🗣️] Headshot! + " + damage + " damage done.");
-                }
-            }
-        }
-    }
-
-    private boolean isHeadshot(Arrow arrow, Player player) {
-        BoundingBox playerBox = player.getBoundingBox();
-        double headHeight = 1.6;
-        double headMinY = playerBox.getMaxY() - headHeight;
-
-        BoundingBox headBox = new BoundingBox(
-            playerBox.getMinX(), headMinY, playerBox.getMinZ(),
-            playerBox.getMaxX(), playerBox.getMaxY(), playerBox.getMaxZ()
-        );
-
-        Vector arrowImpact = arrow.getLocation().toVector();
-        System.out.println("Checking headshot: Arrow at " + arrowImpact + ", Head Box " + headBox);
-
-        return headBox.contains(arrowImpact.getX(), arrowImpact.getY(), arrowImpact.getZ());
-    }
-
-
-    private double calculateDamage(double distance) {
-        double baseDamage = 9;
-        double scalingFactor = 1.5;
-        double minDistanceForExtraDamage = 5.0;
-        double additionalDamage = distance > minDistanceForExtraDamage ? (distance - minDistanceForExtraDamage) * scalingFactor : 0;
-        double totalDamage = baseDamage + additionalDamage;
-        return Math.min(totalDamage, 50); // Max damage cap
     }
 }
 

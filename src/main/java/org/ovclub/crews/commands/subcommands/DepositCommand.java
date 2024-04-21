@@ -49,6 +49,11 @@ public class DepositCommand implements SubCommand {
         int spongeCount;
         if (amount.equalsIgnoreCase("all")) {
             spongeCount = InventoryUtility.getSponges(p);
+            if(pCrew.getVault() + spongeCount > ConfigManager.MAX_VAULT_AMOUNT) {
+                p.sendMessage(ConfigManager.VAULT_MAX_AMOUNT
+                    .replaceText(builder -> builder.matchLiteral("{amount}").replacement(String.valueOf(ConfigManager.MAX_VAULT_AMOUNT))));
+                return;
+            }
             if(spongeCount > 0) {
                 InventoryUtility.removeSponges(p, spongeCount);
             } else {
@@ -57,6 +62,11 @@ public class DepositCommand implements SubCommand {
             }
         } else if (GeneralUtilities.isNumeric(amount)) {
             spongeCount = Integer.parseInt(amount);
+            if(pCrew.getVault() + spongeCount > ConfigManager.MAX_VAULT_AMOUNT) {
+                p.sendMessage(ConfigManager.VAULT_MAX_AMOUNT
+                    .replaceText(builder -> builder.matchLiteral("{amount}").replacement(String.valueOf(ConfigManager.MAX_VAULT_AMOUNT))));
+                return;
+            }
             ItemStack sponges = new ItemStack(Material.SPONGE, spongeCount);
             if (p.getInventory().containsAtLeast(sponges, spongeCount)) {
                 InventoryUtility.removeSponges(p, spongeCount);

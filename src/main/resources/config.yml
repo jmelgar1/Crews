@@ -12,7 +12,9 @@ rename-cost: 100 #Cost to rename your crew name
 upgrade-chat-cost: 250 #Cost to get the crew chat upgrade
 upgrade-mail-cost: 250 #Cost to get the crew mail upgrade
 upgrade-discord-cost: 250 #Cost to get the crew discord upgrade
-influence-per-player: 300 #Amount of influence per player in crew
+influence-per-player: 100 #Amount of influence per player in crew
+default-rating: 1000 #new crew elo rating
+max-vault-amount: 7500 #max amount sponges in vault
 
 #Skirmish Values
 arena-radius: 15 #Radius of arenas subject to cehange
@@ -66,6 +68,8 @@ enforcer-demote: "&#E57373You have been demoted!"
 need-more-sponge: "&#E57373You need more sponge in your inventory to do this!"
 invalid-amount: "&#E57373Please enter a valid amount!"
 waiting-for-matchup: "&#F9A825Waiting for a match-up... to leave type &#FFEB3B'/c skirmish queue leave'"
+crew-upgrade: "&#558B2F{crew} &#43A047has upgraded to &#558B2F&lLEVEL {level}!"
+vault-max-amount: "&#E57373The maximum amount of sponges in the vault is set to {amount}!"
 
 #Strings
 already-invited: "&#E24949{player} &#E57373already has an active invite!"
@@ -93,12 +97,12 @@ remove-from-vault: "&6(&e{player}&6) &6Crew Vault: &#E3D272{current_amount} &4(&
 
 #Skirmish
 skirmish-started: "&#BE5350A skirmish between &#EF7550{crew1} &#BE5350and &#EF7550{crew2} &#BE5350has started!"
-skirmish-ended: "&#FFAE3B{winner} &#FFD33Bhas defeated &#FFAE3B{loser} &#FFD33Bwith a score of &#FF8F3B{points1} - {points2}!"
-skirmish-draw: "&#FFAE3B{team1} &#FFD33Bhas come to a stalemate with &#FFAE3B{team2} &#FFD33Bwith a score of &#FF8F3B{points1} - {points2}!"
+skirmish-draw: "&#4e4b5d&l┌──[&#F4511ESKIRMISH RESULT&#4e4b5d&l]──◓\n&#4e4b5d&l│ &7&l🔰 DRAW 🔰\n&#4e4b5d&l│ &#90CAF9👥 {team1} &7VS &#EF9A9A👥 {team2}\n&#4e4b5d&l│ &7✴ Score: &8{points1} &7- &8{points2}\n&#4e4b5d&l└─────────────◓"
+skirmish-ended: "&#4e4b5d&l┌──[&#F4511ESKIRMISH RESULT&#4e4b5d&l]──◓\n&#4e4b5d&l│ &#FFD33B&l🥇 WINNER: &6&l{winner} &#FFD33B&l🥇\n&#4e4b5d&l│ &#90CAF9👥 {team1} &7VS &#EF9A9A👥 {team2}\n&#4e4b5d&l│ &7✴ Score: &2{points1} &7- &4{points2}\n&#4e4b5d&l└─────────────◓"
 not-in-queue: "&#E57373You are not currently in the queue!"
-gained-rating: "&6RATING: &e{oldRating} &#FFF176(&#FFD54F+{change}&#FFF176) → &6{total}"
-lost-rating: "&cRATING: &#EF5350{oldRating} &#FFCDD2(&#E57373-{change}&#FFCDD2) → &c{total}"
-no-change-rating: "&7RATING: &8No change in rating."
+gained-rating: "&6&lRATING: &e{oldRating} &#FFF176(&#FFD54F+{change}&#FFF176) → &6{total}"
+lost-rating: "&c&lRATING: &#EF5350{oldRating} &#FFCDD2(&#E57373-{change}&#FFCDD2) → &c{total}"
+no-change-rating: "&7&lRATING: &8No change in rating."
 waiting-on-confirmation: "&eMATCH FOUND: &#EF7550Waiting on a confirmation for the skirmish match! &#FFEB3B'/c skirmish accept'"
 you-have-confirmed: "&#60E462You have accepted the match-up!"
 player-confirmed: "&#60E462A player has accepted the match-up! &#AEE9B0(&#E1FFCF{accepted}/{total}&#AEE9B0)"
@@ -111,4 +115,8 @@ match-cancelled-player-left: "&#E57373A player has logged out and the match has 
 match-cancelled-did-not-accept: "&#E57373A player did not accept and the match has been cancelled!"
 crew-removed-from-queue: "&#E57373Your team has been removed from the queue for not accepting the match!"
 seconds-left-to-action: "&eYou have &6{seconds} &eseconds left to &e{action}"
+teleporting-countdown: "&6Teleporting to the arena in &e{seconds} &6seconds..."
 skirmish-starting: "&6Skirmish starting in &e{seconds} &6seconds..."
+skirmish-begin: "&c&lPVP Enabled: &6Good luck!"
+stay-in-bounds: "&#E57373Please stay in bounds!"
+disabled-in-skirmish: "&#E57373This action is disabled while in the arena."

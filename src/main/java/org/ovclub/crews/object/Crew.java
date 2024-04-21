@@ -2,9 +2,9 @@ package org.ovclub.crews.object;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.*;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -14,20 +14,23 @@ import org.ovclub.crews.Crews;
 import org.ovclub.crews.managers.ConfigManager;
 import org.ovclub.crews.managers.WarpCancelListener;
 import org.ovclub.crews.utilities.ChatUtilities;
+import org.ovclub.crews.utilities.SoundUtilities;
 import org.ovclub.crews.utilities.UnicodeCharacters;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class Crew implements ConfigurationSerializable {
+public class Crew {
     private final Crews plugin;
 
     //name
     private String name;
     public String getName() {return this.name;}
+    public void setString(String newName) {this.name = newName;}
 
     private Location compound;
+    public Location getCompound(){return this.compound;}
 
     //date founded
     private final String dateFounded;
@@ -38,7 +41,7 @@ public class Crew implements ConfigurationSerializable {
     public int getVault() { return this.vault; }
 
     //level
-    private final int level;
+    private int level;
     public int getLevel() { return this.level; }
 
     private ItemStack banner;
@@ -59,9 +62,12 @@ public class Crew implements ConfigurationSerializable {
     }
 
     //score (add up to influence)
-    private int ratingScore;
-    public int getRating() { return this.ratingScore;}
-    public void setRating(int value) { this.ratingScore = value;}
+    private int rating;
+    public int getRating() { return this.rating;}
+    public void setRating(int value) {
+        this.rating = value;
+        calculateInfluence();
+    }
 
     private int skirmishWins;
     public int getSkirmishWins() { return this.skirmishWins;}
@@ -84,9 +90,12 @@ public class Crew implements ConfigurationSerializable {
     public void setDescription(String s) {
         this.description = s;
     }
+    public String getDescription() {
+        return this.description;
+    }
 
     //crew upgrades
-    private List<String> unlockedUpgrades;
+    private List<String> unlockedUpgrades = new ArrayList<>();
     public List<String> getUnlockedUpgrades() { return this.unlockedUpgrades; }
     public void addUpgrade(String upgrade) {
         this.unlockedUpgrades.add(upgrade);
@@ -102,7 +111,7 @@ public class Crew implements ConfigurationSerializable {
     }
 
     //mail
-    private ArrayList<String> sentMail;
+    private ArrayList<String> sentMail = new ArrayList<>();
     public ArrayList<String> getSentMail() { return this.sentMail; }
 
     //crew elites
@@ -127,9 +136,9 @@ public class Crew implements ConfigurationSerializable {
     }
 
     //sponge_icon stuff
-    private final int levelUpCost;
+    private int levelUpCost;
     public int getLevelUpCost() { return this.levelUpCost; }
-    private final int memberLimit;
+    private int memberLimit;
     public int getMemberLimit() { return this.memberLimit; }
     private final int enforcerLimit;
     public int getEnforcerLimit() { return this.enforcerLimit; }
@@ -236,7 +245,8 @@ public class Crew implements ConfigurationSerializable {
                 .replaceText(builder -> builder.matchLiteral("{new_amount}").replacement(String.valueOf(vault + amount)));
             broadcast(broadcastMessage);
         }
-        this.vault = vault + amount;
+        this.vault+=amount;
+
         calculateInfluence();
     }
     public void removeFromVault(int amount, Player p, boolean showTransactionMessage){
@@ -248,14 +258,13 @@ public class Crew implements ConfigurationSerializable {
                 .replaceText(builder -> builder.matchLiteral("{new_amount}").replacement(String.valueOf(vault - amount)));
             broadcast(broadcastMessage);
         }
-        this.vault = vault - amount;
+        this.vault-=amount;
+
         calculateInfluence();
     }
 
     public void calculateInfluence() {
-        int totalPlayers = this.members.size() + this.enforcers.size() + 1;
-        int playerPower = totalPlayers * ConfigManager.INFLUENCE_PER_PLAYER;
-        int influence = this.vault + this.ratingScore + playerPower;
+        int influence = this.rating + this.vault;
         setInfluence(influence);
     }
 
@@ -400,7 +409,9 @@ public class Crew implements ConfigurationSerializable {
             UUID pUUID = UUID.fromString(members);
             plugin.getData().removeCPlayer(Bukkit.getPlayer(pUUID));
         }
-        Bukkit.broadcast(ConfigManager.CREW_DISBAND.replaceText(builder -> builder.matchLiteral("{crew}").replacement(this.name)));
+        Bukkit.broadcast(ConfigManager.CREW_DISBAND
+            .replaceText(builder -> builder.matchLiteral("{crew}").replacement(Component.text(this.name).decorate(TextDecoration.BOLD))));
+        SoundUtilities.playSoundToAllPlayers(SoundUtilities.crewDisbandSound, 0.25F, 0.5F);
         plugin.getData().removeCrew(this);
     }
 
@@ -418,32 +429,30 @@ public class Crew implements ConfigurationSerializable {
         return offlinePlayer.getName();
     }
 
-    @Override
-    public Map<String, Object> serialize() {
-        Map<String, Object> map = new HashMap<>();
-        ArrayList<String> unlockedUpgrades = new ArrayList<>(this.unlockedUpgrades);
-        ArrayList<String> sentMail = new ArrayList<>(this.sentMail);
-        ArrayList<String> membersStr = new ArrayList<>(this.members);
-        ArrayList<String> enforcersStr = new ArrayList<>(this.enforcers);
-
-        map.put("name", this.name);
-        map.put("level", this.level);
-        map.put("dateFounded", this.dateFounded);
-        map.put("vault", this.vault);
-        map.put("boss", this.boss);
-        map.put("enforcers", enforcersStr);
-        map.put("levelUpCost", this.levelUpCost);
-        map.put("memberLimit", this.memberLimit);
-        map.put("members", membersStr);
-        map.put("description", this.description);
-        map.put("compound", this.compound);
-        map.put("kills", this.kills);
-        map.put("ratingScore", this.ratingScore);
-        map.put("influence", this.influence);
-        map.put("unlockedUpgrades", unlockedUpgrades);
-        map.put("sentMail", sentMail);
-        return map;
-    }
+//    @Override
+//    public @NotNull Map<String, Object> serialize() {
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("name", this.name);
+//        map.put("level", this.level);
+//        map.put("dateFounded", this.dateFounded);
+//        map.put("vault", this.vault);
+//        map.put("boss", this.boss);
+//        map.put("enforcers", this.enforcers);
+//        map.put("levelUpCost", this.levelUpCost);
+//        map.put("memberLimit", this.memberLimit);
+//        map.put("members", this.members);
+//        map.put("description", this.description);
+//        map.put("skirmishWins", this.skirmishWins);
+//        map.put("skirmishDraws", this.skirmishDraws);
+//        map.put("skirmishLosses", this.skirmishLosses);
+//        map.put("compound", this.compound);
+//        map.put("kills", this.kills);
+//        map.put("ratingScore", this.rating);
+//        map.put("influence", this.influence);
+//        map.put("unlockedUpgrades", this.unlockedUpgrades);
+//        map.put("sentMail", this.sentMail);
+//        return map;
+//    }
 
     //Remove player from crew, whether they left or were kicked. Returns true if player was in the crew, false if player was not.
     public void removePlayer(final UUID pUUID, boolean wasKicked) {
@@ -456,7 +465,6 @@ public class Crew implements ConfigurationSerializable {
             } else {
                 this.broadcast(ConfigManager.LEAVE_CREW.replaceText(builder -> builder.matchLiteral("{player}").replacement(pName)));
             }
-            calculateInfluence();
         }
     }
 
@@ -464,8 +472,7 @@ public class Crew implements ConfigurationSerializable {
     public void addPlayer(final Player p) {
         this.members.add(p.getUniqueId().toString());
         plugin.getData().addCPlayer(p, this);
-        this.broadcast(ConfigManager.JOIN_CREW.replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName())));
-        calculateInfluence();
+        this.broadcast(ConfigManager.JOIN_CREW.replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName())));;
     }
 
     public boolean isBoss(Player p) {
@@ -490,6 +497,50 @@ public class Crew implements ConfigurationSerializable {
     /* Naming */
     public void changeName(String newName) {
         this.name = newName;
+    }
+
+    public void upgradeCrew() {
+        if(this.vault >= 500 && this.level == 9) {
+            this.level = 10;
+            this.memberLimit = 12;
+            this.levelUpCost = -1;
+        } else if(this.vault >= 300 && this.level == 8) {
+            this.level = 9;
+            memberLimit = 11;
+            this.levelUpCost = 500;
+        } else if(this.vault >= 200 && this.level == 7) {
+            this.level = 8;
+            memberLimit = 10;
+            this.levelUpCost = 300;
+        } else if(this.vault >= 150 && this.level == 6) {
+            this.level = 7;
+            memberLimit = 9;
+            this.levelUpCost = 200;
+        } else if(this.vault >= 125 && this.level == 5) {
+            this.level = 6;
+            memberLimit = 8;
+            this.levelUpCost = 150;
+        } else if(this.vault >= 100 && this.level == 4) {
+            this.level = 5;
+            memberLimit = 7;
+            this.levelUpCost = 125;
+        } else if(this.vault >= 75 && this.level == 3) {
+            this.level = 4;
+            memberLimit = 6;
+            this.levelUpCost = 100;
+        } else if(this.vault >= 50 && this.level == 2) {
+            this.level = 3;
+            memberLimit = 5;
+            this.levelUpCost = 75;
+        } else if(this.vault >= 25 && this.level == 1) {
+            this.level = 2;
+            memberLimit = 4;
+            this.levelUpCost = 50;
+        }
+        Bukkit.broadcast(ConfigManager.CREW_UPGRADE
+            .replaceText(builder -> builder.matchLiteral("{crew}").replacement(Component.text(this.name).decorate(TextDecoration.BOLD)))
+            .replaceText(builder -> builder.matchLiteral("{level}").replacement(Component.text(this.level).decorate(TextDecoration.BOLD))));
+        SoundUtilities.playSoundToAllPlayers(SoundUtilities.crewUpgradeSound, 0.20F, 0.7F);
     }
 
     public static Crew deserialize(Map<String, Object> map, Crews data) {
@@ -524,9 +575,12 @@ public class Crew implements ConfigurationSerializable {
         this.kills = 0;
         this.vault = 0;
         this.level = 1;
-        this.influence = 300;
+        this.skirmishWins = 0;
+        this.skirmishLosses = 0;
+        this.skirmishDraws = 0;
+        this.influence = ConfigManager.DEFAULT_RATING;
         this.levelUpCost = 25;
-        this.ratingScore = 100;
+        this.rating = ConfigManager.DEFAULT_RATING;
         this.enforcerLimit = 1;
         this.memberLimit = 3;
         this.unlockedUpgrades = new ArrayList<>();
@@ -587,28 +641,28 @@ public class Crew implements ConfigurationSerializable {
         }
         this.dateFounded = (String) map.get("dateFounded");
         if(map.get("description") == null) this.description = "No description set."; else this.description = (String) map.get("description");
-        if (map.get("kills") == null) this.kills = 0; else this.kills = (int) map.get("kills");
+        if (map.get("kills") == null) this.kills = 0; else this.kills = (int) ((double) map.get("kills"));
         if (map.get("compound") != null) {
             Map<String, Object> compoundMap = (Map<String, Object>) map.get("compound");
             World world = Bukkit.getWorld((String) compoundMap.get("world"));
-            double x = Double.parseDouble((String) compoundMap.get("x"));
-            double y = Double.parseDouble((String) compoundMap.get("y"));
-            double z = Double.parseDouble((String) compoundMap.get("z"));
-            float yaw = Float.parseFloat((String) compoundMap.get("yaw"));
-            float pitch = Float.parseFloat((String) compoundMap.get("pitch"));
+            double x = (double) compoundMap.get("x");
+            double y = (double) compoundMap.get("y");
+            double z = (double) compoundMap.get("z");
+            float yaw = (float) ((double) compoundMap.get("yaw"));
+            float pitch = (float) ((double) compoundMap.get("pitch"));
 
             this.compound = new Location(world, x, y, z, yaw, pitch);
         }
         if(map.get("vault") == null) this.vault = 0; else this.vault = (int) ((double) map.get("vault"));
-        if(map.get("influence") == null) this.influence = 0; else this.influence = (int) ((double) map.get("influence"));
+        if(map.get("influence") == null) this.influence = ConfigManager.DEFAULT_RATING; else this.influence = (int) ((double) map.get("influence"));
         if(map.get("level") == null) this.level = 1; else this.level = (int) ((double) map.get("level"));
-        if(map.get("levelUpCost") == null) this.levelUpCost = 25; else this.levelUpCost = (int) map.get("levelUpCost");
-        if(map.get("ratingScore") == null) this.ratingScore = 100; else this.ratingScore = (int) ((double) map.get("ratingScore"));
-        if(map.get("enforcerLimit") == null) this.enforcerLimit = 1; else this.enforcerLimit = (int) map.get("enforcerLimit");
-        if(map.get("memberLimit") == null) this.memberLimit = 3; else this.memberLimit = (int) map.get("memberLimit");
-        if(map.get("skirmishWins") == null) this.skirmishWins = 0; else this.skirmishWins = (int) map.get("skirmishWins");
-        if(map.get("skirmishDraws") == null) this.skirmishDraws = 0; else this.skirmishDraws = (int) map.get("skirmishDraws");
-        if(map.get("skirmishLosses") == null) this.skirmishLosses = 0; else this.skirmishLosses = (int) map.get("skirmishLosses");
+        if(map.get("levelUpCost") == null) this.levelUpCost = 25; else this.levelUpCost = (int) ((double) map.get("levelUpCost"));
+        if(map.get("rating") == null) this.rating = ConfigManager.DEFAULT_RATING; else this.rating = (int) ((double) map.get("rating"));
+        if(map.get("enforcerLimit") == null) this.enforcerLimit = 1; else this.enforcerLimit = (int) ((double) map.get("enforcerLimit"));
+        if(map.get("memberLimit") == null) this.memberLimit = 3; else this.memberLimit = (int)  ((double) map.get("memberLimit"));
+        if(map.get("skirmishWins") == null) this.skirmishWins = 0; else this.skirmishWins = (int) ((double) map.get("skirmishWins"));
+        if(map.get("skirmishDraws") == null) this.skirmishDraws = 0; else this.skirmishDraws = (int) ((double) map.get("skirmishDraws"));
+        if(map.get("skirmishLosses") == null) this.skirmishLosses = 0; else this.skirmishLosses = (int) ((double) map.get("skirmishLosses"));
         if(map.get("banner") == null) this.banner = new ItemStack(Material.WHITE_BANNER); else this.banner = (ItemStack) map.get("banner");
     }
 }

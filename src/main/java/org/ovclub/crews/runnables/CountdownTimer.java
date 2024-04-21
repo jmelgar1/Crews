@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.ovclub.crews.managers.skirmish.ArenaManager;
 import org.ovclub.crews.object.skirmish.Arena;
-import org.ovclub.crews.utilities.RatingUtilities;
 
 import java.util.UUID;
 

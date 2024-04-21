@@ -1,6 +1,7 @@
 package org.ovclub.crews.object.skirmish;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,8 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 import org.ovclub.crews.managers.ConfigManager;
 import org.ovclub.crews.object.Crew;
-import org.ovclub.crews.utilities.MatchResult;
-import org.ovclub.crews.utilities.RatingUtilities;
+import org.ovclub.crews.utilities.SoundUtilities;
 import org.ovclub.crews.utilities.UnicodeCharacters;
 
 import java.util.HashMap;
@@ -44,10 +44,13 @@ public class Arena {
         this.isInCountdown = isInCountdown;
 
         kFactors = new HashMap<>();
-        kFactors.put(1000, 25);
-        kFactors.put(2000, 16);
-        kFactors.put(3000, 10);
-        kFactors.put(4500, 5);
+        kFactors.put(1000, 100);
+        kFactors.put(2000, 66);
+        kFactors.put(3000, 44);
+        kFactors.put(4000, 29);
+        kFactors.put(5000, 19);
+        kFactors.put(6000, 12);
+        kFactors.put(7000, 8);
     }
 
     public Location getCenter() {
@@ -107,7 +110,7 @@ public class Arena {
         objective.getScore(" ").setScore(11);
 
         //team blue
-        Score teamName1 = objective.getScore(ChatColor.BLUE + matchup.getBlueTeam().getCrew().getName().toUpperCase());
+        Score teamName1 = objective.getScore(ChatColor.BLUE + matchup.getATeam().getCrew().getName().toUpperCase());
         teamName1.setScore(10);
         Score teamScore1 = objective.getScore(ChatColor.BLUE + "• " + ChatColor.WHITE + "Points: " + ChatColor.GOLD + skirmish.getBlueTeamScore() + " ");
         teamScore1.setScore(9);
@@ -115,7 +118,7 @@ public class Arena {
         objective.getScore("  ").setScore(8);
 
         //team red
-        Score teamName2 = objective.getScore(ChatColor.RED + matchup.getRedTeam().getCrew().getName().toUpperCase());
+        Score teamName2 = objective.getScore(ChatColor.RED + matchup.getBTeam().getCrew().getName().toUpperCase());
         teamName2.setScore(7);
         Score teamScore2 = objective.getScore(ChatColor.RED + "• " + ChatColor.WHITE + "Points: " + ChatColor.GOLD + skirmish.getRedTeamScore());
         teamScore2.setScore(6);
@@ -162,7 +165,7 @@ public class Arena {
     public void updateTeamScore(boolean isBlueTeam, int newScore) {
         String teamPrefix = isBlueTeam ? ChatColor.BLUE + "• " : ChatColor.RED + "• ";
         int scoreLine = isBlueTeam ? 9 : 6;
-        String scoreText = teamPrefix + ChatColor.WHITE + " Points: " + ChatColor.GOLD + newScore;
+        String scoreText = teamPrefix + ChatColor.WHITE + "Points: " + ChatColor.GOLD + newScore;
 
         resetScoreAtLine(scoreLine);
         Score score = objective.getScore(scoreText);
@@ -195,14 +198,14 @@ public class Arena {
         Team team = scoreboard.getTeam(teamName);
         if (team == null) {
             team = scoreboard.registerNewTeam(teamName);
-            team.setDisplayName(color + "Test");
-            team.setColor(color);
-            team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
-            team.setOption(Team.Option.DEATH_MESSAGE_VISIBILITY, Team.OptionStatus.NEVER);
-        } else if (team.getColor() != color) {
-            team.setDisplayName(color + "Test");
-            team.setColor(color);
+        } else {
+            team.unregister();
+            team = scoreboard.registerNewTeam(teamName);
         }
+        team.setDisplayName(color + " Test");
+        team.setColor(color);
+        team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        team.setOption(Team.Option.DEATH_MESSAGE_VISIBILITY, Team.OptionStatus.NEVER);
         team.addEntry(player.getName());
     }
     public void removePlayerFromTeams(Player player) {
@@ -215,8 +218,8 @@ public class Arena {
     }
     public SkirmishTeam getPlayerTeam(Player p) {
         SkirmishMatchup matchup = this.skirmish.getMatchup();
-        SkirmishTeam team1 = matchup.getBlueTeam();
-        SkirmishTeam team2 = matchup.getRedTeam();
+        SkirmishTeam team1 = matchup.getATeam();
+        SkirmishTeam team2 = matchup.getBTeam();
 
         String pUUID = String.valueOf(p.getUniqueId());
         if(team1.getPlayers().contains(pUUID)) {
@@ -229,8 +232,8 @@ public class Arena {
     public void determineOutcome() {
         int teamA_score = this.skirmish.getBlueTeamScore();
         int teamB_score = this.skirmish.getRedTeamScore();
-        SkirmishTeam teamA = this.skirmish.getMatchup().getBlueTeam();
-        SkirmishTeam teamB = this.skirmish.getMatchup().getRedTeam();
+        SkirmishTeam teamA = this.skirmish.getMatchup().getATeam();
+        SkirmishTeam teamB = this.skirmish.getMatchup().getBTeam();
         Crew crewA =  teamA.getCrew();
         Crew crewB =  teamB.getCrew();
 
@@ -247,9 +250,10 @@ public class Arena {
             crewB.addSkirmishLosses(1);
             Bukkit.broadcast(ConfigManager.SKIRMISH_ENDED
                 .replaceText(builder -> builder.matchLiteral("{winner}").replacement(crewA.getName()))
-                .replaceText(builder -> builder.matchLiteral("{loser}").replacement(crewB.getName()))
-                .replaceText(builder -> builder.matchLiteral("{points1}").replacement(String.valueOf(teamA_score)))
-                .replaceText(builder -> builder.matchLiteral("{points2}").replacement(String.valueOf(teamB_score))));
+                .replaceText(builder -> builder.matchLiteral("{team1}").replacement(crewA.getName()))
+                .replaceText(builder -> builder.matchLiteral("{team2}").replacement(crewB.getName()))
+                .replaceText(builder -> builder.matchLiteral("{points1}").replacement(Component.text(teamA_score).color(NamedTextColor.DARK_GREEN)))
+                .replaceText(builder -> builder.matchLiteral("{points2}").replacement(Component.text(teamB_score).color(NamedTextColor.DARK_RED))));
 
             crewA.broadcast(ConfigManager.GAINED_RATING
                 .replaceText(builder -> builder.matchLiteral("{oldRating}").replacement(String.valueOf(teamA_rating)))
@@ -259,23 +263,30 @@ public class Arena {
                 .replaceText(builder -> builder.matchLiteral("{oldRating}").replacement(String.valueOf(teamB_rating)))
                 .replaceText(builder -> builder.matchLiteral("{change}").replacement(String.valueOf(teamB_rating - teamB_newRating)))
                 .replaceText(builder -> builder.matchLiteral("{total}").replacement(String.valueOf(teamB_newRating))));
+
+            SoundUtilities.playSoundToSpecificPlayers(teamA.getPlayers(), SoundUtilities.skirmishVictorySound, 1.0F, 1.0F);
+            SoundUtilities.playSoundToSpecificPlayers(teamB.getPlayers(), SoundUtilities.skirmishDefeatSound, 1.0F, 1.0F);
         } else if(teamB_score > teamA_score) {
             crewB.addSkirmishWins(1);
             crewA.addSkirmishLosses(1);
             Bukkit.broadcast(ConfigManager.SKIRMISH_ENDED
                 .replaceText(builder -> builder.matchLiteral("{winner}").replacement(crewB.getName()))
-                .replaceText(builder -> builder.matchLiteral("{loser}").replacement(crewA.getName()))
-                .replaceText(builder -> builder.matchLiteral("{points1}").replacement(String.valueOf(teamB_score)))
-                .replaceText(builder -> builder.matchLiteral("{points2}").replacement(String.valueOf(teamA_score))));
+                .replaceText(builder -> builder.matchLiteral("{team1}").replacement(crewA.getName()))
+                .replaceText(builder -> builder.matchLiteral("{team2}").replacement(crewB.getName()))
+                .replaceText(builder -> builder.matchLiteral("{points1}").replacement(Component.text(teamA_score).color(NamedTextColor.DARK_RED)))
+                .replaceText(builder -> builder.matchLiteral("{points2}").replacement(Component.text(teamB_score).color(NamedTextColor.DARK_GREEN))));
 
             crewB.broadcast(ConfigManager.GAINED_RATING
                 .replaceText(builder -> builder.matchLiteral("{oldRating}").replacement(String.valueOf(teamB_rating)))
                 .replaceText(builder -> builder.matchLiteral("{change}").replacement(String.valueOf(teamB_newRating - teamB_rating)))
-                .replaceText(builder -> builder.matchLiteral("{change}").replacement(String.valueOf(teamB_newRating))));
+                .replaceText(builder -> builder.matchLiteral("{total}").replacement(String.valueOf(teamB_newRating))));
             crewA.broadcast(ConfigManager.LOST_RATING
                 .replaceText(builder -> builder.matchLiteral("{oldRating}").replacement(String.valueOf(teamA_rating)))
                 .replaceText(builder -> builder.matchLiteral("{change}").replacement(String.valueOf(teamA_rating - teamA_newRating)))
                 .replaceText(builder -> builder.matchLiteral("{total}").replacement(String.valueOf(teamA_newRating))));
+
+            SoundUtilities.playSoundToSpecificPlayers(teamB.getPlayers(), SoundUtilities.skirmishVictorySound, 1.0F, 1.0F);
+            SoundUtilities.playSoundToSpecificPlayers(teamA.getPlayers(), SoundUtilities.skirmishDefeatSound, 1.0F, 1.0F);
         } else {
             crewA.addSkirmishDraws(1);
             crewB.addSkirmishDraws(1);
@@ -285,7 +296,9 @@ public class Arena {
                 .replaceText(builder -> builder.matchLiteral("{points1}").replacement(String.valueOf(teamA_score)))
                 .replaceText(builder -> builder.matchLiteral("{points2}").replacement(String.valueOf(teamB_score))));
 
-            if(teamA_newRating > teamB_newRating) {
+            SoundUtilities.playSoundToSpecificPlayers(this.skirmish.getMatchup().getParticipants(), SoundUtilities.skirmishDrawSound, 0.5F, 1.0F);
+
+            if(teamA_newRating - teamA_rating > teamB_newRating - teamB_rating) {
                 crewA.broadcast(ConfigManager.GAINED_RATING
                     .replaceText(builder -> builder.matchLiteral("{oldRating}").replacement(String.valueOf(teamA_rating)))
                     .replaceText(builder -> builder.matchLiteral("{change}").replacement(String.valueOf(teamA_newRating - teamA_rating)))
@@ -294,7 +307,7 @@ public class Arena {
                     .replaceText(builder -> builder.matchLiteral("{oldRating}").replacement(String.valueOf(teamB_rating)))
                     .replaceText(builder -> builder.matchLiteral("{change}").replacement(String.valueOf(teamB_rating - teamB_newRating)))
                     .replaceText(builder -> builder.matchLiteral("{total}").replacement(String.valueOf(teamB_newRating))));
-            } else if(teamB_newRating > teamA_newRating){
+            } else if(teamB_newRating - teamB_rating > teamA_newRating - teamA_rating){
                 crewB.broadcast(ConfigManager.GAINED_RATING
                     .replaceText(builder -> builder.matchLiteral("{oldRating}").replacement(String.valueOf(teamB_rating)))
                     .replaceText(builder -> builder.matchLiteral("{change}").replacement(String.valueOf(teamB_newRating - teamB_rating)))

@@ -1,8 +1,9 @@
 package org.ovclub.crews.managers.skirmish;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -12,14 +13,13 @@ import org.ovclub.crews.managers.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.skirmish.*;
 import org.ovclub.crews.runnables.CountdownTimer;
-import org.ovclub.crews.utilities.RatingUtilities;
+import org.ovclub.crews.utilities.SoundUtilities;
 import org.ovclub.crews.utilities.UnicodeCharacters;
 
 import java.util.*;
 
 public class SkirmishManager {
     private final SkirmishQueue queue = new SkirmishQueue();
-    private final Map<SkirmishMatchup, Skirmish> activeWars = new HashMap<>();
     private final List<SkirmishMatchup> potentialMatchups = new ArrayList<>();
 
     private final Crews plugin;
@@ -38,8 +38,8 @@ public class SkirmishManager {
     }
     public boolean allConfirmedForSkirmish(Crew crew) {
         for (SkirmishMatchup pair : potentialMatchups) {
-            if (pair.getBlueTeam().getCrew().equals(crew) ||
-                pair.getRedTeam().getCrew().equals(crew)) {
+            if (pair.getATeam().getCrew().equals(crew) ||
+                pair.getBTeam().getCrew().equals(crew)) {
                 return pair.getPlayersInConfirmation().isEmpty();
             }
         }
@@ -50,8 +50,8 @@ public class SkirmishManager {
         if (queuePair == null) {
             return;
         }
-        SkirmishTeam team1 = queuePair.getBlueTeam();
-        SkirmishTeam team2 = queuePair.getRedTeam();
+        SkirmishTeam team1 = queuePair.getATeam();
+        SkirmishTeam team2 = queuePair.getBTeam();
 
         int teamOneSize = team1.getPlayers().size();
         int teamTwoSize = team2.getPlayers().size();
@@ -68,7 +68,7 @@ public class SkirmishManager {
             Player p = Bukkit.getPlayer(UUID.fromString(uuid));
             if (p != null && p.isOnline()) {
                 UnicodeCharacters.sendUnbalancedMessage(p, smallestTeam.getPlayers().size(), largestTeam.getPlayers().size(), false);
-                p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5F, 1.0F);
+                SoundUtilities.playPingSound(p);
             }
         }
 
@@ -76,7 +76,7 @@ public class SkirmishManager {
         Player p = Bukkit.getPlayer(UUID.fromString(pUUID));
         if (p != null && p.isOnline()) {
             UnicodeCharacters.sendUnbalancedMessage(p, smallestTeam.getPlayers().size(), largestTeam.getPlayers().size(), true);
-            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5F, 1.0F);
+            SoundUtilities.playPingSound(p);
 
             PlayerResponseListener responseListener = new PlayerResponseListener(plugin, p.getUniqueId(), smallestTeam, largestTeam);
             Bukkit.getPluginManager().registerEvents(responseListener, plugin);
@@ -116,7 +116,7 @@ public class SkirmishManager {
 
     public SkirmishMatchup getMatchupFromCrew(Crew crew) {
         for (SkirmishMatchup pair : potentialMatchups) {
-            if (pair.getBlueTeam().getCrew().equals(crew) || pair.getRedTeam().getCrew().equals(crew)) {
+            if (pair.getATeam().getCrew().equals(crew) || pair.getBTeam().getCrew().equals(crew)) {
                 return pair;
             }
         }
@@ -167,7 +167,7 @@ public class SkirmishManager {
                                     p.sendMessage(ConfigManager.MATCH_CANCELLED_DID_NOT_ACCEPT);
                                 }
                                 if (needToConfirm.contains(playerId)) {
-                                    SkirmishTeam itemToRemove = matchup.getBlueTeam().getPlayers().contains(playerId) ? matchup.getBlueTeam() : matchup.getRedTeam();
+                                    SkirmishTeam itemToRemove = matchup.getATeam().getPlayers().contains(playerId) ? matchup.getATeam() : matchup.getBTeam();
                                     queue.removeFromQueue(itemToRemove);
                                     if (p != null && p.isOnline()) {
                                         p.sendMessage(ConfigManager.CREW_REMOVED_FROM_QUEUE);
@@ -183,7 +183,7 @@ public class SkirmishManager {
                     for (Player p : Bukkit.getOnlinePlayers()) {
                         if (needToConfirm.contains(String.valueOf(p.getUniqueId()))) {
                             p.sendMessage(ConfigManager.WAITING_ON_CONFIRMATION);
-                            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.5F, 1.0F);
+                            SoundUtilities.playPingSound(p);
                         }
                     }
                     count++;
@@ -202,15 +202,10 @@ public class SkirmishManager {
             @Override
             public void run() {
                 if (secondsLeft <= 0) {
-                    Skirmish war = new Skirmish(matchup);
                     if (areParticipantsOnline(queueItemOne) && areParticipantsOnline(queueItemTwo)) {
                         potentialMatchups.removeIf(pair -> pair.contains(queueItemOne) || pair.contains(queueItemTwo));
                         queue.removeFromQueue(queueItemOne);
                         queue.removeFromQueue(queueItemTwo);
-                        activeWars.put(matchup, war);
-                        Bukkit.broadcast(ConfigManager.SKIRMISH_STARTED
-                            .replaceText(builder -> builder.matchLiteral("{crew1}").replacement(queueItemOne.getCrew().getName()))
-                            .replaceText(builder -> builder.matchLiteral("{crew2}").replacement(queueItemTwo.getCrew().getName())));
                         arenaManager.setupArena(matchup);
 
                         Arena arena = arenaManager.getArenaByMatchup(matchup);
@@ -221,21 +216,31 @@ public class SkirmishManager {
                                     if (remainingSeconds <= 0) {
                                         arena.setIsInCountdown(false);
                                         for (String uuid : arena.getSkirmish().getMatchup().getParticipants()) {
-                                            Player player = Bukkit.getPlayer(UUID.fromString(uuid));
-                                            if (player != null) {
-                                                player.sendMessage("§aGo!");
-                                                arena.removePlayerFromTeams(player);
+                                            Player p = Bukkit.getPlayer(UUID.fromString(uuid));
+                                            if (p != null) {
+                                                p.sendMessage(ConfigManager.SKIRMISH_BEGIN);
+                                                SoundUtilities.playHornSound(p);
+                                                arena.removePlayerFromTeams(p);
                                             }
                                         }
+                                        Bukkit.broadcast(ConfigManager.SKIRMISH_STARTED
+                                            .replaceText(builder -> builder.matchLiteral("{crew1}").replacement(Component.text(queueItemOne.getCrew().getName()).decorate(TextDecoration.BOLD)))
+                                            .replaceText(builder -> builder.matchLiteral("{crew2}").replacement(Component.text(queueItemTwo.getCrew().getName()).decorate(TextDecoration.BOLD))));
                                         arena.setupScoreboardForAllPlayers();
                                         CountdownTimer countdown = new CountdownTimer(arena, arenaManager);
                                         countdown.runTaskTimer(plugin, 20L, 20L);
                                         cancel();
                                     } else {
-                                        for (String uuid : arena.getSkirmish().getMatchup().getParticipants()) {
-                                            Player player = Bukkit.getPlayer(UUID.fromString(uuid));
-                                            if (player != null) {
-                                                player.sendMessage("Match starts in: " + remainingSeconds + " seconds.");
+                                        if (remainingSeconds == 10 || remainingSeconds <= 5) {
+                                            for (String uuid : arena.getSkirmish().getMatchup().getParticipants()) {
+                                                Player p = Bukkit.getPlayer(UUID.fromString(uuid));
+                                                if (p != null) {
+                                                    if(remainingSeconds <= 3) {
+                                                        SoundUtilities.playPingSound(p);
+                                                    }
+                                                    p.sendMessage(ConfigManager.SKIRMISH_STARTING
+                                                        .replaceText(builder -> builder.matchLiteral("{seconds}").replacement(String.valueOf(remainingSeconds))));
+                                                }
                                             }
                                         }
                                         remainingSeconds--;
@@ -252,7 +257,10 @@ public class SkirmishManager {
                         for(String uuid : matchup.getParticipants()) {
                             Player p = Bukkit.getPlayer(UUID.fromString(uuid));
                             if(p != null && p.isOnline()) {
-                                p.sendMessage(ConfigManager.SKIRMISH_STARTING
+                                if(secondsLeft <= 3) {
+                                    SoundUtilities.playPingSound(p);
+                                }
+                                p.sendMessage(ConfigManager.TELEPORTING_COUNTDOWN
                                     .replaceText(builder -> builder.matchLiteral("{seconds}").replacement(String.valueOf(secondsLeft))));
                             }
                         }
@@ -297,7 +305,7 @@ public class SkirmishManager {
 
     public SkirmishMatchup findPairContainingItem(SkirmishTeam item) {
         for (SkirmishMatchup pair : potentialMatchups) {
-            if (pair.getBlueTeam().equals(item) || pair.getRedTeam().equals(item)) {
+            if (pair.getATeam().equals(item) || pair.getBTeam().equals(item)) {
                 return pair;
             }
         }

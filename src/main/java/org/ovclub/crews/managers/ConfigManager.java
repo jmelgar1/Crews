@@ -22,6 +22,8 @@ public class ConfigManager {
         UPGRADE_MAIL_COST = config.getInt("upgrade-mail-cost");
         UPGRADE_DISCORD_COST = config.getInt("upgrade-discord-cost");
         INFLUENCE_PER_PLAYER = config.getInt("influence-per-player");
+        DEFAULT_RATING = config.getInt("default-rating");
+        MAX_VAULT_AMOUNT = config.getInt("max-vault-amount");
 
         /* Skirmish Stuff */
         ARENA_RADIUS = config.getInt("arena-radius");
@@ -72,6 +74,8 @@ public class ConfigManager {
         ENFORCER_PROMOTE = UnicodeCharacters.createPromoteIcon(TextColor.color(46,125,50)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("you-are-enforcer")))));
         ENFORCER_DEMOTE = UnicodeCharacters.createDemoteIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("enforcer-demote")))));
         WAITING_FOR_MATCHUP = UnicodeCharacters.createQueueIcon(UnicodeCharacters.queue_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("waiting-for-matchup")))));
+        CREW_UPGRADE = UnicodeCharacters.createUpgradeIcon(UnicodeCharacters.upgrade_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("crew-upgrade")))));
+        VAULT_MAX_AMOUNT = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("vault-max-amount")))));
 
         /* Strings */
         ALREADY_INVITED = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("already-invited")))));
@@ -103,8 +107,8 @@ public class ConfigManager {
 
         /* Skirmish Started */
         SKIRMISH_STARTED = UnicodeCharacters.createSkirmishIcon(UnicodeCharacters.skirmish_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("skirmish-started")))));
-        SKIRMISH_ENDED = UnicodeCharacters.createSkirmishIcon(UnicodeCharacters.rating_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("skirmish-ended")))));
-        SKIRMISH_DRAW = UnicodeCharacters.createSkirmishIcon(UnicodeCharacters.rating_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("skirmish-draw")))));
+        SKIRMISH_ENDED = LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("skirmish-ended"))));
+        SKIRMISH_DRAW = LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("skirmish-draw"))));
         NOT_IN_QUEUE = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("not-in-queue")))));
         YOU_HAVE_CONFIRMED = UnicodeCharacters.createSuccessIcon(TextColor.color(46,125,50)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("you-have-confirmed")))));
         WAITING_ON_CONFIRMATION = UnicodeCharacters.createQueueIcon(UnicodeCharacters.skirmish_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("waiting-on-confirmation")))));
@@ -118,10 +122,14 @@ public class ConfigManager {
         MATCH_CANCELLED_DID_NOT_ACCEPT = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("match-cancelled-did-not-accept")))));
         CREW_REMOVED_FROM_QUEUE = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("crew-removed-from-queue")))));
         SECONDS_LEFT_TO_ACTION = UnicodeCharacters.createAlertIcon(TextColor.color(232,194,59)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("seconds-left-to-action")))));
+        TELEPORTING_COUNTDOWN = UnicodeCharacters.createSkirmishIcon(TextColor.color(232,194,59)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("teleporting-countdown")))));
         SKIRMISH_STARTING = UnicodeCharacters.createSkirmishIcon(TextColor.color(232,194,59)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("skirmish-starting")))));
         GAINED_RATING = UnicodeCharacters.createRatingIcon(TextColor.color(232,194,59)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("gained-rating")))));
         LOST_RATING = UnicodeCharacters.createRatingIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("lost-rating")))));
         NO_CHANGE_IN_RATING = UnicodeCharacters.createRatingIcon(TextColor.color(114, 107, 107)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("no-change-rating")))));
+        SKIRMISH_BEGIN = UnicodeCharacters.createSkirmishIcon(TextColor.color(224,224,224)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("skirmish-begin")))));
+        STAY_IN_BOUNDS = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("stay-in-bounds")))));
+        DISABLED_IN_SKIRMISH = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("disabled-in-skirmish")))));
     }
 
 
@@ -135,6 +143,8 @@ public class ConfigManager {
     public static int UPGRADE_MAIL_COST;
     public static int UPGRADE_DISCORD_COST;
     public static int INFLUENCE_PER_PLAYER;
+    public static int DEFAULT_RATING;
+    public static int MAX_VAULT_AMOUNT;
     public static int ARENA_RADIUS;
     public static int WALL_BUFFER;
     public static int WALL_HEIGHT;
@@ -201,6 +211,8 @@ public class ConfigManager {
     public static TextComponent ENFORCER_PROMOTE;
     public static TextComponent ENFORCER_DEMOTE;
     public static TextComponent WAITING_FOR_MATCHUP;
+    public static TextComponent CREW_UPGRADE;
+    public static TextComponent VAULT_MAX_AMOUNT;
 
     /* Skirmish */
     public static TextComponent CREW_HAS_JOINED_QUEUE;
@@ -223,9 +235,12 @@ public class ConfigManager {
     public static TextComponent MATCH_CANCELLED_DID_NOT_ACCEPT;
     public static TextComponent CREW_REMOVED_FROM_QUEUE;
     public static TextComponent SECONDS_LEFT_TO_ACTION;
+    public static TextComponent TELEPORTING_COUNTDOWN;
     public static TextComponent SKIRMISH_STARTING;
     public static TextComponent GAINED_RATING;
     public static TextComponent LOST_RATING;
     public static TextComponent NO_CHANGE_IN_RATING;
-
+    public static TextComponent SKIRMISH_BEGIN;
+    public static TextComponent STAY_IN_BOUNDS;
+    public static TextComponent DISABLED_IN_SKIRMISH;
 }

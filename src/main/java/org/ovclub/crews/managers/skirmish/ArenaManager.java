@@ -1,6 +1,7 @@
 package org.ovclub.crews.managers.skirmish;
 
 import org.bukkit.*;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -9,6 +10,7 @@ import org.ovclub.crews.object.skirmish.Arena;
 import org.ovclub.crews.object.skirmish.Skirmish;
 import org.ovclub.crews.object.skirmish.SkirmishMatchup;
 import org.ovclub.crews.object.skirmish.SkirmishTeam;
+import org.ovclub.crews.utilities.SoundUtilities;
 
 import java.util.*;
 
@@ -18,9 +20,22 @@ public class ArenaManager {
     private final Random random = new Random();
 
     public Location getRandomArenaLocation() {
-        int x = random.nextInt(3001) - 1500;
-        int z = random.nextInt(3001) - 1500;
-        return new Location(world, x, world.getHighestBlockYAt(x, z), z);
+        World world = Bukkit.getWorld("world");
+        Location location;
+        int x, z;
+        boolean isOcean;
+        do {
+            x = random.nextInt(3001) - 1500;
+            z = random.nextInt(3001) - 1500;
+            assert world != null;
+            location = new Location(world, x, world.getHighestBlockYAt(x, z), z);
+            Biome biome = world.getBiome(x, world.getHighestBlockYAt(x, z), z);
+            isOcean = biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.FROZEN_OCEAN ||
+                biome == Biome.COLD_OCEAN || biome == Biome.WARM_OCEAN || biome == Biome.DEEP_COLD_OCEAN ||
+                biome == Biome.DEEP_LUKEWARM_OCEAN || biome == Biome.DEEP_FROZEN_OCEAN || biome == Biome.RIVER ||
+                biome == Biome.FROZEN_RIVER;
+        } while (isOcean);
+        return location;
     }
 
     public void setupArena(SkirmishMatchup matchup) {
@@ -39,7 +54,6 @@ public class ArenaManager {
             center.getY(),
             center.getZ() + radius - diagonalInward);
 
-        // Adjusting Y to be at the highest block at each location
         corner1.setY(center.getWorld().getHighestBlockYAt(corner1));
         corner2.setY(center.getWorld().getHighestBlockYAt(corner2));
 
@@ -47,34 +61,31 @@ public class ArenaManager {
         Arena arena = new Arena(world, center, ConfigManager.ARENA_RADIUS, skirmish, true);
         arenas.add(arena);
 
-        // Teleport each team to the calculated corners
-        teleportTeamToArena(matchup.getBlueTeam(), corner1, arena, true);
-        teleportTeamToArena(matchup.getRedTeam(), corner2, arena, false);
+        teleportTeamToArena(matchup.getATeam(), corner1, arena, true);
+        teleportTeamToArena(matchup.getBTeam(), corner2, arena, false);
 
         arena.setHasBeenTeleported(true);
-
-        Bukkit.broadcastMessage("An arena has been setup at " + formatLocation(center) + " for the upcoming skirmish!");
     }
 
     public void teleportTeamToArena(SkirmishTeam team, Location location, Arena arena, boolean isTeamOne) {
         for (String playerUUID : team.getPlayers()) {
-            Player player = Bukkit.getPlayer(UUID.fromString(playerUUID));
-            if (player != null) {
-                arena.addPlayerReturnPoint(player.getUniqueId(), player.getLocation());
+            Player p = Bukkit.getPlayer(UUID.fromString(playerUUID));
+            if (p != null) {
+                arena.addPlayerReturnPoint(p.getUniqueId(), p.getLocation());
 
                 Location safeLocation = getSafeLocation(location);
                 float yaw = getYaw(safeLocation, arena.getCenter());
                 safeLocation.setYaw(yaw);
-                player.teleport(safeLocation);
+                p.teleport(safeLocation);
+                SoundUtilities.playTeleportSound(p);
 
                 // Set team color based on whether it's Team One or not
                 ChatColor color = isTeamOne ? ChatColor.BLUE : ChatColor.RED;
-                arena.setTeamColor(player, color);
+                arena.setTeamColor(p, color);
 
                 // Apply the glowing effect
                 PotionEffect glowingEffect = new PotionEffect(PotionEffectType.GLOWING, 200, 0, false, false, true);
-                player.addPotionEffect(glowingEffect);
-                player.sendMessage("You have been teleported to the arena!");
+                p.addPotionEffect(glowingEffect);
             }
         }
     }
@@ -92,46 +103,42 @@ public class ArenaManager {
     }
 
     private Location getSafeLocation(Location original) {
+        if (original == null || original.getWorld() == null) {
+            return original;
+        }
         World world = original.getWorld();
         int x = original.getBlockX();
         int z = original.getBlockZ();
-        int radius = 5; // Checks a 10x10 area centered on the original location
 
-        while (true) {
-            int waterCount = 0;
-            int totalCount = 0;
-
-            for (int dx = -radius; dx <= radius; dx++) {
-                for (int dz = -radius; dz <= radius; dz++) {
-                    int currentY = world.getHighestBlockYAt(x + dx, z + dz);
-                    Material topMaterial = world.getBlockAt(x + dx, currentY, z + dz).getType();
-                    if (topMaterial == Material.WATER || topMaterial == Material.SEAGRASS) {
-                        waterCount++;
-                    }
-                    totalCount++;
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                int currentY = world.getHighestBlockYAt(x + dx, z + dz);
+                Material topMaterial = world.getBlockAt(x + dx, currentY, z + dz).getType();
+                if (topMaterial == Material.WATER || topMaterial == Material.SEAGRASS || topMaterial == Material.LAVA) {
+                    continue;
+                }
+                if (checkSurroundingsSafe(world, x + dx, currentY + 1, z + dz)) {
+                    return new Location(world, x + dx + 0.5, currentY + 1.5, z + dz + 0.5);
                 }
             }
+        }
+        return original;
+    }
 
-            double waterRatio = (double) waterCount / totalCount;
-            if (waterRatio < 0.5) { // Less than 50% of the area is water
-                int safeY = world.getHighestBlockYAt(x, z);
-                return new Location(world, x + 0.5, safeY+1, z + 0.5, original.getYaw(), original.getPitch());
-            } else {
-                // Adjust the location and try again if too much water
-                x += 10; // Move 10 blocks over on each check, could be randomized or iterated differently
+    private boolean checkSurroundingsSafe(World world, int x, int y, int z) {
+        if (world == null) {
+            return false;
+        }
+        for (int dy = 0; dy <= 2; dy++) {
+            Material blockType = world.getBlockAt(x, y + dy, z).getType();
+            if (blockType != Material.AIR) {
+                return false;
             }
         }
+        return true;
     }
 
-    private boolean isNonSolid(Material mat) {
-        return !mat.isSolid();
-    }
-
-    private boolean isSolid(Material mat) {
-        return mat.isSolid() && mat != Material.LAVA && mat != Material.WATER;
-    }
-
-    private float getYaw(Location from, Location to) {
+    public float getYaw(Location from, Location to) {
         double deltaX = to.getX() - from.getX();
         double deltaZ = to.getZ() - from.getZ();
         double angle = Math.atan2(deltaZ, deltaX);
@@ -147,9 +154,6 @@ public class ArenaManager {
             }
         }
         return null;
-    }
-    private String formatLocation(Location loc) {
-        return "X: " + loc.getBlockX() + ", Y: " + loc.getBlockY() + ", Z: " + loc.getBlockZ();
     }
     public Arena getArenaByPlayer(Player p) {
         if(!arenas.isEmpty()) {

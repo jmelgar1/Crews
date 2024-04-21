@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Rating {
-    private double ratingA;
-    private double ratingB;
-    private int result;
-    private Map<Integer, Integer> kFactors;
+    private final double ratingA;
+    private final double ratingB;
+    private final int result;
+    private final Map<Integer, Integer> kFactors;
 
     public Rating(double ratingA, double ratingB, int result, Map<Integer, Integer> kFactors) {
         this.ratingA = ratingA;
@@ -25,18 +25,18 @@ public class Rating {
         double changeA = 0;
         double changeB = 0;
         switch (result) {
-            case 1: // WIN
+            case 1 -> { // WIN
                 changeA = kA * (1 - expectedA);
                 changeB = -kB * expectedB;
-                break;
-            case -1: // LOSS
+            }
+            case -1 -> { // LOSS
                 changeA = -kA * expectedA;
                 changeB = kB * (1 - expectedB);
-                break;
-            case 0: // DRAW
+            }
+            case 0 -> { // DRAW
                 changeA = kA * (0.5 - expectedA);
                 changeB = kB * (0.5 - expectedB);
-                break;
+            }
         }
 
         // Update the ratings and ensure they don't go below 0

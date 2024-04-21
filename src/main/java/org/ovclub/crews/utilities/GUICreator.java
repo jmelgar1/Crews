@@ -71,7 +71,7 @@ public class GUICreator {
             Component.text(""),
             ComponentUtilities.createComponentWithDecoration("Crew influence is the sum of the crew's", NamedTextColor.GRAY, TextDecoration.ITALIC),
             ComponentUtilities.createComponentWithDecoration("rating, vault balance, and player power.", NamedTextColor.GRAY, TextDecoration.ITALIC),
-            ComponentUtilities.createComponentWithDecoration("(300 Influence per player)", NamedTextColor.GRAY, TextDecoration.ITALIC),
+            ComponentUtilities.createComponentWithDecoration("(100 Influence per player)", NamedTextColor.GRAY, TextDecoration.ITALIC),
             Component.text(""),
             ComponentUtilities.createInfluenceComponent(influence)));
 

@@ -52,7 +52,7 @@ public class ArenaUtilities {
         nearestInside.setPitch(loc.getPitch());
 
         player.teleport(nearestInside);
-        player.sendMessage("You've been teleported back inside the arena bounds!");
+        player.sendMessage(ConfigManager.STAY_IN_BOUNDS);
     }
     public static void updateGlassWall(Player player, Location loc, Location arenaCenter) {
         if (!isNearBoundary(loc, arenaCenter)) {
@@ -93,7 +93,7 @@ public class ArenaUtilities {
     private static void clearGlass(Player player) {
         Map<Location, BlockData> glassBlocks = playerGlassBlocks.remove(player);
         if (glassBlocks != null) {
-            glassBlocks.forEach((loc, data) -> player.sendBlockChange(loc, data));
+            glassBlocks.forEach(player::sendBlockChange);
         }
     }
     private static int determineNearestBoundary(int playerCoord, int centerCoord) {

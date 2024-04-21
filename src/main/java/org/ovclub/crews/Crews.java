@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.ovclub.crews.commands.CommandManager;
@@ -17,7 +16,6 @@ import org.ovclub.crews.listeners.skirmish.ArenaListener;
 import org.ovclub.crews.managers.ConfigManager;
 import org.ovclub.crews.managers.skirmish.ArenaManager;
 import org.ovclub.crews.managers.skirmish.SkirmishManager;
-import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 
 import com.google.gson.*;
@@ -96,7 +94,6 @@ public final class Crews extends JavaPlugin implements Listener {
         ConfigManager.loadConfig(this.getConfig());
         crewsFile = new CrewsFile(this);
         crewsFile.loadCrews();
-        ConfigurationSerialization.registerClass(Crew.class);
 
         getServer().getPluginManager().registerEvents(new PlayerEvents(this), this);
         getServer().getPluginManager().registerEvents(new CrewGUIListener(this), this);

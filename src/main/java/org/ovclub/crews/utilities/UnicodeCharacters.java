@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.entity.Player;
 
 public class UnicodeCharacters {
@@ -30,6 +31,7 @@ public class UnicodeCharacters {
     public static String crew_chat_emoji = "💬 ";
     public static String discord_emoji = "🔊 ";
     public static String siren_emoji = "🚨 ";
+    public static String upgrade_icon = "\uD83E\uDC81 ";
     public static String mail_emoji = "\uD83D\uDCEA ";
     public static String vault = "\uD83C\uDFE6";
     public static String foundedDate = "\uD83D\uDCDD";
@@ -58,6 +60,7 @@ public class UnicodeCharacters {
     public static TextColor influence_outline_color = TextColor.fromHexString("#8E2DE2");
     public static TextColor influence_color = TextColor.fromHexString("#D32CE6");
     public static TextColor level_color = TextColor.fromHexString("#F44336");
+    public static TextColor upgrade_color = TextColor.fromHexString("#2E7D32");
     public static TextColor description_color = TextColor.fromHexString("#FFF59D");
     public static TextColor founded_color = TextColor.fromHexString("#81C784");
     public static TextColor economy_color = TextColor.fromHexString("#4CAF50");
@@ -73,6 +76,8 @@ public class UnicodeCharacters {
     public static TextColor emoji_text_color = TextColor.fromHexString("#FFEBEE");
     public static TextColor compound_inactive = TextColor.fromHexString("#E57373");
     public static TextColor compound_active = TextColor.fromHexString("#81C784");
+    public static TextColor teamA_color = TextColor.fromHexString("#90CAF9");
+    public static TextColor teamB_color = TextColor.fromHexString("#EF9A9A");
 
     /* Create Message Icon Headers */
     public static TextComponent createAlertIcon(TextColor color) {
@@ -115,6 +120,7 @@ public class UnicodeCharacters {
     public static TextComponent createQueueIcon(TextColor color) {return Component.text("[⏳] ").color(color);}
     public static TextComponent createSkirmishIcon(TextColor color) {return Component.text("[⚔] ").color(color);}
     public static TextComponent createRatingIcon(TextColor color) {return Component.text("[🎖] ").color(color);}
+    public static TextComponent createUpgradeIcon(TextColor color) {return Component.text("[🢁] ").color(color);}
 
 
     public static void sendInfoMessage(Player p, String prefixEmoji, String prefix, String text, TextColor color) {
@@ -135,7 +141,7 @@ public class UnicodeCharacters {
 
     public static  void sendMessageWithHeader(Player p, String prefix, String headerText, String suffix) {
         p.sendMessage(Component.text(prefix).color(UnicodeCharacters.logo_color)
-            .append(Component.text(headerText).color(UnicodeCharacters.plugin_color))
+            .append(Component.text(headerText).color(UnicodeCharacters.plugin_color).decorate(TextDecoration.BOLD))
             .append(Component.text(suffix).color(UnicodeCharacters.logo_color)));
     }
 

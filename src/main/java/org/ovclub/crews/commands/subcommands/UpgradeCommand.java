@@ -50,11 +50,11 @@ public class UpgradeCommand implements SubCommand {
             return;
         }
         int levelUpCost = pCrew.getLevelUpCost();
-        int currentLevel = pCrew.getLevel();
-        if (levelUpCost <= pCrew.getVault()) {
-            pCrew.removeFromVault(levelUpCost, p, false);
-            //new upgrade feature
-            //crewManager.upgradecrew(playerCrew, crewVault, p);
+        if(levelUpCost > pCrew.getVault()) {
+            p.sendMessage(ConfigManager.NOT_ENOUGH_IN_VAULT);
+            return;
         }
+        pCrew.removeFromVault(levelUpCost, p, false);
+        pCrew.upgradeCrew();
     }
 }

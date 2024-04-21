@@ -42,6 +42,10 @@ public class SkirmishJoinCommand implements SubCommand {
             p.sendMessage(ConfigManager.ALREADY_IN_QUEUE);
             return;
         }
+        if(plugin.getArenaManager().getArenaByPlayer(p) != null) {
+            p.sendMessage(ConfigManager.ALREADY_IN_QUEUE);
+            return;
+        }
         GUICreator.createSkirmishQueueGUI(data, p, queue.size());
     }
 }

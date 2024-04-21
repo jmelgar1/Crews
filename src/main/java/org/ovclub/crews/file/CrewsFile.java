@@ -15,8 +15,6 @@ import java.util.Map;
 public class CrewsFile {
     private final Crews plugin;
     private File crewsFile;
-    private JsonObject crewsData;
-    public JsonObject getCrewsData() { return this.crewsData; }
 
     public CrewsFile(final Crews plugin){
         this.plugin = plugin;
@@ -59,11 +57,13 @@ public class CrewsFile {
 
 
     public void saveCrews() {
-        System.out.println("Saving Crews");
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Crew.class, new CrewTypeAdapter())
+            .create();
+
         JsonObject allCrewsJson = new JsonObject();
         for (Crew c : plugin.getData().getCrews()) {
-            JsonObject crewJson = gson.toJsonTree(c.serialize()).getAsJsonObject();
+            JsonObject crewJson = gson.toJsonTree(c).getAsJsonObject();
             allCrewsJson.add(c.getName(), crewJson);
         }
         try (FileWriter file = new FileWriter(crewsFile)) {
