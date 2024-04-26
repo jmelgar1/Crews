@@ -1,6 +1,8 @@
 package org.ovclub.crews.utilities;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -20,6 +22,7 @@ import org.ovclub.crews.managers.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 public class GUICreator {
@@ -256,6 +259,53 @@ public class GUICreator {
 
         GUICreator.openInventory(p, bannerInv);
     }
+
+    public static void createHighTableVoteGUI(PlayerData data, Player p) {
+        Inventory htGUI = Bukkit.createInventory(null, 9, Component.text("Crew High Table Vote"));
+        data.getInventories().put(p.getUniqueId(), htGUI);
+
+        htGUI.setItem(0, createGuiItem(Material.NETHERITE_PICKAXE,
+            ComponentUtilities.createComponent("Ore Drop Rates", TextColor.fromHexString("#8D6E63")),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+        htGUI.setItem(2, createGuiItem(Material.DIAMOND_SWORD,
+            ComponentUtilities.createComponent("Mob Drop Rates", TextColor.fromHexString("#F44336")),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+        htGUI.setItem(4, createGuiItem(Material.NETHERITE_CHESTPLATE,
+            ComponentUtilities.createComponent("Mob Difficulty", TextColor.fromHexString("#3F51B5")),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+        htGUI.setItem(6, createGuiItem(Material.EXPERIENCE_BOTTLE,
+            ComponentUtilities.createComponent("XP Drop Rates", TextColor.fromHexString("#4CAF50")),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+        htGUI.setItem(8, createGuiItem(Material.ANVIL,
+            ComponentUtilities.createComponent("Discounts", TextColor.fromHexString("#FFEB3B")),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+        GUICreator.openInventory(p, htGUI);
+    }
+
+    public static void createPassiveMobDropVoteGUI(PlayerData data, Player p) {
+        Inventory htInv = Bukkit.createInventory(null, 54, Component.text("VOSOIDVKASDK"));
+        data.getInventories().put(p.getUniqueId(), htInv);
+
+        //Cat
+        htInv.setItem(0, createGuiItem(createCustomSkull("dd8c5fb1326b4065b185c849713eb62527b9b8a5ba3ad62cef2f53154e42a277"),
+            ComponentUtilities.createComponentWithPlaceHolder("• Mob Type: ", NamedTextColor.GRAY, "Cat", NamedTextColor.YELLOW),
+            Component.text(""),
+            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "Drop Multiplier: ", NamedTextColor.WHITE, "1.5x", NamedTextColor.AQUA),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+        GUICreator.openInventory(p, htInv);
+    }
     protected static ItemStack createGuiItem(final Material material, final TextComponent name, final TextComponent... lore) {
         final ItemStack item = new ItemStack(material, 1);
         final ItemMeta meta = item.getItemMeta();
@@ -306,7 +356,26 @@ public class GUICreator {
 
         return skull;
     }
+    public static ItemStack createCustomSkull(String textureHash) {
+        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta skullMeta = (SkullMeta) head.getItemMeta();
+        GameProfile profile = new GameProfile(UUID.randomUUID(), "CustomSkull");
+        String base64EncodedTexture = java.util.Base64.getEncoder().encodeToString(String.format("{textures:{SKIN:{url:\"http://textures.minecraft.net/texture/%s\"}}}", textureHash).getBytes());
+        profile.getProperties().put("textures", new Property("textures", base64EncodedTexture));
+
+        Field profileField;
+        try {
+            profileField = skullMeta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            profileField.set(skullMeta, profile);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        head.setItemMeta(skullMeta);
+        return head;
+    }
     public static void openInventory(final HumanEntity ent, Inventory inv) {
         ent.openInventory(inv);
     }
 }
+

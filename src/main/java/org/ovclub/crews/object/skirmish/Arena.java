@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class Arena {
+    UUID arenaId;
     Scoreboard pointScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
     Objective objective = pointScoreboard.registerNewObjective("skirmish", "dummy",
         Component.text(UnicodeCharacters.crews).color(UnicodeCharacters.logo_color)
@@ -31,12 +32,13 @@ public class Arena {
     private boolean hasBeenTeleported;
     private boolean isInCountdown;
     //private int gameTime = 600;
-    private int gameTime = 10;
+    private int gameTime = 180;
     private final HashMap<UUID, Location> playerReturnPoints = new HashMap<>();
 
     private Map<Integer, Integer> kFactors;
 
     public Arena(World world, Location center, int radius, Skirmish skirmish, boolean isInCountdown) {
+        this.arenaId = UUID.randomUUID();
         this.world = world;
         this.center = center;
         this.radius = radius;
@@ -44,14 +46,16 @@ public class Arena {
         this.isInCountdown = isInCountdown;
 
         kFactors = new HashMap<>();
-        kFactors.put(1000, 100);
-        kFactors.put(2000, 66);
-        kFactors.put(3000, 44);
-        kFactors.put(4000, 29);
-        kFactors.put(5000, 19);
-        kFactors.put(6000, 12);
-        kFactors.put(7000, 8);
+        kFactors.put(1000, 150);
+        kFactors.put(2000, 100);
+        kFactors.put(3000, 66);
+        kFactors.put(4000, 44);
+        kFactors.put(5000, 29);
+        kFactors.put(6000, 19);
+        kFactors.put(7000, 12);
     }
+
+    public UUID getArenaId() { return arenaId; }
 
     public Location getCenter() {
         return center;
@@ -112,7 +116,7 @@ public class Arena {
         //team blue
         Score teamName1 = objective.getScore(ChatColor.BLUE + matchup.getATeam().getCrew().getName().toUpperCase());
         teamName1.setScore(10);
-        Score teamScore1 = objective.getScore(ChatColor.BLUE + "• " + ChatColor.WHITE + "Points: " + ChatColor.GOLD + skirmish.getBlueTeamScore() + " ");
+        Score teamScore1 = objective.getScore(ChatColor.BLUE + "• " + ChatColor.WHITE + "Points: " + ChatColor.GOLD + skirmish.getATeamScore() + " ");
         teamScore1.setScore(9);
 
         objective.getScore("  ").setScore(8);
@@ -120,7 +124,7 @@ public class Arena {
         //team red
         Score teamName2 = objective.getScore(ChatColor.RED + matchup.getBTeam().getCrew().getName().toUpperCase());
         teamName2.setScore(7);
-        Score teamScore2 = objective.getScore(ChatColor.RED + "• " + ChatColor.WHITE + "Points: " + ChatColor.GOLD + skirmish.getRedTeamScore());
+        Score teamScore2 = objective.getScore(ChatColor.RED + "• " + ChatColor.WHITE + "Points: " + ChatColor.GOLD + skirmish.getBTeamScore());
         teamScore2.setScore(6);
 
         objective.getScore("   ").setScore(5);
@@ -162,14 +166,26 @@ public class Arena {
         }
     }
 
-    public void updateTeamScore(boolean isBlueTeam, int newScore) {
-        String teamPrefix = isBlueTeam ? ChatColor.BLUE + "• " : ChatColor.RED + "• ";
-        int scoreLine = isBlueTeam ? 9 : 6;
+    public void updateTeamScore(boolean isATeam, int newScore) {
+        String teamPrefix = isATeam ? ChatColor.BLUE + "• " : ChatColor.RED + "• ";
+        int scoreLine = isATeam ? 9 : 6;
         String scoreText = teamPrefix + ChatColor.WHITE + "Points: " + ChatColor.GOLD + newScore;
 
         resetScoreAtLine(scoreLine);
         Score score = objective.getScore(scoreText);
         score.setScore(scoreLine);
+    }
+
+    public void updateOpponentTeamScore(SkirmishTeam team) {
+       if(team.equals(getMatchup().getATeam())) {
+           int newScore = this.skirmish.getBTeamScore() + 1;
+           updateTeamScore(false, newScore);
+           this.skirmish.setBTeamScore(newScore);
+       } else {
+           int newScore = this.skirmish.getATeamScore() + 1;
+           updateTeamScore(true, newScore);
+           this.skirmish.setATeamScore(newScore);
+       }
     }
 
     private void resetScoreAtLine(int line) {
@@ -230,8 +246,8 @@ public class Arena {
     }
 
     public void determineOutcome() {
-        int teamA_score = this.skirmish.getBlueTeamScore();
-        int teamB_score = this.skirmish.getRedTeamScore();
+        int teamA_score = this.skirmish.getATeamScore();
+        int teamB_score = this.skirmish.getBTeamScore();
         SkirmishTeam teamA = this.skirmish.getMatchup().getATeam();
         SkirmishTeam teamB = this.skirmish.getMatchup().getBTeam();
         Crew crewA =  teamA.getCrew();

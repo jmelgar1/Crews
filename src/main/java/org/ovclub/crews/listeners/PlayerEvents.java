@@ -12,6 +12,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.ovclub.crews.Crews;
 import org.ovclub.crews.commands.subcommands.ShopCommand;
 import org.ovclub.crews.object.Crew;
+import org.ovclub.crews.utilities.GUICreator;
 
 import java.util.*;
 
@@ -80,13 +81,17 @@ public class PlayerEvents implements Listener {
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent e){
+    public void onPlayerJoin(PlayerJoinEvent e) {
         for (Crew c : plugin.getData().getCrews()) {
             if (c.hasMember(e.getPlayer())) {
                 plugin.getData().addCPlayer(e.getPlayer(), c);
+                if(c.isInHighTable()) {
+                    GUICreator.createHighTableVoteGUI(plugin.getData(), e.getPlayer());
+                }
                 break;
             }
         }
+    }
 //        Player p = event.getPlayer();
 //        UUID uuid = p.getUniqueId();
 //
@@ -118,7 +123,8 @@ public class PlayerEvents implements Listener {
 //                }
 //            }
 //        }
-    }
+
+
 
     @EventHandler
     private void onLeave(PlayerQuitEvent e) {

@@ -4,13 +4,18 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.EntityType;
 import org.ovclub.crews.utilities.UnicodeCharacters;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import static org.bukkit.ChatColor.translateAlternateColorCodes;
 
 public class ConfigManager {
+    public static Map<EntityType, Double> mobMultipliers = new HashMap<>();
+
     public static void loadConfig(final FileConfiguration config){
         MAX_MEMBERS = config.getInt("max-members");
         COMMANDS_PER_PAGE = config.getInt("commands-per-page");
@@ -76,6 +81,9 @@ public class ConfigManager {
         WAITING_FOR_MATCHUP = UnicodeCharacters.createQueueIcon(UnicodeCharacters.queue_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("waiting-for-matchup")))));
         CREW_UPGRADE = UnicodeCharacters.createUpgradeIcon(UnicodeCharacters.upgrade_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("crew-upgrade")))));
         VAULT_MAX_AMOUNT = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("vault-max-amount")))));
+        YOU_LEFT_CREW = UnicodeCharacters.createSuccessIcon(TextColor.color(46,125,50)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("you-left-crew")))));
+        YOU_GOT_KICKED_CREW = UnicodeCharacters.createKickIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("you-got-kicked")))));
+
 
         /* Strings */
         ALREADY_INVITED = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("already-invited")))));
@@ -130,6 +138,9 @@ public class ConfigManager {
         SKIRMISH_BEGIN = UnicodeCharacters.createSkirmishIcon(TextColor.color(224,224,224)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("skirmish-begin")))));
         STAY_IN_BOUNDS = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("stay-in-bounds")))));
         DISABLED_IN_SKIRMISH = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("disabled-in-skirmish")))));
+        DISABLED_COMMAND_IN_ARENA = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("disabled-command-in-arena")))));
+        PLAYER_WILL_BE_BANNED = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("player-will-be-banned")))));
+        PLAYER_BANNED = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("player-banned")))));
     }
 
 
@@ -213,6 +224,8 @@ public class ConfigManager {
     public static TextComponent WAITING_FOR_MATCHUP;
     public static TextComponent CREW_UPGRADE;
     public static TextComponent VAULT_MAX_AMOUNT;
+    public static TextComponent YOU_LEFT_CREW;
+    public static TextComponent YOU_GOT_KICKED_CREW;
 
     /* Skirmish */
     public static TextComponent CREW_HAS_JOINED_QUEUE;
@@ -243,4 +256,29 @@ public class ConfigManager {
     public static TextComponent SKIRMISH_BEGIN;
     public static TextComponent STAY_IN_BOUNDS;
     public static TextComponent DISABLED_IN_SKIRMISH;
+    public static TextComponent DISABLED_COMMAND_IN_ARENA;
+    public static TextComponent PLAYER_WILL_BE_BANNED;
+    public static TextComponent PLAYER_BANNED;
+
+    private static void loadCategorizedMobMultipliers(FileConfiguration config) {
+        if (config.contains("mob-multipliers")) {
+            config.getConfigurationSection("mob-multipliers").getKeys(false).forEach(categoryKey -> {
+                if (config.contains("mob-multipliers." + categoryKey)) {
+                    config.getConfigurationSection("mob-multipliers." + categoryKey).getKeys(false).forEach(mobKey -> {
+                        try {
+                            EntityType type = EntityType.valueOf(mobKey.toUpperCase());
+                            double multiplier = config.getDouble("mob-multipliers." + categoryKey + "." + mobKey);
+                            mobMultipliers.put(type, multiplier);
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("Error loading multiplier for " + mobKey + ": " + e.getMessage());
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    public static double getMultiplierForEntityType(EntityType type) {
+        return mobMultipliers.getOrDefault(type, 1.0);
+    }
 }

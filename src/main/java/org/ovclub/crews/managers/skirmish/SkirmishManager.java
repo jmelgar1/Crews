@@ -21,6 +21,7 @@ import java.util.*;
 public class SkirmishManager {
     private final SkirmishQueue queue = new SkirmishQueue();
     private final List<SkirmishMatchup> potentialMatchups = new ArrayList<>();
+    private HashMap<UUID, Integer> taskMap = new HashMap<>();
 
     private final Crews plugin;
     private final Map<UUID, PlayerResponseListener> responseListeners = new HashMap<>();
@@ -90,6 +91,12 @@ public class SkirmishManager {
                     PlayerResponseListener listener = responseListeners.get(p.getUniqueId());
                     if (listener != null) {
                         if (!listener.isAwaitingResponse()) {
+                            int selectedTeamSize = listener.getChosenTeamSize();
+                            if (largestTeam.equals(team1)) {
+                                setRandomizedTeamPlayers(team1, selectedTeamSize);
+                            } else {
+                                setRandomizedTeamPlayers(team2, selectedTeamSize);
+                            }
                             startSkirmish(team1, team2);
                             cancel();
                         } else if (secondsLeft <= 0) {
@@ -121,6 +128,16 @@ public class SkirmishManager {
             }
         }
         return null;
+    }
+
+    private void setRandomizedTeamPlayers(SkirmishTeam team, int selectedTeamSize) {
+        ArrayList<String> players = team.getPlayers();
+        Collections.shuffle(players);
+        if (selectedTeamSize > players.size()) {
+            selectedTeamSize = players.size();
+        }
+        ArrayList<String> selectedPlayers = new ArrayList<>(players.subList(0, selectedTeamSize));
+        team.setPlayers(selectedPlayers);
     }
 
     public void createMatchupConfirmation() {
@@ -227,8 +244,7 @@ public class SkirmishManager {
                                             .replaceText(builder -> builder.matchLiteral("{crew1}").replacement(Component.text(queueItemOne.getCrew().getName()).decorate(TextDecoration.BOLD)))
                                             .replaceText(builder -> builder.matchLiteral("{crew2}").replacement(Component.text(queueItemTwo.getCrew().getName()).decorate(TextDecoration.BOLD))));
                                         arena.setupScoreboardForAllPlayers();
-                                        CountdownTimer countdown = new CountdownTimer(arena, arenaManager);
-                                        countdown.runTaskTimer(plugin, 20L, 20L);
+                                        plugin.getRunnableManager().startArenaCountdownTimer(arena, arenaManager);
                                         cancel();
                                     } else {
                                         if (remainingSeconds == 10 || remainingSeconds <= 5) {
@@ -314,5 +330,25 @@ public class SkirmishManager {
 
     public SkirmishQueue getQueue() {
         return this.queue;
+    }
+
+    public HashMap<UUID, Integer> getTaskMap() {
+        return taskMap;
+    }
+
+    public void scheduleTimer(Arena arena, ArenaManager manager) {
+        int taskId = new CountdownTimer(arena, manager).runTaskTimer(plugin, 0L, 20L).getTaskId();
+        taskMap.put(arena.getArenaId(), taskId);
+    }
+
+    public void cancelTimer(Arena arena) {
+        if (taskMap.containsKey(arena.getArenaId())) {
+            Bukkit.getScheduler().cancelTask(taskMap.get(arena.getArenaId()));
+            taskMap.remove(arena.getArenaId());
+        }
+    }
+
+    public void removeTask(UUID arenaId) {
+        taskMap.remove(arenaId);
     }
 }

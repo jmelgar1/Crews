@@ -22,6 +22,60 @@ wall-buffer: 5 #Space between player and border where glass will show
 wall-height: 10 #Height of the barrier shown
 wall-width: 10 #Width of the barrier shown
 
+#Crew High Table
+high-table:
+    crew1:
+        currentVote: "[one of the following or null]"
+        vote-list:
+            p1: ore-drop-[ore]
+            p2: mob-drop-[mob]
+            p3: mob-difficulty-[mob]
+            p4: xp-drop-[mob]/[ore]
+            p5: discounts-[discount]
+    crew2:
+        currentVote: "[one of the following or null]"
+        vote-list:
+            p1: ore-drop-[ore]
+            p2: mob-drop-[mob]
+            p3: mob-difficulty-[mob]
+            p4: xp-drop-[mob]/[ore]
+            p5: discounts-[discount]
+    crew3:
+        currentVote: "[one of the following or null]"
+        vote-list:
+            p1: ore-drop-[ore]
+            p2: mob-drop-[mob]
+            p3: mob-difficulty-[mob]
+            p4: xp-drop-[mob]/[ore]
+            p5: discounts-[discount]
+    crew4:
+        currentVote: "[one of the following or null]"
+        vote-list:
+            p1: ore-drop-[ore]
+            p2: mob-drop-[mob]
+            p3: mob-difficulty-[mob]
+            p4: xp-drop-[mob]/[ore]
+            p5: discounts-[discount]
+    crew5:
+        currentVote: "[one of the following or null]"
+        vote-list:
+            p1: ore-drop-[ore]
+            p2: mob-drop-[mob]
+            p3: mob-difficulty-[mob]
+            p4: xp-drop-[mob]/[ore]
+            p5: discounts-[discount]
+
+
+#Multipliers
+#Passive Mobs
+mob-multipliers:
+    passive-multipliers:
+        CAT: 1.5
+    neutral-multipliers:
+        CAVE_SPIDER: 1.5
+    hostile-multipliers:
+        BLAZE: 1.5
+
 #Messages
 #TextComponents
 already-in-crew: "&#E57373You are already in a crew! &#E5CB70To leave use '/crews leave'"
@@ -80,6 +134,8 @@ max-enforcer: "&#E57373The crew currently has an enforcer limit of &#E5CB70{limi
 joined-crew: "&#60E462{player} &#32B834has joined the crew!"
 kicked-from-crew: "&#E57373{player} &#E24949has been kicked from the crew!"
 leave-crew: "&#E57373{player} &#E24949has left the crew!"
+you-left-crew: "&#60E462You have left the crew!"
+you-got-kicked: "&#E57373You were kicked from the crew!"
 new-boss: "&#606AA2{player} &#3F51B5is the new crew boss!"
 new-enforcer: "&#8FCED6{player} &#80DEEAhas been promoted to enforcer!"
 sponge-deposit: "&#60E462You have deposited &#3CC33E{amount} &#60E462sponge into the crew vault!"
@@ -120,3 +176,6 @@ skirmish-starting: "&6Skirmish starting in &e{seconds} &6seconds..."
 skirmish-begin: "&c&lPVP Enabled: &6Good luck!"
 stay-in-bounds: "&#E57373Please stay in bounds!"
 disabled-in-skirmish: "&#E57373This action is disabled while in the arena."
+disabled-command-in-arena: "&#E57373This command is disabled while in the arena. If you want to leave type &#E5CB70'/c skirmish leave'"
+player-will-be-banned: "&#E57373{player} &#E24949has &#E57373{seconds} seconds &#E24949to join before being removed from the skirmish!"
+player-banned: "&#E57373{player} &#E24949has been removed from the skirmish for inactivity!"

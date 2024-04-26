@@ -50,6 +50,7 @@ public class UnicodeCharacters {
     public static String tott = "\uD83D\uDDFC";
     public static String checkmark_emoji = "✅ ";
     public static String x_emoji = "❌ ";
+    public static String multiplier = "💠 ";
 
     //DECENT HOLOGRAMS TELEPORT INFO TO YOU
 

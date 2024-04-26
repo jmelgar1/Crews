@@ -14,19 +14,27 @@ public class Skirmish {
 
     public SkirmishMatchup getMatchup() { return this.matchup; }
 
-    public int getBlueTeamScore() {
+    public int getATeamScore() {
         return blueTeamScore;
     }
 
-    public void setBlueTeamScore(int value) {
+    public void setATeamScore(int value) {
         this.blueTeamScore = value;
     }
 
-    public void setRedTeamScore(int value) {
+    public void setBTeamScore(int value) {
         this.redTeamScore = value;
     }
 
-    public int getRedTeamScore() {
+    public void addToATeamScore(int value) {
+        this.blueTeamScore+=value;
+    }
+
+    public void addToBTeamScore(int value) {
+        this.redTeamScore+=value;
+    }
+
+    public int getBTeamScore() {
         return redTeamScore;
     }
 

@@ -1,11 +1,11 @@
 package org.ovclub.crews.commands.subcommands;
 
+import org.apache.logging.log4j.core.net.MailManager;
 import org.bukkit.entity.Player;
 import org.ovclub.crews.Crews;
 import org.ovclub.crews.commands.SubCommand;
 import org.ovclub.crews.exceptions.NotInCrew;
 import org.ovclub.crews.managers.ConfigManager;
-import org.ovclub.crews.managers.MailManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 import org.ovclub.crews.utilities.ChatUtilities;
@@ -50,20 +50,20 @@ public class MailCommand implements SubCommand {
             p.sendMessage(ConfigManager.UPGRADE_NOT_UNLOCKED.replaceText(builder -> builder.matchLiteral("{upgrade}").replacement("mail")));
             return;
         }
-        if(args[1].equalsIgnoreCase("open")) {
-            MailManager mailManager = new MailManager(plugin);
-            mailManager.openCrewMail(p);
-        } else {
-            LocalDateTime currentDateTime = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-            String dateString = currentDateTime.format(formatter);
-
-            String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-            String mailMessage = "[" + dateString + "] " + p.getName() + ": " + message;
-
-            List<String> crewMembers = pCrew.getMembers();
-            crewMembers.remove(p.getUniqueId().toString());
-            pCrew.addToMail(mailMessage);
-        }
+//        if(args[1].equalsIgnoreCase("open")) {
+//            MailManager mailManager = new MailManager(plugin);
+//            mailManager.openCrewMail(p);
+//        } else {
+//            LocalDateTime currentDateTime = LocalDateTime.now();
+//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+//            String dateString = currentDateTime.format(formatter);
+//
+//            String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+//            String mailMessage = "[" + dateString + "] " + p.getName() + ": " + message;
+//
+//            List<String> crewMembers = pCrew.getMembers();
+//            crewMembers.remove(p.getUniqueId().toString());
+//            pCrew.addToMail(mailMessage);
+//        }
     }
 }

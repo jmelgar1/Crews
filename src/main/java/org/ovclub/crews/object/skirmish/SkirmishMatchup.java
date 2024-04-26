@@ -1,6 +1,11 @@
 package org.ovclub.crews.object.skirmish;
 
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class SkirmishMatchup {
     private final SkirmishTeam a_team;
@@ -30,5 +35,13 @@ public class SkirmishMatchup {
         participants.addAll(a_team.getPlayers());
         participants.addAll(b_team.getPlayers());
         return participants;
+    }
+    public void broadcast(Component message) {
+        for(String sUUID : getParticipants()) {
+            Player p = Bukkit.getPlayer(UUID.fromString(sUUID));
+            if (p != null && p.isOnline()) {
+                p.sendMessage(message);
+            }
+        }
     }
 }

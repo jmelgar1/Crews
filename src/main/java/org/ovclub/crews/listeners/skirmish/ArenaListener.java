@@ -11,8 +11,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.ovclub.crews.Crews;
 import org.ovclub.crews.managers.ConfigManager;
@@ -24,10 +23,13 @@ import org.ovclub.crews.utilities.ArenaUtilities;
 import org.ovclub.crews.utilities.SoundUtilities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class ArenaListener implements Listener {
     private final Crews plugin;
+    private HashMap<UUID, Integer> taskMap = new HashMap<>();
+
     public ArenaListener(Crews plugin) {
         this.plugin = plugin;
     }
@@ -114,6 +116,10 @@ public class ArenaListener implements Listener {
         } else {
             handleDeathWithoutKiller(deceased, arena);
         }
+
+        event.setDroppedExp(0);
+        event.setKeepInventory(true);
+        event.getDrops().clear();
     }
 
     @EventHandler
@@ -157,6 +163,45 @@ public class ArenaListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
+        Player p = event.getPlayer();
+        String message = event.getMessage();
+        Arena arena = plugin.getArenaManager().getArenaByPlayer(p);
+        if (arena == null) {
+            return;
+        }
+        if (!message.equalsIgnoreCase("/c skirmish leave")) {
+            event.setCancelled(true);
+            p.sendMessage(ConfigManager.DISABLED_COMMAND_IN_ARENA);
+        }
+    }
+
+    @EventHandler
+    private void onLeave(PlayerQuitEvent e) {
+        Player p = e.getPlayer();
+        Arena arena = plugin.getArenaManager().getArenaByPlayer(p);
+        if (arena == null) {
+            return;
+        }
+        SkirmishTeam pTeam = arena.getPlayerTeam(p);
+        if(pTeam == null){
+            return;
+        }
+        arena.updateOpponentTeamScore(pTeam);
+        plugin.getRunnableManager().startPlayerArenaLeaveTimer(p, arena.getMatchup(), plugin.getArenaManager(), 120);
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player p = event.getPlayer();
+        Arena arena = plugin.getArenaManager().getArenaByPlayer(p);
+        if (arena == null) {
+            return;
+        }
+        plugin.getRunnableManager().cancelPlayerArenaLeaveTimer(p);
+    }
+
     private Location getFarthestLocation(Location arenaCenter, ArrayList<Location> enemyLocations) {
         Location bestLocation = arenaCenter;
         double bestDistance = -1;
@@ -194,15 +239,31 @@ public class ArenaListener implements Listener {
 
     private void updateScore(Arena arena, boolean isBlueTeam, int scoreChange) {
         Skirmish skirmish = arena.getSkirmish();
-        int currentScore = isBlueTeam ? skirmish.getBlueTeamScore() : skirmish.getRedTeamScore();
+        int currentScore = isBlueTeam ? skirmish.getATeamScore() : skirmish.getBTeamScore();
         int newScore = Math.max(0, currentScore + scoreChange);
         if (isBlueTeam) {
-            skirmish.setBlueTeamScore(newScore);
+            skirmish.setATeamScore(newScore);
             arena.updateTeamScore(true, newScore);
         } else {
-            skirmish.setRedTeamScore(newScore);
+            skirmish.setBTeamScore(newScore);
             arena.updateTeamScore(false, newScore);
         }
     }
+//
+//    public void scheduleTimer(Player player, SkirmishMatchup matchup) {
+//        int taskId = new PlayerLeaveArenaPunishment(this, player, matchup, plugin.getSkirmishManager(), plugin.getArenaManager(), 120).runTaskTimer(plugin, 0L, 20L).getTaskId();
+//        taskMap.put(player.getUniqueId(), taskId);
+//    }
+//
+//    public void cancelTimer(Player player) {
+//        if (taskMap.containsKey(player.getUniqueId())) {
+//            Bukkit.getScheduler().cancelTask(taskMap.get(player.getUniqueId()));
+//            taskMap.remove(player.getUniqueId());
+//        }
+//    }
+//
+//    public void removeTask(UUID playerUuid) {
+//        taskMap.remove(playerUuid);
+//    }
 }
 

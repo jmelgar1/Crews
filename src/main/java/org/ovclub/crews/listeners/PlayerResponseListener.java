@@ -18,6 +18,7 @@ public class PlayerResponseListener implements Listener {
     private final SkirmishTeam smallerTeam;
     private final SkirmishTeam largerTeam;
     private long responseStartTime;
+    private int chosenTeamSize;
     private boolean awaitingResponse;
 
     public PlayerResponseListener(JavaPlugin plugin, UUID playerUUID, SkirmishTeam smallerTeam, SkirmishTeam largerTeam) {
@@ -76,6 +77,7 @@ public class PlayerResponseListener implements Listener {
                         if(response != largerTeam.getPlayers().size()) {
                             p.sendMessage(ConfigManager.PLAYERS_SITTING_OUT
                                 .replaceText(builder -> builder.matchLiteral("{amount}").replacement(String.valueOf(playersNotPlaying))));
+                            chosenTeamSize = response;
                         }
                     }
                 }
@@ -85,6 +87,10 @@ public class PlayerResponseListener implements Listener {
 
     public boolean isAwaitingResponse() {
         return awaitingResponse;
+    }
+
+    public int getChosenTeamSize() {
+        return chosenTeamSize;
     }
 
     public long getResponseStartTime() {

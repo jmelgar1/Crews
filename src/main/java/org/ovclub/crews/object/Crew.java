@@ -415,55 +415,24 @@ public class Crew {
         plugin.getData().removeCrew(this);
     }
 
-    private String getOnlinePlayerName(UUID playerId) {
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerId);
-        if (offlinePlayer.isOnline() && offlinePlayer.getPlayer() != null) {
-            return offlinePlayer.getPlayer().getName();
-        } else {
-            return offlinePlayer.getName();
-        }
-    }
-
     private String getPlayerName(UUID playerId) {
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerId);
         return offlinePlayer.getName();
     }
-
-//    @Override
-//    public @NotNull Map<String, Object> serialize() {
-//        Map<String, Object> map = new HashMap<>();
-//        map.put("name", this.name);
-//        map.put("level", this.level);
-//        map.put("dateFounded", this.dateFounded);
-//        map.put("vault", this.vault);
-//        map.put("boss", this.boss);
-//        map.put("enforcers", this.enforcers);
-//        map.put("levelUpCost", this.levelUpCost);
-//        map.put("memberLimit", this.memberLimit);
-//        map.put("members", this.members);
-//        map.put("description", this.description);
-//        map.put("skirmishWins", this.skirmishWins);
-//        map.put("skirmishDraws", this.skirmishDraws);
-//        map.put("skirmishLosses", this.skirmishLosses);
-//        map.put("compound", this.compound);
-//        map.put("kills", this.kills);
-//        map.put("ratingScore", this.rating);
-//        map.put("influence", this.influence);
-//        map.put("unlockedUpgrades", this.unlockedUpgrades);
-//        map.put("sentMail", this.sentMail);
-//        return map;
-//    }
 
     //Remove player from crew, whether they left or were kicked. Returns true if player was in the crew, false if player was not.
     public void removePlayer(final UUID pUUID, boolean wasKicked) {
         this.enforcers.remove(pUUID.toString());
         if (this.members.remove(pUUID.toString())) {
             plugin.getData().removeCPlayer(Bukkit.getPlayer(pUUID));
-            String pName = Bukkit.getOfflinePlayer(pUUID).getName();
-            if(wasKicked){
-                this.broadcast(ConfigManager.KICKED_FROM_CREW.replaceText(builder -> builder.matchLiteral("{player}").replacement(pName)));
-            } else {
-                this.broadcast(ConfigManager.LEAVE_CREW.replaceText(builder -> builder.matchLiteral("{player}").replacement(pName)));
+            Player p = Bukkit.getPlayer(pUUID);
+            if(p != null && p.isOnline()) {
+                if (wasKicked) {
+                    this.broadcast(ConfigManager.KICKED_FROM_CREW.replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName())));
+                } else {
+                    p.sendMessage(ConfigManager.YOU_LEFT_CREW);
+                    this.broadcast(ConfigManager.LEAVE_CREW.replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName())));
+                }
             }
         }
     }
@@ -541,6 +510,16 @@ public class Crew {
             .replaceText(builder -> builder.matchLiteral("{crew}").replacement(Component.text(this.name).decorate(TextDecoration.BOLD)))
             .replaceText(builder -> builder.matchLiteral("{level}").replacement(Component.text(this.level).decorate(TextDecoration.BOLD))));
         SoundUtilities.playSoundToAllPlayers(SoundUtilities.crewUpgradeSound, 0.20F, 0.7F);
+    }
+
+    public boolean isInHighTable() {
+        Map<String, Integer> sortedList = plugin.getData().generateLeaderboardJson();
+        int position = 0;
+        for (String id : sortedList.keySet()) {
+            if (++position > 5) break;
+            if (id.equals(this.name)) return true;
+        }
+        return false;
     }
 
     public static Crew deserialize(Map<String, Object> map, Crews data) {
