@@ -5,7 +5,7 @@ import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.ovclub.crews.managers.ConfigManager;
+import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.skirmish.Arena;
 import org.ovclub.crews.object.skirmish.Skirmish;
 import org.ovclub.crews.object.skirmish.SkirmishMatchup;

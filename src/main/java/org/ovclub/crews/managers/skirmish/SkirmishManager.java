@@ -9,7 +9,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.ovclub.crews.Crews;
 import org.ovclub.crews.listeners.PlayerResponseListener;
-import org.ovclub.crews.managers.ConfigManager;
+import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.skirmish.*;
 import org.ovclub.crews.runnables.CountdownTimer;

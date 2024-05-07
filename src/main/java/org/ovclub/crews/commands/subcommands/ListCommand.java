@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.ovclub.crews.Crews;
 import org.ovclub.crews.commands.SubCommand;
 import org.ovclub.crews.exceptions.NotInCrew;
+import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 
 import org.ovclub.crews.utilities.ChatUtilities;
@@ -54,7 +55,7 @@ public class ListCommand implements SubCommand {
                 pageNum = 1;
             }
 
-            Map<String, Integer> sortedList = data.generateLeaderboardJson();
+            Map<Crew, Integer> sortedList = data.generateLeaderboardJson();
             int totalEntries = sortedList.size();
             int entriesPerPage = 10;
             int lastPageNum = (int) Math.ceil(totalEntries / (double) entriesPerPage);
@@ -65,7 +66,7 @@ public class ListCommand implements SubCommand {
 
             int firstEntryIndex = (pageNum - 1) * entriesPerPage;
             int count = 0;
-            boolean isAlternateColor = false; // For alternating colors after the top 5
+            boolean isAlternateColor = false;
 
             TextComponent leaderBoardTitle = Component.text("=======[ ").color(TextColor.fromHexString("#BDBDBD"))
                 .append(Component.text((UnicodeCharacters.trophy + " CREWS LEADERBOARD " + UnicodeCharacters.trophy)).color(TextColor.fromHexString("#FFD54F"))
@@ -76,9 +77,9 @@ public class ListCommand implements SubCommand {
             TextComponent crewHighTableFooter = Component.text("-=-=-=-=-=-=-=-=-=-=-=-").color(TextColor.fromHexString("#BDBDBD"));
             p.sendMessage(leaderBoardTitle);
             p.sendMessage(Component.text(""));
-            for (Map.Entry<String, Integer> entry : sortedList.entrySet()) {
+            for (Map.Entry<Crew, Integer> entry : sortedList.entrySet()) {
                 if (count >= firstEntryIndex && count < firstEntryIndex + entriesPerPage) {
-                    String crewName = entry.getKey();
+                    String crewName = entry.getKey().getName();
                     int influence = entry.getValue();
 
                     if(count == 0) {
@@ -89,7 +90,7 @@ public class ListCommand implements SubCommand {
                     if(pageNum == 1 && count == 5) {
                         p.sendMessage(crewHighTableFooter);
                     }
-                    if (pageNum == 1 && count < 5) {
+                    if (entry.getKey().isInHighTable()) {
                         color = (count % 2 == 0) ? TextColor.fromHexString("#FFD700") : TextColor.fromHexString("#C5A500");
                     } else {
                         color = isAlternateColor ? TextColor.fromHexString("#90A4AE") : TextColor.fromHexString("#546E7A");

@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.ovclub.crews.Crews;
-import org.ovclub.crews.managers.ConfigManager;
+import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.managers.WarpCancelListener;
 import org.ovclub.crews.utilities.ChatUtilities;
 import org.ovclub.crews.utilities.SoundUtilities;
@@ -23,6 +23,10 @@ import java.util.*;
 
 public class Crew {
     private final Crews plugin;
+
+    private String uuid;
+    public String getUuid() {return uuid;}
+    public void setUuid() {this.uuid = UUID.randomUUID().toString();}
 
     //name
     private String name;
@@ -513,17 +517,12 @@ public class Crew {
     }
 
     public boolean isInHighTable() {
-        Map<String, Integer> sortedList = plugin.getData().generateLeaderboardJson();
-        int position = 0;
-        for (String id : sortedList.keySet()) {
-            if (++position > 5) break;
-            if (id.equals(this.name)) return true;
-        }
-        return false;
+        ArrayList<String> hightableCrews = plugin.getData().getHightableCrews();
+        return hightableCrews.contains(this.uuid);
     }
 
-    public static Crew deserialize(Map<String, Object> map, Crews data) {
-        return new Crew(map, data);
+    public static Crew deserialize(String uuid, Map<String, Object> map, Crews data) {
+        return new Crew(uuid, map, data);
     }
 
     //Hashcode
@@ -545,6 +544,7 @@ public class Crew {
         LocalDate currentDate = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 
+        this.uuid = UUID.randomUUID().toString();
         this.plugin = data;
         this.plugin.getData().addCPlayer(p, this);
         this.name = name;
@@ -566,7 +566,8 @@ public class Crew {
     }
 
     //Constructor for loaded crew
-    public Crew(Map<String, Object> map, final Crews data) {
+    public Crew(String uuid, Map<String, Object> map, final Crews data) {
+        this.uuid = uuid;
         this.plugin = data;
         this.name = (String) map.get("name");
         if (map.get("boss") != null) {

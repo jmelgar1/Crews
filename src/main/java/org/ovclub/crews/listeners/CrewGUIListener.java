@@ -1,10 +1,12 @@
 package org.ovclub.crews.listeners;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,12 +15,17 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.jline.utils.Log;
 import org.ovclub.crews.Crews;
-import org.ovclub.crews.managers.ConfigManager;
+import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
+import org.ovclub.crews.object.hightable.MultiplierItem;
 import org.ovclub.crews.object.skirmish.SkirmishTeam;
 import org.ovclub.crews.utilities.GUICreator;
+import org.ovclub.crews.utilities.HightableUtility;
+import org.ovclub.crews.utilities.skull.CustomHead;
 
 import java.util.*;
 
@@ -147,6 +154,146 @@ public class CrewGUIListener implements Listener {
                 }
             }
         }
+
+        /* High Table Listeners */
+        if(clickedItem.getType() == Material.NETHERITE_PICKAXE && e.getView().title().equals(Component.text("Crew High Table Vote"))) {
+            p.closeInventory();
+
+            MultiplierItem multiplierItem = plugin.getData().getMultiplierBySection("oreDrops");
+            GUICreator.createOreDropVoteGUI(multiplierItem.getValues(), data, p);
+        }
+        if(clickedItem.getType() == Material.DIAMOND_SWORD && e.getView().title().equals(Component.text("Crew High Table Vote"))) {
+            p.closeInventory();
+            GUICreator.createHighTableMobDropSelectionGUI(data, p);
+        }
+        if(clickedItem.getType() == Material.EXPERIENCE_BOTTLE && e.getView().title().equals(Component.text("Crew High Table Vote"))) {
+            p.closeInventory();
+            MultiplierItem multiplierItem = plugin.getData().getMultiplierBySection("xpDrops.activities");
+            GUICreator.createHighTableXPDropSelectionGUI(plugin, multiplierItem.getValues(), p);
+        }
+        if(clickedItem.getType() == Material.ANVIL && e.getView().title().equals(Component.text("Crew High Table Vote"))) {
+            p.closeInventory();
+            MultiplierItem multiplierItem = plugin.getData().getMultiplierBySection("discounts");
+            GUICreator.createHighTableDiscountsDropSelectionGUI(plugin, multiplierItem.getValues(), p);
+        }
+        if(clickedItem.getType() == Material.NETHERITE_CHESTPLATE && e.getView().title().equals(Component.text("Crew High Table Vote"))) {
+            p.closeInventory();
+            MultiplierItem multiplierItem = plugin.getData().getMultiplierBySection("mobDifficulty");
+            GUICreator.createMobDifficultyDropVoteGUI(multiplierItem.getValues(), data, p);
+        }
+        if(clickedItem.getType() == Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE) {
+            if(e.getView().title().equals(Component.text("Passive Mob Drop Rates")) ||
+                e.getView().title().equals(Component.text("Neutral Mob Drop Rates")) ||
+                e.getView().title().equals(Component.text("Hostile Mob Drop Rates"))) {
+                p.closeInventory();
+                GUICreator.createHighTableMobDropSelectionGUI(plugin.getData(), p);
+                return;
+            }
+            if(e.getView().title().equals(Component.text("Ore Drop Rates")) ||
+                e.getView().title().equals(Component.text("Mob Drop Rates")) ||
+                e.getView().title().equals(Component.text("Mob Difficulty Rates")) ||
+                e.getView().title().equals(Component.text("XP Drop Rates")) ||
+                e.getView().title().equals(Component.text("Discounts"))) {
+                p.closeInventory();
+                GUICreator.createHighTableVoteGUI(plugin.getData(), p);
+                return;
+            }
+            if (e.getView().title().equals(Component.text("Mob XP Drop Rates")) ||
+                e.getView().title().equals(Component.text("Ores & Blocks XP Drop Rates"))) {
+                p.closeInventory();
+                MultiplierItem multiplierItem = plugin.getData().getMultiplierBySection("xpDrops.activities");
+                GUICreator.createHighTableXPDropSelectionGUI(plugin, multiplierItem.getValues(), p);
+                return;
+            }
+        }
+        if(isMultiplier(clickedItem)) {
+            if(e.getView().title().equals(Component.text("Ore Drop Rates"))) {
+                recordVote(p, pCrew, "oreDrop", clickedItem.getType().name());
+                return;
+            }
+            if(e.getView().title().equals(Component.text("Passive Mob Drop Rates"))) {
+                recordVote(p, pCrew, "mobDrop", getHeadName(clickedItem));
+                return;
+            }
+            if(e.getView().title().equals(Component.text("Neutral Mob Drop Rates"))) {
+                recordVote(p, pCrew, "mobDrop", getHeadName(clickedItem));
+                return;
+            }
+            if(e.getView().title().equals(Component.text("Hostile Mob Drop Rates"))) {
+                recordVote(p, pCrew, "mobDrop", getHeadName(clickedItem));
+                return;
+            }
+            if(e.getView().title().equals(Component.text("Mob Difficulty Rates"))) {
+                recordVote(p, pCrew, "mobDifficulty", getHeadName(clickedItem));
+                return;
+            }
+            if(e.getView().title().equals(Component.text("XP Drop Rates"))) {
+                if(clickedItem.getType() != Material.GOLDEN_PICKAXE && clickedItem.getType() != Material.GOLDEN_SWORD) {
+                    recordVote(p, pCrew, "xpDrop", clickedItem.getType().name());
+                    return;
+                }
+            }
+            if(e.getView().title().equals(Component.text("Mob XP Drop Rates"))) {
+                recordVote(p, pCrew, "xpDrop", getHeadName(clickedItem));
+                return;
+            }
+            if(e.getView().title().equals(Component.text("Ores & Blocks XP Drop Rates"))) {
+                recordVote(p, pCrew, "xpDrop", clickedItem.getType().name());
+                return;
+            }
+            if(e.getView().title().equals(Component.text("Discounts"))) {
+                recordVote(p, pCrew, "discounts", clickedItem.getType().name());
+                return;
+            }
+        }
+        if (e.getView().title().equals(Component.text("Mob Drop Rates"))) {
+            if (clickedItem.getType() == Material.PLAYER_HEAD) {
+                ItemMeta meta = clickedItem.getItemMeta();
+                if (clickedItem.getType() != Material.PLAYER_HEAD || !(meta instanceof SkullMeta)) return;
+
+                SkullMeta skullMeta = (SkullMeta) clickedItem.getItemMeta();
+                PlayerProfile profile = skullMeta.getPlayerProfile();
+                if(profile != null) {
+                UUID skullUUID = profile.getId();
+                    for (CustomHead head : CustomHead.values()) {
+                        if (head.getUuid().equals(skullUUID)) {
+                            if(head.name().equals("COW")) {
+                                p.closeInventory();
+                                MultiplierItem multiplierItem = plugin.getData().getMultiplierBySection("mobDrops.passive");
+                                GUICreator.createPassiveMobDropVoteGUI(multiplierItem.getValues(), data, p);
+                                break;
+                            }
+                            if(head.name().equals("IRON_GOLEM")) {
+                                p.closeInventory();
+                                MultiplierItem multiplierItem = plugin.getData().getMultiplierBySection("mobDrops.neutral");
+                                GUICreator.createNeutralMobDropVoteGUI(multiplierItem.getValues(), data, p);
+                                break;
+                            }
+                            if(head.name().equals("CREEPER")) {
+                                p.closeInventory();
+                                MultiplierItem multiplierItem = plugin.getData().getMultiplierBySection("mobDrops.hostile");
+                                GUICreator.createHostileMobDropVoteGUI(multiplierItem.getValues(), data, p);
+                                break;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (e.getView().title().equals(Component.text("XP Drop Rates"))) {
+            if (clickedItem.getType() == Material.GOLDEN_SWORD) {
+                p.closeInventory();
+                MultiplierItem multiplierItem = plugin.getData().getMultiplierBySection("xpDrops.mobs");
+                GUICreator.createHighTableMobXPDropSelectionGUI(plugin, multiplierItem.getValues(), p);
+            }
+
+            if (clickedItem.getType() == Material.GOLDEN_PICKAXE) {
+                p.closeInventory();
+                MultiplierItem multiplierItem = plugin.getData().getMultiplierBySection("xpDrops.blocks");
+                GUICreator.createBlockXPDropVoteGUI(plugin, multiplierItem.getValues(), p);
+            }
+        }
     }
 
     @EventHandler
@@ -161,5 +308,47 @@ public class CrewGUIListener implements Listener {
     public void onInventoryClose(final InventoryCloseEvent e) {
         Player p = (Player) e.getPlayer();
         plugin.getData().getInventories().remove(p.getUniqueId());
+    }
+
+    private String getHeadName(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        if (item.getType() != Material.PLAYER_HEAD || !(meta instanceof SkullMeta)) return null;
+
+        SkullMeta skullMeta = (SkullMeta) item.getItemMeta();
+        PlayerProfile profile = skullMeta.getPlayerProfile();
+        if(profile != null) {
+            UUID skullUUID = profile.getId();
+            for (CustomHead head : CustomHead.values()) {
+                if (head.getUuid().equals(skullUUID)) {
+                    return head.name();
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean isMultiplier(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) {
+            return false;
+        }
+        ItemMeta meta = item.getItemMeta();
+        if (meta.hasLore()) {
+            List<Component> lore = meta.lore();
+            for (Component line : lore) {
+                String plainText = PlainTextComponentSerializer.plainText().serialize(line);
+                if (plainText.contains("Drop Multiplier") || plainText.contains("Discount") || plainText.contains("Difficulty Amplifier")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void recordVote(Player p, Crew crew, String category, String item) {
+        FileConfiguration config = plugin.getConfig();
+        String path = "high-table." + crew.getName() + ".votes." + p.getName() + "." + category + "." + item;
+        int currentCount = config.getInt(path, 0);
+        config.set(path, currentCount + 1);
+        plugin.saveConfig();
     }
 }

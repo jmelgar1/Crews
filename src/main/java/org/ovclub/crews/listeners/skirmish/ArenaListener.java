@@ -14,7 +14,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.ovclub.crews.Crews;
-import org.ovclub.crews.managers.ConfigManager;
+import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.managers.skirmish.ArenaManager;
 import org.ovclub.crews.object.skirmish.Arena;
 import org.ovclub.crews.object.skirmish.Skirmish;

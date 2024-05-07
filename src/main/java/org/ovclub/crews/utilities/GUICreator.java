@@ -1,8 +1,6 @@
 package org.ovclub.crews.utilities;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -11,6 +9,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -18,11 +17,13 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.ovclub.crews.managers.ConfigManager;
+import org.ovclub.crews.Crews;
+import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
+import org.ovclub.crews.utilities.skull.CustomHead;
+import org.ovclub.crews.utilities.skull.SkullCreator;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 public class GUICreator {
@@ -222,24 +223,6 @@ public class GUICreator {
 
         GUICreator.openInventory(p, data.getInventories().get(p.getUniqueId()));
     }
-//    public static void createSkirmishMatchBalancingGUI(PlayerData data, Player p, SkirmishTeam team1, SkirmishTeam team2) {
-//        Inventory inv = Bukkit.createInventory(null, 27, Component.text("Skirmish Match Balancing"));
-//        data.getInventories().put(p.getUniqueId(), inv);
-//
-//        List<String> teamOnePlayerUUIDs = team1.getPlayers();
-//        for (int i = 0; i < teamOnePlayerUUIDs.size() && i < 9; i++) {
-//            UUID uuid = UUID.fromString(teamOnePlayerUUIDs.get(i));
-//            getPlayerHead(i, uuid, Component.text("Player " + (i + 1)), inv);
-//        }
-//
-//        List<String> teamTwoPlayerUUIDs = team2.getPlayers();
-//        for (int i = 0; i < teamTwoPlayerUUIDs.size() && i < 9; i++) {
-//            UUID uuid = UUID.fromString(teamTwoPlayerUUIDs.get(i));
-//            getPlayerHead(18 + i, uuid, Component.text("Player " + (i + 1)), inv);
-//        }
-//
-//        GUICreator.openInventory(p, data.getInventories().get(p.getUniqueId()));
-//    }
     public static void createBannerSelectGUI(PlayerData data, Player p, Crew crew) {
         Inventory bannerInv = Bukkit.createInventory(null, 9, Component.text("Change Crew Banner"));
         ItemStack banner = Optional.ofNullable(crew.getBanner()).orElse(new ItemStack(Material.WHITE_BANNER));
@@ -261,50 +244,329 @@ public class GUICreator {
     }
 
     public static void createHighTableVoteGUI(PlayerData data, Player p) {
-        Inventory htGUI = Bukkit.createInventory(null, 9, Component.text("Crew High Table Vote"));
-        data.getInventories().put(p.getUniqueId(), htGUI);
+        Inventory inv = Bukkit.createInventory(null, 9, Component.text("Crew High Table Vote"));
+        data.getInventories().put(p.getUniqueId(), inv);
 
-        htGUI.setItem(0, createGuiItem(Material.NETHERITE_PICKAXE,
-            ComponentUtilities.createComponent("Ore Drop Rates", TextColor.fromHexString("#8D6E63")),
+        inv.setItem(0, createGuiItem(Material.NETHERITE_PICKAXE,
+            ComponentUtilities.createComponent("⛏ Ore Drop Rates", TextColor.fromHexString("#8D6E63")),
             Component.text(""),
-            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+            ComponentUtilities.createComponent("Click to view options.", NamedTextColor.DARK_GRAY)));
 
-        htGUI.setItem(2, createGuiItem(Material.DIAMOND_SWORD,
-            ComponentUtilities.createComponent("Mob Drop Rates", TextColor.fromHexString("#F44336")),
+        inv.setItem(2, createGuiItem(Material.DIAMOND_SWORD,
+            ComponentUtilities.createComponent("🗡 Mob Drop Rates", TextColor.fromHexString("#F44336")),
             Component.text(""),
-            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+            ComponentUtilities.createComponent("Click to view options.", NamedTextColor.DARK_GRAY)));
 
-        htGUI.setItem(4, createGuiItem(Material.NETHERITE_CHESTPLATE,
-            ComponentUtilities.createComponent("Mob Difficulty", TextColor.fromHexString("#3F51B5")),
+        inv.setItem(4, createGuiItem(Material.NETHERITE_CHESTPLATE,
+            ComponentUtilities.createComponent("☠ Mob Difficulty", TextColor.fromHexString("#3F51B5")),
             Component.text(""),
-            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+            ComponentUtilities.createComponent("Click to view options.", NamedTextColor.DARK_GRAY)));
 
-        htGUI.setItem(6, createGuiItem(Material.EXPERIENCE_BOTTLE,
-            ComponentUtilities.createComponent("XP Drop Rates", TextColor.fromHexString("#4CAF50")),
+        inv.setItem(6, createGuiItem(Material.EXPERIENCE_BOTTLE,
+            ComponentUtilities.createComponent("🔮 XP Drop Rates", TextColor.fromHexString("#4CAF50")),
             Component.text(""),
-            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+            ComponentUtilities.createComponent("Click to view options.", NamedTextColor.DARK_GRAY)));
 
-        htGUI.setItem(8, createGuiItem(Material.ANVIL,
-            ComponentUtilities.createComponent("Discounts", TextColor.fromHexString("#FFEB3B")),
+        inv.setItem(8, createGuiItem(Material.ANVIL,
+            ComponentUtilities.createComponent("🧰 Discounts", TextColor.fromHexString("#FFEB3B")),
             Component.text(""),
-            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+            ComponentUtilities.createComponent("Click to view options.", NamedTextColor.DARK_GRAY)));
 
-        GUICreator.openInventory(p, htGUI);
+        GUICreator.openInventory(p, inv);
     }
 
-    public static void createPassiveMobDropVoteGUI(PlayerData data, Player p) {
-        Inventory htInv = Bukkit.createInventory(null, 54, Component.text("VOSOIDVKASDK"));
-        data.getInventories().put(p.getUniqueId(), htInv);
+    public static void createHighTableMobDropSelectionGUI(PlayerData data, Player p) {
+        Inventory inv = Bukkit.createInventory(null, 9, Component.text("Mob Drop Rates"));
+        data.getInventories().put(p.getUniqueId(), inv);
 
-        //Cat
-        htInv.setItem(0, createGuiItem(createCustomSkull("dd8c5fb1326b4065b185c849713eb62527b9b8a5ba3ad62cef2f53154e42a277"),
-            ComponentUtilities.createComponentWithPlaceHolder("• Mob Type: ", NamedTextColor.GRAY, "Cat", NamedTextColor.YELLOW),
+        inv.setItem(2, createGuiItem(SkullCreator.getCustomHead(CustomHead.COW),
+            ComponentUtilities.createComponent("☆ Passive Mobs ☆", NamedTextColor.DARK_GREEN),
             Component.text(""),
-            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "Drop Multiplier: ", NamedTextColor.WHITE, "1.5x", NamedTextColor.AQUA),
+            ComponentUtilities.createComponent("Click to view options.", NamedTextColor.DARK_GRAY)));
+
+        inv.setItem(4, createGuiItem(SkullCreator.getCustomHead(CustomHead.IRON_GOLEM),
+            ComponentUtilities.createComponent("☆ Neutral Mobs ☆", NamedTextColor.YELLOW),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to view options.", NamedTextColor.DARK_GRAY)));
+
+        inv.setItem(6, createGuiItem(SkullCreator.getCustomHead(CustomHead.CREEPER),
+            ComponentUtilities.createComponent("☆ Hostile Mobs ☆", NamedTextColor.DARK_RED),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to view options.", NamedTextColor.DARK_GRAY)));
+
+        inv.setItem(8, createGuiItem(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE,
+            ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
+            ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
+
+        GUICreator.openInventory(p, inv);
+    }
+    public static void createHighTableXPDropSelectionGUI(Crews plugin, Map<String, Double> difficultyMultipliers, Player p) {
+        PlayerData data = plugin.getData();
+        Inventory inv = Bukkit.createInventory(null, 27, Component.text("XP Drop Rates"));
+        data.getInventories().put(p.getUniqueId(), inv);
+
+        inv.setItem(1, createGuiItem(Material.GOLDEN_SWORD,
+            ComponentUtilities.createComponent("☆ XP from Mobs ☆", NamedTextColor.DARK_GREEN),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to view options.", NamedTextColor.DARK_GRAY)));
+
+        inv.setItem(3, createGuiItem(Material.GOLDEN_PICKAXE,
+            ComponentUtilities.createComponent("☆ XP from Ores & Blocks ☆", NamedTextColor.AQUA),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to view options.", NamedTextColor.DARK_GRAY)));
+
+        inv.setItem(5, createGuiItem(Material.EMERALD,
+            ComponentUtilities.createComponent("☆ XP from Trading ☆", NamedTextColor.GREEN),
+            Component.text(""),
+            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", difficultyMultipliers.get(Material.EMERALD.name())) + "x", NamedTextColor.AQUA),
             Component.text(""),
             ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
 
-        GUICreator.openInventory(p, htInv);
+        inv.setItem(7, createGuiItem(Material.FISHING_ROD,
+            ComponentUtilities.createComponent("☆ XP from Fishing ☆", NamedTextColor.BLUE),
+            Component.text(""),
+            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", difficultyMultipliers.get(Material.FISHING_ROD.name())) + "x", NamedTextColor.AQUA),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+        inv.setItem(11, createGuiItem(Material.WHEAT,
+            ComponentUtilities.createComponent("☆ XP from Breeding ☆", NamedTextColor.RED),
+            Component.text(""),
+            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", difficultyMultipliers.get(Material.WHEAT.name())) + "x", NamedTextColor.AQUA),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+        inv.setItem(13, createGuiItem(Material.FURNACE,
+            ComponentUtilities.createComponent("☆ XP from Smelting & Cooking ☆", NamedTextColor.GRAY),
+            Component.text(""),
+            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", difficultyMultipliers.get(Material.FURNACE.name())) + "x", NamedTextColor.AQUA),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+        inv.setItem(15, createGuiItem(Material.GRINDSTONE,
+            ComponentUtilities.createComponent("☆ XP from Grindstones ☆", NamedTextColor.YELLOW),
+            Component.text(""),
+            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", difficultyMultipliers.get(Material.GRINDSTONE.name())) + "x", NamedTextColor.AQUA),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+        inv.setItem(26, createGuiItem(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE,
+            ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
+            ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
+
+        GUICreator.openInventory(p, inv);
+    }
+    public static void createHighTableMobXPDropSelectionGUI(Crews plugin, Map<String, Double> multipliers, Player p) {
+        PlayerData data = plugin.getData();
+        Inventory inv = Bukkit.createInventory(null, 9, Component.text("Mob XP Drop Rates"));
+        data.getInventories().put(p.getUniqueId(), inv);
+
+        inv.setItem(2, createGuiItem(SkullCreator.getCustomHead(CustomHead.COW),
+            ComponentUtilities.createComponent("☆ Passive Mobs ☆", NamedTextColor.DARK_GREEN),
+            Component.text(""),
+            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", multipliers.get(CustomHead.COW.name())) + "x", NamedTextColor.AQUA),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+        inv.setItem(4, createGuiItem(SkullCreator.getCustomHead(CustomHead.IRON_GOLEM),
+            ComponentUtilities.createComponent("☆ Neutral Mobs ☆", NamedTextColor.YELLOW),
+            Component.text(""),
+            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", multipliers.get(CustomHead.IRON_GOLEM.name())) + "x", NamedTextColor.AQUA),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+        inv.setItem(6, createGuiItem(SkullCreator.getCustomHead(CustomHead.CREEPER),
+            ComponentUtilities.createComponent("☆ Hostile Mobs ☆", NamedTextColor.DARK_RED),
+            Component.text(""),
+            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", multipliers.get(CustomHead.CREEPER.name())) + "x", NamedTextColor.AQUA),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+        inv.setItem(8, createGuiItem(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE,
+            ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
+            ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
+
+        GUICreator.openInventory(p, inv);
+    }
+    public static void createBlockXPDropVoteGUI(Crews plugin, Map<String, Double> multipliers, Player p) {
+        PlayerData data = plugin.getData();
+        Inventory inv = Bukkit.createInventory(null, 27, Component.text("Ores & Blocks XP Drop Rates"));
+        data.getInventories().put(p.getUniqueId(), inv);
+
+        int slotIndex = 0;
+        for(Map.Entry<String, Double> entry : multipliers.entrySet()) {
+            String name;
+            if(entry.getKey().equals("DIAMOND_ORE")) {
+                name = "Overworld Ores";
+            } else if(entry.getKey().equals("ANCIENT_DEBRIS")) {
+                name = "Nether Ores";
+            } else {
+                name = entry.getKey();
+            }
+            inv.setItem(slotIndex, createGuiItem(Material.valueOf(entry.getKey()),
+                ComponentUtilities.createComponentWithPlaceHolder("• Block Type: ", NamedTextColor.GRAY, name, NamedTextColor.YELLOW),
+                Component.text(""),
+                ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", entry.getValue()) + "x", NamedTextColor.AQUA),
+                Component.text(""),
+                ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+            slotIndex += 2;
+        }
+
+        inv.setItem(26, createGuiItem(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE,
+            ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
+            ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
+
+        GUICreator.openInventory(p, inv);
+    }
+    public static void createHighTableDiscountsDropSelectionGUI(Crews plugin, Map<String, Double> discounts, Player p) {
+        Inventory inv = Bukkit.createInventory(null, 9, Component.text("Discounts"));
+        plugin.getData().getInventories().put(p.getUniqueId(), inv);
+
+        inv.setItem(2, createGuiItem(Material.ENCHANTING_TABLE,
+            ComponentUtilities.createComponent("☆ Enchant Discount ☆", NamedTextColor.AQUA),
+            Component.text(""),
+            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "Discount: ", NamedTextColor.WHITE, String.format("%.2f", discounts.get(Material.ENCHANTING_TABLE.name())) + "x", NamedTextColor.AQUA),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+        inv.setItem(4, createGuiItem(Material.ANVIL,
+            ComponentUtilities.createComponent("☆ Repair Discount ☆", NamedTextColor.GRAY),
+            Component.text(""),
+            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "Discount: ", NamedTextColor.WHITE, String.format("%.2f", discounts.get(Material.ANVIL.name())) + "x", NamedTextColor.AQUA),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+        inv.setItem(6, createGuiItem(Material.EMERALD,
+            ComponentUtilities.createComponent("☆ Trading Discount ☆", NamedTextColor.GREEN),
+            Component.text(""),
+            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "Discount: ", NamedTextColor.WHITE, String.format("%.2f", discounts.get(Material.EMERALD.name())) + "x", NamedTextColor.AQUA),
+            Component.text(""),
+            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+        inv.setItem(8, createGuiItem(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE,
+            ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
+            ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
+
+        GUICreator.openInventory(p, inv);
+    }
+    public static void createPassiveMobDropVoteGUI(Map<String, Double> passiveMultipliers, PlayerData data, Player p) {
+        Inventory inv = Bukkit.createInventory(null, 54, Component.text("Passive Mob Drop Rates"));
+        data.getInventories().put(p.getUniqueId(), inv);
+
+        int slotIndex = 0;
+        for (CustomHead head : CustomHead.values()) {
+            if(head.getCategory().equals(CustomHead.Category.PASSIVE)) {
+                inv.setItem(slotIndex, createGuiItem(SkullCreator.getCustomHead(head),
+                    ComponentUtilities.createComponentWithPlaceHolder("• Mob Type: ", NamedTextColor.GRAY, head.name(), NamedTextColor.YELLOW),
+                    Component.text(""),
+                    ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", passiveMultipliers.get(head.name())) + "x", NamedTextColor.AQUA),
+                    Component.text(""),
+                    ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+                slotIndex += 2;
+            }
+        }
+
+        inv.setItem(53, createGuiItem(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE,
+            ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
+            ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
+
+        GUICreator.openInventory(p, inv);
+    }
+    public static void createNeutralMobDropVoteGUI(Map<String, Double> neutralMultipliers, PlayerData data, Player p) {
+        Inventory inv = Bukkit.createInventory(null, 54, Component.text("Neutral Mob Drop Rates"));
+        data.getInventories().put(p.getUniqueId(), inv);
+
+        int slotIndex = 0;
+        for (CustomHead head : CustomHead.values()) {
+            if(head.getCategory().equals(CustomHead.Category.NEUTRAL)) {
+                inv.setItem(slotIndex, createGuiItem(SkullCreator.getCustomHead(head),
+                    ComponentUtilities.createComponentWithPlaceHolder("• Mob Type: ", NamedTextColor.GRAY, head.name(), NamedTextColor.YELLOW),
+                    Component.text(""),
+                    ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", neutralMultipliers.get(head.name())) + "x", NamedTextColor.AQUA),
+                    Component.text(""),
+                    ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+                slotIndex += 2;
+            }
+        }
+
+        inv.setItem(53, createGuiItem(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE,
+            ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
+            ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
+
+        GUICreator.openInventory(p, inv);
+    }
+    public static void createHostileMobDropVoteGUI(Map<String, Double> hostileMultipliers, PlayerData data, Player p) {
+        Inventory inv = Bukkit.createInventory(null, 54, Component.text("Hostile Mob Drop Rates"));
+        data.getInventories().put(p.getUniqueId(), inv);
+
+        int slotIndex = 0;
+        for (CustomHead head : CustomHead.values()) {
+            if(head.getCategory().equals(CustomHead.Category.HOSTILE)) {
+                inv.setItem(slotIndex, createGuiItem(SkullCreator.getCustomHead(head),
+                    ComponentUtilities.createComponentWithPlaceHolder("• Mob Type: ", NamedTextColor.GRAY, head.name(), NamedTextColor.YELLOW),
+                    Component.text(""),
+                    ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", hostileMultipliers.get(head.name())) + "x", NamedTextColor.AQUA),
+                    Component.text(""),
+                    ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+                slotIndex += 2;
+            }
+        }
+
+        inv.setItem(53, createGuiItem(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE,
+            ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
+            ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
+
+        GUICreator.openInventory(p, inv);
+    }
+    public static void createMobDifficultyDropVoteGUI(Map<String, Double> difficultyMultipliers, PlayerData data, Player p) {
+        Inventory inv = Bukkit.createInventory(null, 54, Component.text("Mob Difficulty Rates"));
+        data.getInventories().put(p.getUniqueId(), inv);
+
+        int slotIndex = 0;
+        for (CustomHead head : CustomHead.values()) {
+            if(head.getCategory().equals(CustomHead.Category.HOSTILE)) {
+                inv.setItem(slotIndex, createGuiItem(SkullCreator.getCustomHead(head),
+                    ComponentUtilities.createComponentWithPlaceHolder("• Mob Type: ", NamedTextColor.GRAY, head.name(), NamedTextColor.YELLOW),
+                    Component.text(""),
+                    ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "Difficulty Amplifier: ", NamedTextColor.WHITE, String.format("%.2f", difficultyMultipliers.get(head.name())) + "x", NamedTextColor.AQUA),
+                    Component.text(""),
+                    ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+                slotIndex += 2;
+            }
+        }
+
+        inv.setItem(53, createGuiItem(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE,
+            ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
+            ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
+
+        GUICreator.openInventory(p, inv);
+    }
+    public static void createOreDropVoteGUI(Map<String, Double> oreDropMultipliers, PlayerData data, Player p) {
+        Inventory inv = Bukkit.createInventory(null, 27, Component.text("Ore Drop Rates"));
+        data.getInventories().put(p.getUniqueId(), inv);
+
+        int slotIndex = 0;
+            for(Map.Entry<String, Double> entry : oreDropMultipliers.entrySet()) {
+                inv.setItem(slotIndex, createGuiItem(Material.valueOf(entry.getKey()),
+                    ComponentUtilities.createComponentWithPlaceHolder("• Ore Type: ", NamedTextColor.GRAY, entry.getKey(), NamedTextColor.YELLOW),
+                    Component.text(""),
+                    ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", entry.getValue()) + "x", NamedTextColor.AQUA),
+                    Component.text(""),
+                    ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+
+                slotIndex += 2;
+            }
+
+        inv.setItem(26, createGuiItem(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE,
+            ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
+            ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
+
+        GUICreator.openInventory(p, inv);
     }
     protected static ItemStack createGuiItem(final Material material, final TextComponent name, final TextComponent... lore) {
         final ItemStack item = new ItemStack(material, 1);
@@ -312,6 +574,7 @@ public class GUICreator {
         meta.displayName(name);
         meta.lore(Arrays.asList(lore));
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        meta.addItemFlags(ItemFlag.HIDE_ITEM_SPECIFICS);
         item.setItemMeta(meta);
 
         return item;
@@ -324,6 +587,7 @@ public class GUICreator {
             meta.displayName(name);
             meta.lore(Arrays.asList(lore));
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            meta.addItemFlags(ItemFlag.HIDE_ITEM_SPECIFICS);
             item.setItemMeta(meta);
         }
         return item;
@@ -332,7 +596,6 @@ public class GUICreator {
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) skull.getItemMeta();
         if (meta != null) {
-            // Fetch the player's profile using the UUID
             PlayerProfile profile = Bukkit.createProfile(playerUUID);
             meta.setPlayerProfile(profile);
 
@@ -342,37 +605,6 @@ public class GUICreator {
         }
 
         inventory.setItem(slot, skull);
-    }
-    public static ItemStack createGuiSkull(final Component IGN, final Component displayName, final Component... lore) {
-        ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
-
-        ItemMeta meta = skull.getItemMeta();
-        if (meta != null) {
-
-            meta.displayName(displayName);
-            meta.lore(Arrays.asList(lore));
-            skull.setItemMeta(meta);
-        }
-
-        return skull;
-    }
-    public static ItemStack createCustomSkull(String textureHash) {
-        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
-        SkullMeta skullMeta = (SkullMeta) head.getItemMeta();
-        GameProfile profile = new GameProfile(UUID.randomUUID(), "CustomSkull");
-        String base64EncodedTexture = java.util.Base64.getEncoder().encodeToString(String.format("{textures:{SKIN:{url:\"http://textures.minecraft.net/texture/%s\"}}}", textureHash).getBytes());
-        profile.getProperties().put("textures", new Property("textures", base64EncodedTexture));
-
-        Field profileField;
-        try {
-            profileField = skullMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(skullMeta, profile);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        head.setItemMeta(skullMeta);
-        return head;
     }
     public static void openInventory(final HumanEntity ent, Inventory inv) {
         ent.openInventory(inv);

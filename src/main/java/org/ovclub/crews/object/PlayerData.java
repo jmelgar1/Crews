@@ -6,8 +6,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.ovclub.crews.Crews;
 import org.ovclub.crews.exceptions.NotInCrew;
-import org.ovclub.crews.managers.ConfigManager;
+import org.ovclub.crews.managers.file.ConfigManager;
+import org.ovclub.crews.object.hightable.MultiplierItem;
 import org.ovclub.crews.utilities.GeneralUtilities;
 
 import java.util.*;
@@ -22,6 +24,8 @@ public class PlayerData {
         inCrewChat = new ArrayList<>();
         inventories = new HashMap<>();
         selectedForQueue = new HashMap<>();
+        multipliers = new ArrayList<>();
+        hightableCrews = new ArrayList<>();
 
         // In case of server /reload
         for(Player p : Bukkit.getOnlinePlayers()){
@@ -37,6 +41,35 @@ public class PlayerData {
     private final HashMap<UUID, Inventory> inventories;
     public HashMap<UUID, Inventory> getInventories(){
         return inventories;
+    }
+
+    /*
+    Hightable Multipliers
+     */
+    private final ArrayList<MultiplierItem> multipliers;
+    public ArrayList<MultiplierItem> getMultipliers() { return multipliers; }
+
+    public void addMultiplier(MultiplierItem item){
+        multipliers.add(item);
+    }
+
+    public MultiplierItem getMultiplierBySection(String section) {
+        for (MultiplierItem item : multipliers) {
+            if (item.getSection().equals("multipliers." + section)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    /*
+    Hightable Crews
+     */
+    private final ArrayList<String> hightableCrews;
+    public ArrayList<String> getHightableCrews() { return hightableCrews; }
+
+    public void addHightableCrew(String s){
+        hightableCrews.add(s);
     }
 
     private final HashMap<Crew, ArrayList<String>> selectedForQueue;
@@ -240,11 +273,11 @@ public class PlayerData {
 //        }
 //    }
 
-    public Map<String, Integer> generateLeaderboardJson() {
-        HashMap<String, Integer> crewAndScore = new HashMap<>();
+    public Map<Crew, Integer> generateLeaderboardJson() {
+        HashMap<Crew, Integer> crewAndScore = new HashMap<>();
         for(Crew crew : crews) {
             int influence = crew.getInfluence();
-            crewAndScore.put(crew.getName(), influence);
+            crewAndScore.put(crew, influence);
         }
         return GeneralUtilities.sortByComparator(crewAndScore, false);
     }

@@ -1,21 +1,15 @@
-package org.ovclub.crews.managers;
+package org.ovclub.crews.managers.file;
 
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.EntityType;
 import org.ovclub.crews.utilities.UnicodeCharacters;
-
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import static org.bukkit.ChatColor.translateAlternateColorCodes;
 
 public class ConfigManager {
-    public static Map<EntityType, Double> mobMultipliers = new HashMap<>();
-
     public static void loadConfig(final FileConfiguration config){
         MAX_MEMBERS = config.getInt("max-members");
         COMMANDS_PER_PAGE = config.getInt("commands-per-page");
@@ -259,26 +253,4 @@ public class ConfigManager {
     public static TextComponent DISABLED_COMMAND_IN_ARENA;
     public static TextComponent PLAYER_WILL_BE_BANNED;
     public static TextComponent PLAYER_BANNED;
-
-    private static void loadCategorizedMobMultipliers(FileConfiguration config) {
-        if (config.contains("mob-multipliers")) {
-            config.getConfigurationSection("mob-multipliers").getKeys(false).forEach(categoryKey -> {
-                if (config.contains("mob-multipliers." + categoryKey)) {
-                    config.getConfigurationSection("mob-multipliers." + categoryKey).getKeys(false).forEach(mobKey -> {
-                        try {
-                            EntityType type = EntityType.valueOf(mobKey.toUpperCase());
-                            double multiplier = config.getDouble("mob-multipliers." + categoryKey + "." + mobKey);
-                            mobMultipliers.put(type, multiplier);
-                        } catch (IllegalArgumentException e) {
-                            System.out.println("Error loading multiplier for " + mobKey + ": " + e.getMessage());
-                        }
-                    });
-                }
-            });
-        }
-    }
-
-    public static double getMultiplierForEntityType(EntityType type) {
-        return mobMultipliers.getOrDefault(type, 1.0);
-    }
 }

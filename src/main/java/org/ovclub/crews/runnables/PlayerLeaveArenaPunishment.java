@@ -2,7 +2,7 @@ package org.ovclub.crews.runnables;
 
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.ovclub.crews.managers.ConfigManager;
+import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.managers.skirmish.ArenaManager;
 import org.ovclub.crews.object.skirmish.Arena;
 import org.ovclub.crews.object.skirmish.SkirmishMatchup;

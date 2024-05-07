@@ -45,9 +45,10 @@ public class CrewsFile {
                 return;
             }
             for (Map.Entry<String, JsonElement> entry : crewsData.entrySet()) {
+                String uuid = entry.getKey();
                 Type type = new TypeToken<Map<String, Object>>() {}.getType();
                 Map<String, Object> crewMap = gson.fromJson(entry.getValue(), type);
-                Crew loadedCrew = Crew.deserialize(crewMap, plugin);
+                Crew loadedCrew = Crew.deserialize(uuid, crewMap, plugin);
                 plugin.getData().addCrew(loadedCrew);
             }
         } catch (IOException e) {
@@ -64,7 +65,10 @@ public class CrewsFile {
         JsonObject allCrewsJson = new JsonObject();
         for (Crew c : plugin.getData().getCrews()) {
             JsonObject crewJson = gson.toJsonTree(c).getAsJsonObject();
-            allCrewsJson.add(c.getName(), crewJson);
+            if(c.getUuid() == null) {
+                c.setUuid();
+            }
+            allCrewsJson.add(c.getUuid(), crewJson);
         }
         try (FileWriter file = new FileWriter(crewsFile)) {
             gson.toJson(allCrewsJson, file);

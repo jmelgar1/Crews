@@ -7,13 +7,16 @@ import org.ovclub.crews.file.CrewsFile;
 import org.ovclub.crews.listeners.CrewGUIListener;
 import org.ovclub.crews.listeners.PlayerEvents;
 import org.ovclub.crews.listeners.skirmish.ArenaListener;
-import org.ovclub.crews.managers.ConfigManager;
+import org.ovclub.crews.managers.file.ConfigManager;
+import org.ovclub.crews.managers.file.HighTableConfigManager;
+import org.ovclub.crews.managers.file.HightableFile;
 import org.ovclub.crews.managers.hightable.DailyMultiplierManager;
 import org.ovclub.crews.managers.skirmish.ArenaManager;
 import org.ovclub.crews.managers.skirmish.SkirmishManager;
 import org.ovclub.crews.object.PlayerData;
 
 import org.ovclub.crews.runnables.MatchSearchTask;
+import org.ovclub.crews.runnables.ResetHighTableVote;
 import org.ovclub.crews.runnables.RunnableManager;
 import org.ovclub.crews.runnables.UpdateScoreboard;
 
@@ -26,7 +29,11 @@ public final class Crews extends JavaPlugin implements Listener {
 
     private CrewsFile crewsFile;
 
+    private HightableFile hightableFile;
+    public HightableFile getHightableFile() { return hightableFile;}
+
     private DailyMultiplierManager multiplierManager;
+    public DailyMultiplierManager getMultiplierManager() { return multiplierManager; }
 
     private SkirmishManager skirmishManager;
     public SkirmishManager getSkirmishManager(){return skirmishManager;}
@@ -45,6 +52,8 @@ public final class Crews extends JavaPlugin implements Listener {
         this.arenaManager = new ArenaManager();
         this.runnableManager = new RunnableManager(this);
         this.skirmishManager = new SkirmishManager(this);
+        multiplierManager = new DailyMultiplierManager();
+        ResetHighTableVote resetHighTableVote = new ResetHighTableVote(this, multiplierManager);
         MatchSearchTask matchSearchTask = new MatchSearchTask(this);
         UpdateScoreboard updateScoreboard = new UpdateScoreboard(this);
         getCommand("crews").setExecutor(new CommandManager(this));
@@ -55,17 +64,23 @@ public final class Crews extends JavaPlugin implements Listener {
         crewsFile = new CrewsFile(this);
         crewsFile.loadCrews();
 
+        hightableFile = new HightableFile(this);
+        hightableFile.loadHightable();
+
+        HighTableConfigManager.initialize(this);
+        HighTableConfigManager.saveDefaultHighTableConfig();
+
         getServer().getPluginManager().registerEvents(new PlayerEvents(this), this);
         getServer().getPluginManager().registerEvents(new CrewGUIListener(this), this);
         getServer().getPluginManager().registerEvents(new ArenaListener(this), this);
 
         matchSearchTask.runTaskTimer(this, 0L, 20L * 60);
-
-        multiplierManager = new DailyMultiplierManager();
+        resetHighTableVote.run();
     }
 
     public void onDisable() {
         System.out.println("Crews Disabled!");
         crewsFile.saveCrews();
+        HighTableConfigManager.saveHighTableConfig();
     }
 }

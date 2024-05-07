@@ -21,6 +21,8 @@ public class WeightedRandomMultiplier {
 
     public double next() {
         double value = random.nextDouble() * total;
-        return map.ceilingEntry(value).getValue();
+        double result = map.ceilingEntry(value).getValue();
+        result = Math.round(result * 100.0) / 100.0;
+        return Double.parseDouble(String.format("%.2f", result));
     }
 }

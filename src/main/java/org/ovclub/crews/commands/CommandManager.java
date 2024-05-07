@@ -18,7 +18,7 @@ import org.ovclub.crews.commands.subcommands.*;
 
 import org.ovclub.crews.commands.subcommands.skirmish.*;
 import org.ovclub.crews.exceptions.NotInCrew;
-import org.ovclub.crews.managers.ConfigManager;
+import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.utilities.UnicodeCharacters;
 
 public class CommandManager implements CommandExecutor {

@@ -1,19 +1,13 @@
 package org.ovclub.crews.commands.subcommands;
 
-import org.apache.logging.log4j.core.net.MailManager;
 import org.bukkit.entity.Player;
 import org.ovclub.crews.Crews;
 import org.ovclub.crews.commands.SubCommand;
 import org.ovclub.crews.exceptions.NotInCrew;
-import org.ovclub.crews.managers.ConfigManager;
+import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 import org.ovclub.crews.utilities.ChatUtilities;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
 
 public class MailCommand implements SubCommand {
 
