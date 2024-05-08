@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.ovclub.crews.Crews;
 import org.ovclub.crews.exceptions.NotInCrew;
 import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.hightable.MultiplierItem;
@@ -41,6 +40,14 @@ public class PlayerData {
     private final HashMap<UUID, Inventory> inventories;
     public HashMap<UUID, Inventory> getInventories(){
         return inventories;
+    }
+
+    public void replaceInventory(UUID uuid, Inventory inv){
+        if(inventories.get(uuid) != null) {
+            inventories.replace(uuid, inv);
+        } else {
+            inventories.put(uuid, inv);
+        }
     }
 
     /*

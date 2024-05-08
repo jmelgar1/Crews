@@ -9,7 +9,6 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -245,7 +244,7 @@ public class GUICreator {
 
     public static void createHighTableVoteGUI(PlayerData data, Player p) {
         Inventory inv = Bukkit.createInventory(null, 9, Component.text("Crew High Table Vote"));
-        data.getInventories().put(p.getUniqueId(), inv);
+        data.replaceInventory(p.getUniqueId(), inv);
 
         inv.setItem(0, createGuiItem(Material.NETHERITE_PICKAXE,
             ComponentUtilities.createComponent("⛏ Ore Drop Rates", TextColor.fromHexString("#8D6E63")),
@@ -277,7 +276,7 @@ public class GUICreator {
 
     public static void createHighTableMobDropSelectionGUI(PlayerData data, Player p) {
         Inventory inv = Bukkit.createInventory(null, 9, Component.text("Mob Drop Rates"));
-        data.getInventories().put(p.getUniqueId(), inv);
+        data.replaceInventory(p.getUniqueId(), inv);
 
         inv.setItem(2, createGuiItem(SkullCreator.getCustomHead(CustomHead.COW),
             ComponentUtilities.createComponent("☆ Passive Mobs ☆", NamedTextColor.DARK_GREEN),
@@ -303,7 +302,7 @@ public class GUICreator {
     public static void createHighTableXPDropSelectionGUI(Crews plugin, Map<String, Double> difficultyMultipliers, Player p) {
         PlayerData data = plugin.getData();
         Inventory inv = Bukkit.createInventory(null, 27, Component.text("XP Drop Rates"));
-        data.getInventories().put(p.getUniqueId(), inv);
+        data.replaceInventory(p.getUniqueId(), inv);
 
         inv.setItem(1, createGuiItem(Material.GOLDEN_SWORD,
             ComponentUtilities.createComponent("☆ XP from Mobs ☆", NamedTextColor.DARK_GREEN),
@@ -320,35 +319,36 @@ public class GUICreator {
             Component.text(""),
             ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", difficultyMultipliers.get(Material.EMERALD.name())) + "x", NamedTextColor.AQUA),
             Component.text(""),
-            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+            HightableUtility.isSelected(p, "xpDrops", "EMERALD")));
 
         inv.setItem(7, createGuiItem(Material.FISHING_ROD,
             ComponentUtilities.createComponent("☆ XP from Fishing ☆", NamedTextColor.BLUE),
             Component.text(""),
             ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", difficultyMultipliers.get(Material.FISHING_ROD.name())) + "x", NamedTextColor.AQUA),
             Component.text(""),
-            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+            HightableUtility.isSelected(p, "xpDrops", "FISHING_ROD")));
 
         inv.setItem(11, createGuiItem(Material.WHEAT,
             ComponentUtilities.createComponent("☆ XP from Breeding ☆", NamedTextColor.RED),
             Component.text(""),
             ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", difficultyMultipliers.get(Material.WHEAT.name())) + "x", NamedTextColor.AQUA),
             Component.text(""),
-            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+            HightableUtility.isSelected(p, "xpDrops", "WHEAT")));
 
         inv.setItem(13, createGuiItem(Material.FURNACE,
             ComponentUtilities.createComponent("☆ XP from Smelting & Cooking ☆", NamedTextColor.GRAY),
             Component.text(""),
             ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", difficultyMultipliers.get(Material.FURNACE.name())) + "x", NamedTextColor.AQUA),
             Component.text(""),
-            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+            HightableUtility.isSelected(p, "xpDrops", "FURNACE")));
 
         inv.setItem(15, createGuiItem(Material.GRINDSTONE,
             ComponentUtilities.createComponent("☆ XP from Grindstones ☆", NamedTextColor.YELLOW),
             Component.text(""),
             ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", difficultyMultipliers.get(Material.GRINDSTONE.name())) + "x", NamedTextColor.AQUA),
             Component.text(""),
-            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+            HightableUtility.isSelected(p, "xpDrops", "GRINDSTONE")));
+
 
         inv.setItem(26, createGuiItem(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE,
             ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
@@ -359,28 +359,30 @@ public class GUICreator {
     public static void createHighTableMobXPDropSelectionGUI(Crews plugin, Map<String, Double> multipliers, Player p) {
         PlayerData data = plugin.getData();
         Inventory inv = Bukkit.createInventory(null, 9, Component.text("Mob XP Drop Rates"));
-        data.getInventories().put(p.getUniqueId(), inv);
+        data.replaceInventory(p.getUniqueId(), inv);
 
         inv.setItem(2, createGuiItem(SkullCreator.getCustomHead(CustomHead.COW),
             ComponentUtilities.createComponent("☆ Passive Mobs ☆", NamedTextColor.DARK_GREEN),
             Component.text(""),
-            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", multipliers.get(CustomHead.COW.name())) + "x", NamedTextColor.AQUA),
+            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", multipliers.get("PASSIVE")) + "x", NamedTextColor.AQUA),
             Component.text(""),
-            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+            HightableUtility.isSelected(p, "xpDrops", "PASSIVE")));
+
 
         inv.setItem(4, createGuiItem(SkullCreator.getCustomHead(CustomHead.IRON_GOLEM),
             ComponentUtilities.createComponent("☆ Neutral Mobs ☆", NamedTextColor.YELLOW),
             Component.text(""),
-            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", multipliers.get(CustomHead.IRON_GOLEM.name())) + "x", NamedTextColor.AQUA),
+            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", multipliers.get("NEUTRAL")) + "x", NamedTextColor.AQUA),
             Component.text(""),
-            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+            HightableUtility.isSelected(p, "xpDrops", "NEUTRAL")));
+
 
         inv.setItem(6, createGuiItem(SkullCreator.getCustomHead(CustomHead.CREEPER),
             ComponentUtilities.createComponent("☆ Hostile Mobs ☆", NamedTextColor.DARK_RED),
             Component.text(""),
-            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", multipliers.get(CustomHead.CREEPER.name())) + "x", NamedTextColor.AQUA),
+            ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", multipliers.get("HOSTILE")) + "x", NamedTextColor.AQUA),
             Component.text(""),
-            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+            HightableUtility.isSelected(p, "xpDrops", "HOSTILE")));
 
         inv.setItem(8, createGuiItem(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE,
             ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
@@ -391,7 +393,7 @@ public class GUICreator {
     public static void createBlockXPDropVoteGUI(Crews plugin, Map<String, Double> multipliers, Player p) {
         PlayerData data = plugin.getData();
         Inventory inv = Bukkit.createInventory(null, 27, Component.text("Ores & Blocks XP Drop Rates"));
-        data.getInventories().put(p.getUniqueId(), inv);
+        data.replaceInventory(p.getUniqueId(), inv);
 
         int slotIndex = 0;
         for(Map.Entry<String, Double> entry : multipliers.entrySet()) {
@@ -408,7 +410,7 @@ public class GUICreator {
                 Component.text(""),
                 ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "XP Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", entry.getValue()) + "x", NamedTextColor.AQUA),
                 Component.text(""),
-                ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+                HightableUtility.isSelected(p, "xpDrops", entry.getKey())));
 
             slotIndex += 2;
         }
@@ -421,28 +423,28 @@ public class GUICreator {
     }
     public static void createHighTableDiscountsDropSelectionGUI(Crews plugin, Map<String, Double> discounts, Player p) {
         Inventory inv = Bukkit.createInventory(null, 9, Component.text("Discounts"));
-        plugin.getData().getInventories().put(p.getUniqueId(), inv);
+        plugin.getData().replaceInventory(p.getUniqueId(), inv);
 
         inv.setItem(2, createGuiItem(Material.ENCHANTING_TABLE,
             ComponentUtilities.createComponent("☆ Enchant Discount ☆", NamedTextColor.AQUA),
             Component.text(""),
             ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "Discount: ", NamedTextColor.WHITE, String.format("%.2f", discounts.get(Material.ENCHANTING_TABLE.name())) + "x", NamedTextColor.AQUA),
             Component.text(""),
-            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+            HightableUtility.isSelected(p, "discounts", "ENCHANTING_TABLE")));
 
         inv.setItem(4, createGuiItem(Material.ANVIL,
             ComponentUtilities.createComponent("☆ Repair Discount ☆", NamedTextColor.GRAY),
             Component.text(""),
             ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "Discount: ", NamedTextColor.WHITE, String.format("%.2f", discounts.get(Material.ANVIL.name())) + "x", NamedTextColor.AQUA),
             Component.text(""),
-            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+            HightableUtility.isSelected(p, "discounts", "ANVIL")));
 
         inv.setItem(6, createGuiItem(Material.EMERALD,
             ComponentUtilities.createComponent("☆ Trading Discount ☆", NamedTextColor.GREEN),
             Component.text(""),
             ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "Discount: ", NamedTextColor.WHITE, String.format("%.2f", discounts.get(Material.EMERALD.name())) + "x", NamedTextColor.AQUA),
             Component.text(""),
-            ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+            HightableUtility.isSelected(p, "discounts", "EMERALD")));
 
         inv.setItem(8, createGuiItem(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE,
             ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
@@ -452,7 +454,7 @@ public class GUICreator {
     }
     public static void createPassiveMobDropVoteGUI(Map<String, Double> passiveMultipliers, PlayerData data, Player p) {
         Inventory inv = Bukkit.createInventory(null, 54, Component.text("Passive Mob Drop Rates"));
-        data.getInventories().put(p.getUniqueId(), inv);
+        data.replaceInventory(p.getUniqueId(), inv);
 
         int slotIndex = 0;
         for (CustomHead head : CustomHead.values()) {
@@ -462,7 +464,7 @@ public class GUICreator {
                     Component.text(""),
                     ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", passiveMultipliers.get(head.name())) + "x", NamedTextColor.AQUA),
                     Component.text(""),
-                    ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+                    HightableUtility.isSelected(p, "mobDrops", head.name())));
 
                 slotIndex += 2;
             }
@@ -476,7 +478,7 @@ public class GUICreator {
     }
     public static void createNeutralMobDropVoteGUI(Map<String, Double> neutralMultipliers, PlayerData data, Player p) {
         Inventory inv = Bukkit.createInventory(null, 54, Component.text("Neutral Mob Drop Rates"));
-        data.getInventories().put(p.getUniqueId(), inv);
+        data.replaceInventory(p.getUniqueId(), inv);
 
         int slotIndex = 0;
         for (CustomHead head : CustomHead.values()) {
@@ -486,7 +488,7 @@ public class GUICreator {
                     Component.text(""),
                     ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", neutralMultipliers.get(head.name())) + "x", NamedTextColor.AQUA),
                     Component.text(""),
-                    ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+                    HightableUtility.isSelected(p, "mobDrops", head.name())));
 
                 slotIndex += 2;
             }
@@ -500,17 +502,18 @@ public class GUICreator {
     }
     public static void createHostileMobDropVoteGUI(Map<String, Double> hostileMultipliers, PlayerData data, Player p) {
         Inventory inv = Bukkit.createInventory(null, 54, Component.text("Hostile Mob Drop Rates"));
-        data.getInventories().put(p.getUniqueId(), inv);
+        data.replaceInventory(p.getUniqueId(), inv);
 
         int slotIndex = 0;
         for (CustomHead head : CustomHead.values()) {
+
             if(head.getCategory().equals(CustomHead.Category.HOSTILE)) {
                 inv.setItem(slotIndex, createGuiItem(SkullCreator.getCustomHead(head),
                     ComponentUtilities.createComponentWithPlaceHolder("• Mob Type: ", NamedTextColor.GRAY, head.name(), NamedTextColor.YELLOW),
                     Component.text(""),
                     ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", hostileMultipliers.get(head.name())) + "x", NamedTextColor.AQUA),
                     Component.text(""),
-                    ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+                    HightableUtility.isSelected(p, "mobDrops", head.name())));
 
                 slotIndex += 2;
             }
@@ -524,7 +527,7 @@ public class GUICreator {
     }
     public static void createMobDifficultyDropVoteGUI(Map<String, Double> difficultyMultipliers, PlayerData data, Player p) {
         Inventory inv = Bukkit.createInventory(null, 54, Component.text("Mob Difficulty Rates"));
-        data.getInventories().put(p.getUniqueId(), inv);
+        data.replaceInventory(p.getUniqueId(), inv);
 
         int slotIndex = 0;
         for (CustomHead head : CustomHead.values()) {
@@ -534,7 +537,7 @@ public class GUICreator {
                     Component.text(""),
                     ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "Difficulty Amplifier: ", NamedTextColor.WHITE, String.format("%.2f", difficultyMultipliers.get(head.name())) + "x", NamedTextColor.AQUA),
                     Component.text(""),
-                    ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+                    HightableUtility.isSelected(p, "mobDifficulty", head.name())));
 
                 slotIndex += 2;
             }
@@ -548,7 +551,7 @@ public class GUICreator {
     }
     public static void createOreDropVoteGUI(Map<String, Double> oreDropMultipliers, PlayerData data, Player p) {
         Inventory inv = Bukkit.createInventory(null, 27, Component.text("Ore Drop Rates"));
-        data.getInventories().put(p.getUniqueId(), inv);
+        data.replaceInventory(p.getUniqueId(), inv);
 
         int slotIndex = 0;
             for(Map.Entry<String, Double> entry : oreDropMultipliers.entrySet()) {
@@ -557,7 +560,7 @@ public class GUICreator {
                     Component.text(""),
                     ComponentUtilities.createComponentWithPlaceHolder(UnicodeCharacters.multiplier + "Drop Multiplier: ", NamedTextColor.WHITE, String.format("%.2f", entry.getValue()) + "x", NamedTextColor.AQUA),
                     Component.text(""),
-                    ComponentUtilities.createComponent("Click to select.", NamedTextColor.DARK_GRAY)));
+                    HightableUtility.isSelected(p, "oreDrops", entry.getKey())));
 
                 slotIndex += 2;
             }

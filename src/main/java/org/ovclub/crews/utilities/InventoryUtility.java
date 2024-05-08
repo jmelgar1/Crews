@@ -4,6 +4,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.List;
 
 public class InventoryUtility {
     public static int getSponges(Player p) {
@@ -38,4 +41,30 @@ public class InventoryUtility {
             }
         }
     }
+
+//    public static double getDropMultiplier(ItemStack item) {
+//        if (item != null && item.hasItemMeta()) {
+//            ItemMeta meta = item.getItemMeta();
+//            if (meta.hasLore()) {
+//                List<String> lore = meta.getLore();
+//                for (String line : lore) {
+//                    if (line.contains("Drop Multiplier:")) {
+//                        String[] parts = line.split(" ");
+//                        for (String part : parts) {
+//                            if (part.endsWith("x")) {
+//                                String number = part.substring(0, part.length() - 1); // Remove the 'x' character
+//                                try {
+//                                    return Double.parseDouble(number);
+//                                } catch (NumberFormatException e) {
+//                                    // Handle the case where the number is not valid
+//                                    System.out.println("Failed to parse multiplier: " + part);
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        return 1.0;
+//    }
 }

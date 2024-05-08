@@ -79,6 +79,7 @@ public class UnicodeCharacters {
     public static TextColor compound_active = TextColor.fromHexString("#81C784");
     public static TextColor teamA_color = TextColor.fromHexString("#90CAF9");
     public static TextColor teamB_color = TextColor.fromHexString("#EF9A9A");
+    public static TextColor hightable_color = TextColor.fromHexString("#9575CD");
 
     /* Create Message Icon Headers */
     public static TextComponent createAlertIcon(TextColor color) {
@@ -122,6 +123,7 @@ public class UnicodeCharacters {
     public static TextComponent createSkirmishIcon(TextColor color) {return Component.text("[⚔] ").color(color);}
     public static TextComponent createRatingIcon(TextColor color) {return Component.text("[🎖] ").color(color);}
     public static TextComponent createUpgradeIcon(TextColor color) {return Component.text("[🢁] ").color(color);}
+    public static TextComponent createVoteIcon(TextColor color) {return Component.text("[🧻] ").color(color);}
 
 
     public static void sendInfoMessage(Player p, String prefixEmoji, String prefix, String text, TextColor color) {

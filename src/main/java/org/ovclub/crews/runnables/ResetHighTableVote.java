@@ -13,9 +13,7 @@ import java.time.ZonedDateTime;
 public class ResetHighTableVote extends BukkitRunnable {
 
     private final Crews plugin;
-    private final DailyMultiplierManager manager;
-    public ResetHighTableVote(Crews plugin, DailyMultiplierManager manager) {
-        this.manager = manager;
+    public ResetHighTableVote(Crews plugin) {
         this.plugin = plugin;
     }
 
@@ -33,8 +31,13 @@ public class ResetHighTableVote extends BukkitRunnable {
                 LocalTime targetTime = LocalTime.MIDNIGHT;
 
                 if (currentTime.getHour() == targetTime.getHour() && currentTime.getMinute() == targetTime.getMinute()) {
+                    System.out.println(HightableUtility.getTopVotedItems(plugin));
+                    HightableUtility.updateActiveMultipliers(HightableUtility.getTopVotedItems(plugin));
                     HightableUtility.updateHighTable(plugin.getData().generateLeaderboardJson());
+
+                    DailyMultiplierManager manager = new DailyMultiplierManager();
                     HightableUtility.saveMultipliers(manager);
+
                     plugin.getHightableFile().loadHightable();
                 }
             }

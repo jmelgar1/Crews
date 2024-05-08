@@ -7,10 +7,7 @@ import org.ovclub.crews.Crews;
 import org.ovclub.crews.object.hightable.MultiplierItem;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
-
 
 public class HightableFile {
     private final Crews plugin;
@@ -49,12 +46,11 @@ public class HightableFile {
     }
 
     private void loadHighTableCrews() {
-        ConfigurationSection highTableSection = configData.getConfigurationSection("high-table");
+        ConfigurationSection highTableSection = configData.getConfigurationSection("high-table.crews");
         if (highTableSection != null) {
-            List<String> crewUUIDs = highTableSection.getStringList("crews");
-            for (String uuid : crewUUIDs) {
-                plugin.getData().addHightableCrew(uuid);
-            }
+            highTableSection.getKeys(false).forEach(key -> {
+                plugin.getData().addHightableCrew(key);
+            });
         }
     }
 }

@@ -135,6 +135,10 @@ public class ConfigManager {
         DISABLED_COMMAND_IN_ARENA = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("disabled-command-in-arena")))));
         PLAYER_WILL_BE_BANNED = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("player-will-be-banned")))));
         PLAYER_BANNED = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("player-banned")))));
+
+        /*High Table Stuff*/
+        VOTE_SET = UnicodeCharacters.createVoteIcon(UnicodeCharacters.hightable_color).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("vote-set")))));
+        NOT_IN_HIGHTABLE = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("not-in-hightable")))));
     }
 
 
@@ -253,4 +257,8 @@ public class ConfigManager {
     public static TextComponent DISABLED_COMMAND_IN_ARENA;
     public static TextComponent PLAYER_WILL_BE_BANNED;
     public static TextComponent PLAYER_BANNED;
+
+    /*High table stuff*/
+    public static TextComponent VOTE_SET;
+    public static TextComponent NOT_IN_HIGHTABLE;
 }

@@ -3,6 +3,7 @@ package org.ovclub.crews.managers.hightable;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.ovclub.crews.object.hightable.WeightedRandomMultiplier;
+import org.ovclub.crews.utilities.HightableUtility;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -20,7 +21,7 @@ public class DailyMultiplierManager {
     /*XP DROPS*/
     private Map<Material, Double> oresAndBlocksXPDropRates;
     private Map<Material, Double> activitiesXPDropRates;
-    private Map<EntityType, Double> mobXPDropRates;
+    private Map<String, Double> mobXPDropRates;
 
     /*DISCOUNTS*/
     private Map<Material, Double> discountMultipliers;
@@ -77,163 +78,54 @@ public class DailyMultiplierManager {
     }
 
     public void generatePassiveMobDailyMultipliers() {
-        EntityType[] mobTypes = {
-            EntityType.CAT,
-            EntityType.CHICKEN,
-            EntityType.COD,
-            EntityType.COW,
-            EntityType.DONKEY,
-            EntityType.GLOW_SQUID,
-            EntityType.HORSE,
-            EntityType.MUSHROOM_COW,
-            EntityType.MULE,
-            EntityType.OCELOT,
-            EntityType.PARROT,
-            EntityType.PIG,
-            EntityType.PUFFERFISH,
-            EntityType.RABBIT,
-            EntityType.SALMON,
-            EntityType.SHEEP,
-            EntityType.SKELETON_HORSE,
-            EntityType.SNOWMAN,
-            EntityType.SQUID,
-            EntityType.STRIDER,
-            EntityType.TROPICAL_FISH,
-            EntityType.TURTLE
-        };
-
         passiveMobDropRates = new HashMap<>();
 
-        for (EntityType mobType : mobTypes) {
+        for (EntityType mobType : HightableUtility.passiveMobs) {
             double multiplier = dropRates.next();
             passiveMobDropRates.put(mobType, multiplier);
         }
     }
 
     public void generateNeutralMobDailyMultipliers() {
-        EntityType[] mobTypes = {
-            EntityType.CAVE_SPIDER,
-            EntityType.DOLPHIN,
-            EntityType.DROWNED,
-            EntityType.ENDERMAN,
-            EntityType.IRON_GOLEM,
-            EntityType.LLAMA,
-            EntityType.PANDA,
-            EntityType.PIGLIN,
-            EntityType.POLAR_BEAR,
-            EntityType.SPIDER,
-            EntityType.TRADER_LLAMA,
-            EntityType.ZOMBIFIED_PIGLIN
-        };
-
         neutralMobDropRates = new HashMap<>();
 
-        for (EntityType mobType : mobTypes) {
+        for (EntityType mobType : HightableUtility.neutralMobs) {
             double multiplier = dropRates.next();
             neutralMobDropRates.put(mobType, multiplier);
         }
     }
 
     public void generateHostileMobDailyMultipliers() {
-        EntityType[] mobTypes = {
-            EntityType.BLAZE,
-            EntityType.CREEPER,
-            EntityType.ELDER_GUARDIAN,
-            EntityType.EVOKER,
-            EntityType.GHAST,
-            EntityType.GUARDIAN,
-            EntityType.HOGLIN,
-            EntityType.HUSK,
-            EntityType.MAGMA_CUBE,
-            EntityType.PIGLIN_BRUTE,
-            EntityType.PILLAGER,
-            EntityType.SHULKER,
-            EntityType.SKELETON,
-            EntityType.SLIME,
-            EntityType.STRAY,
-            EntityType.VINDICATOR,
-            EntityType.WITCH,
-            EntityType.WITHER_SKELETON,
-            EntityType.ZOGLIN,
-            EntityType.ZOMBIE,
-            EntityType.ZOMBIE_VILLAGER
-        };
-
         hostileMobDropRates = new HashMap<>();
 
-        for (EntityType mobType : mobTypes) {
+        for (EntityType mobType : HightableUtility.hostileMobs) {
             double multiplier = dropRates.next();
             hostileMobDropRates.put(mobType, multiplier);
         }
     }
 
     public void generateOreDropMultiplier() {
-        Material[] blockTypes = {
-            Material.COAL_ORE,
-            Material.IRON_ORE,
-            Material.COPPER_ORE,
-            Material.REDSTONE_ORE,
-            Material.GOLD_ORE,
-            Material.LAPIS_ORE,
-            Material.EMERALD_ORE,
-            Material.DIAMOND_ORE,
-            Material.NETHER_GOLD_ORE,
-            Material.NETHER_QUARTZ_ORE,
-            Material.ANCIENT_DEBRIS
-        };
-
         oreDropRates = new LinkedHashMap<>();
 
-        for (Material blockType : blockTypes) {
+        for (Material blockType : HightableUtility.oreDropBlockTypes) {
             double multiplier = dropRates.next();
             oreDropRates.put(blockType, multiplier);
         }
     }
 
     public void generateBlockXPDropRates() {
-        Material[] blockTypes = {
-            Material.DIAMOND_ORE,
-            Material.ANCIENT_DEBRIS,
-            Material.SPAWNER,
-            Material.SCULK,
-        };
-
         oresAndBlocksXPDropRates = new LinkedHashMap<>();
 
-        for (Material blockType : blockTypes) {
+        for (Material blockType : HightableUtility.xpDropBlockTypes) {
             double multiplier = dropRates.next();
             oresAndBlocksXPDropRates.put(blockType, multiplier);
         }
     }
 
     public void generateMobDifficultyMultipliers() {
-        EntityType[] mobTypes = {
-            EntityType.BLAZE,
-            EntityType.CREEPER,
-            EntityType.ELDER_GUARDIAN,
-            EntityType.EVOKER,
-            EntityType.GHAST,
-            EntityType.GUARDIAN,
-            EntityType.HOGLIN,
-            EntityType.HUSK,
-            EntityType.MAGMA_CUBE,
-            EntityType.PIGLIN_BRUTE,
-            EntityType.PILLAGER,
-            EntityType.SHULKER,
-            EntityType.SKELETON,
-            EntityType.SLIME,
-            EntityType.STRAY,
-            EntityType.VINDICATOR,
-            EntityType.WITCH,
-            EntityType.WITHER_SKELETON,
-            EntityType.ZOGLIN,
-            EntityType.ZOMBIE,
-            EntityType.ZOMBIE_VILLAGER
-        };
-
         mobDifficultyRates = new HashMap<>();
 
-        for (EntityType mobType : mobTypes) {
+        for (EntityType mobType : HightableUtility.hostileMobs) {
             double multiplier = difficultyRates.next();
             mobDifficultyRates.put(mobType, multiplier);
         }
@@ -257,30 +149,18 @@ public class DailyMultiplierManager {
     }
 
     public void generateMobXPDrops() {
-        EntityType[] mobTypes = {
-            EntityType.COW,
-            EntityType.IRON_GOLEM,
-            EntityType.CREEPER
-        };
-
         mobXPDropRates = new HashMap<>();
 
-        for (EntityType mobType : mobTypes) {
+        for (String mobType : HightableUtility.xpDropMobTypes) {
             double multiplier = dropRates.next();
             mobXPDropRates.put(mobType, multiplier);
         }
     }
 
     public void generateDiscounts() {
-        Material[] itemTypes = {
-            Material.ENCHANTING_TABLE,
-            Material.ANVIL,
-            Material.EMERALD
-        };
-
         discountMultipliers = new HashMap<>();
 
-        for (Material itemType : itemTypes) {
+        for (Material itemType : HightableUtility.discounts) {
             double multiplier = discountRates.next();
             discountMultipliers.put(itemType, multiplier);
         }
@@ -292,7 +172,7 @@ public class DailyMultiplierManager {
     public Map<Material, Double> getOreDropRates() {return oreDropRates;}
     public Map<Material, Double> getOresAndBlocksXPDropRates() {return oresAndBlocksXPDropRates;}
     public Map<Material, Double> getActivitiesXPDrops() {return this.activitiesXPDropRates;}
-    public Map<EntityType, Double> getMobXPDropRates() {return this.mobXPDropRates;}
+    public Map<String, Double> getMobXPDropRates() {return this.mobXPDropRates;}
     public Map<Material, Double> getDiscountMultipliers() {return this.discountMultipliers;}
     public Map<EntityType, Double> getMobDifficultyRates() {return mobDifficultyRates;}
 

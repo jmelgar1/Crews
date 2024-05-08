@@ -110,6 +110,7 @@ public class CommandManager implements CommandExecutor {
         subCommands.put("deposit", new DepositCommand());
 		subCommands.put("boss", new BossCommand());
 		subCommands.put("enforcer", new EnforcerCommand());
+        subCommands.put("vote", new VoteCommand());
 		enforcerCommands.put("withdraw", new WithdrawCommand());
 		enforcerCommands.put("invite", new InviteCommand());
 		enforcerCommands.put("kick", new KickCommand());

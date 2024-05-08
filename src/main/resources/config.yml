@@ -137,4 +137,7 @@ disabled-in-skirmish: "&#E57373This action is disabled while in the arena."
 disabled-command-in-arena: "&#E57373This command is disabled while in the arena. If you want to leave type &#E5CB70'/c skirmish leave'"
 player-will-be-banned: "&#E57373{player} &#E24949has &#E57373{seconds} seconds &#E24949to join before being removed from the skirmish!"
 player-banned: "&#E57373{player} &#E24949has been removed from the skirmish for inactivity!"
+
 #High Table Things
+vote-set: "&#AB75CDYou have set your vote! &#D3B2C3Use '/crews vote' to change your vote!"
+not-in-hightable: "&#E57373Your crew is not part of the high table!"
