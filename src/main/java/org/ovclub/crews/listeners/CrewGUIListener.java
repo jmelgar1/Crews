@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -24,9 +23,7 @@ import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 import org.ovclub.crews.object.hightable.MultiplierItem;
 import org.ovclub.crews.object.skirmish.SkirmishTeam;
-import org.ovclub.crews.utilities.GUICreator;
-import org.ovclub.crews.utilities.HightableUtility;
-import org.ovclub.crews.utilities.InventoryUtility;
+import org.ovclub.crews.utilities.GUI.GUICreator;
 import org.ovclub.crews.utilities.skull.CustomHead;
 
 import java.util.*;

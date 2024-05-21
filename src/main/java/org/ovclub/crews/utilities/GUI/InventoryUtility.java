@@ -1,4 +1,4 @@
-package org.ovclub.crews.utilities;
+package org.ovclub.crews.utilities.GUI;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

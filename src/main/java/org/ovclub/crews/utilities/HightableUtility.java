@@ -15,6 +15,7 @@ import org.ovclub.crews.managers.hightable.DailyMultiplierManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.hightable.MultiplierItem;
 import org.ovclub.crews.object.hightable.VoteItem;
+import org.w3c.dom.Text;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -261,6 +262,102 @@ public class HightableUtility{
         return "unknown";
     }
 
+    public static List<TextComponent> generateMultiplierString(VoteItem voteItem) {
+        String section = voteItem.getSection();
+        String item = voteItem.getItem();
+        String multiplier = voteItem.getMultiplier();
+
+        List<TextComponent> components = new ArrayList<>();
+
+        switch (section) {
+            case "mobDrops" -> {
+                components.add(Component.text(UnicodeCharacters.formatString(item) + "s").color(NamedTextColor.DARK_GREEN)
+                    .append(Component.text(" have a ").color(NamedTextColor.YELLOW))
+                    .append(Component.text(UnicodeCharacters.convertDoubleToPercent(multiplier)).color(NamedTextColor.DARK_GREEN))
+                    .append(Component.text(" increased").color(NamedTextColor.YELLOW)));
+                components.add(Component.text("chance of dropping extra loot.").color(NamedTextColor.YELLOW));
+            }
+            case "oreDrops" -> {
+                components.add(Component.text(UnicodeCharacters.formatString(item)).color(NamedTextColor.DARK_GREEN)
+                    .append(Component.text(" has a ").color(NamedTextColor.YELLOW))
+                    .append(Component.text(UnicodeCharacters.convertDoubleToPercent(multiplier)).color(NamedTextColor.DARK_GREEN))
+                    .append(Component.text(" increased").color(NamedTextColor.YELLOW)));
+                components.add(Component.text("chance of dropping extra items.").color(NamedTextColor.YELLOW));
+            }
+            case "xpDrops" -> {
+                if (isValidMaterial(item)) {
+                    if (Arrays.stream(xpDropActivities).toList().contains(Material.valueOf(item))) {
+                        switch (item) {
+                            case "FURNACE" -> item = "COOKING";
+                            case "EMERALD" -> item = "TRADING";
+                            case "FISHING_ROD" -> item = "FISHING";
+                            case "WHEAT" -> item = "BREEDING";
+                        }
+                        components.add(Component.text(UnicodeCharacters.formatString(item)).color(NamedTextColor.DARK_GREEN)
+                            .append(Component.text(" rewards").color(NamedTextColor.YELLOW)));
+                        components.add(Component.text(UnicodeCharacters.convertDoubleToPercent(multiplier)).color(NamedTextColor.DARK_GREEN)
+                            .append(Component.text(" more XP.").color(NamedTextColor.YELLOW)));
+                    } else if (Arrays.stream(xpDropBlockTypes).toList().contains(Material.valueOf(item))) {
+                        switch (item) {
+                            case "DIAMOND_ORE" -> item = "Overworld Ores";
+                            case "ANCIENT_DEBRIS" -> item = "Nether Ores";
+                        }
+                        components.add(Component.text(item).color(NamedTextColor.DARK_GREEN)
+                            .append(Component.text(" drops").color(NamedTextColor.YELLOW)));
+                        components.add(Component.text(UnicodeCharacters.convertDoubleToPercent(multiplier)).color(NamedTextColor.DARK_GREEN)
+                            .append(Component.text(" more XP.").color(NamedTextColor.YELLOW)));
+                    }
+                } else if (Arrays.stream(xpDropMobTypes).toList().contains(item)) {
+                    components.add(Component.text(UnicodeCharacters.formatString(item)).color(NamedTextColor.DARK_GREEN)
+                        .append(Component.text(" mobs drop").color(NamedTextColor.YELLOW)));
+                    components.add(Component.text(UnicodeCharacters.convertDoubleToPercent(multiplier)).color(NamedTextColor.DARK_GREEN)
+                        .append(Component.text(" more XP.").color(NamedTextColor.YELLOW)));
+                }
+            }
+            case "discounts" -> {
+                switch (item) {
+                    case "EMERALD" -> item = "TRADING";
+                    case "ANVIL" -> item = "REPAIRING";
+                    case "ENCHANTING_TABLE" -> item = "ENCHANTING";
+                }
+                components.add(Component.text(UnicodeCharacters.formatString(item)).color(NamedTextColor.DARK_GREEN)
+                    .append(Component.text(" costs").color(NamedTextColor.YELLOW)));
+                components.add(Component.text(UnicodeCharacters.convertToPercentAndFindDifference(multiplier)).color(NamedTextColor.DARK_GREEN)
+                    .append(Component.text(" less.").color(NamedTextColor.YELLOW)));
+            }
+            case "mobDifficulty" -> {
+                double dMultiplier = Double.parseDouble(multiplier);
+                if (dMultiplier > 1.0) {
+                    components.add(Component.text("The ").color(NamedTextColor.YELLOW)
+                        .append(Component.text(UnicodeCharacters.formatString(item)).color(NamedTextColor.DARK_RED)
+                            .append(Component.text(" mob is").color(NamedTextColor.YELLOW))));
+                    components.add(Component.text(UnicodeCharacters.convertDoubleToPercent(multiplier)).color(NamedTextColor.DARK_RED)
+                        .append(Component.text(" stronger.").color(NamedTextColor.YELLOW)));
+                } else {
+                    components.add(Component.text("The ").color(NamedTextColor.YELLOW)
+                        .append(Component.text(UnicodeCharacters.formatString(item)).color(NamedTextColor.DARK_GREEN)
+                            .append(Component.text(" mob is").color(NamedTextColor.YELLOW))));
+                    components.add(Component.text(UnicodeCharacters.convertToPercentAndFindDifference(multiplier)).color(NamedTextColor.DARK_GREEN)
+                        .append(Component.text(" weaker.").color(NamedTextColor.YELLOW)));
+                }
+            }
+        }
+
+        if (components.isEmpty()) {
+            components.add(Component.text("unknown"));
+        }
+
+        return components;
+    }
+    public static boolean isValidMaterial(String item) {
+        try {
+            Material.valueOf(item);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
     public static EntityType[] passiveMobs = {
         EntityType.CAT,
         EntityType.CHICKEN,
@@ -344,6 +441,14 @@ public class HightableUtility{
         Material.ANCIENT_DEBRIS,
         Material.SPAWNER,
         Material.SCULK,
+    };
+
+    public static Material[] xpDropActivities = {
+        Material.EMERALD,
+        Material.FISHING_ROD,
+        Material.WHEAT,
+        Material.FURNACE,
+        Material.GRINDSTONE,
     };
 
     public static String[] xpDropMobTypes = {

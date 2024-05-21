@@ -31,7 +31,6 @@ public class ResetHighTableVote extends BukkitRunnable {
                 LocalTime targetTime = LocalTime.MIDNIGHT;
 
                 if (currentTime.getHour() == targetTime.getHour() && currentTime.getMinute() == targetTime.getMinute()) {
-                    System.out.println(HightableUtility.getTopVotedItems(plugin));
                     HightableUtility.updateActiveMultipliers(HightableUtility.getTopVotedItems(plugin));
                     HightableUtility.updateHighTable(plugin.getData().generateLeaderboardJson());
 

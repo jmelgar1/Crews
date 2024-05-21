@@ -7,6 +7,7 @@ import org.ovclub.crews.commands.SubCommand;
 import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.utilities.ChatUtilities;
+import org.ovclub.crews.utilities.UnicodeCharacters;
 
 public class AcceptCommand implements SubCommand {
 	@Override
@@ -28,7 +29,7 @@ public class AcceptCommand implements SubCommand {
     @Override
 	public void perform(Player p, String[] args, Crews plugin) {
         if (args.length != 1) {
-            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            p.sendMessage(UnicodeCharacters.CorrectUsage(getSyntax()));
             return;
         }
         if (plugin.getData().getCrew(p) != null) {

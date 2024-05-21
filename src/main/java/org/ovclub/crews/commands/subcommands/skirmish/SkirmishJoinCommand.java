@@ -8,7 +8,7 @@ import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 import org.ovclub.crews.object.skirmish.SkirmishQueue;
-import org.ovclub.crews.utilities.GUICreator;
+import org.ovclub.crews.utilities.GUI.GUICreator;
 
 public class SkirmishJoinCommand implements SubCommand {
 

@@ -132,17 +132,9 @@ public class DailyMultiplierManager {
     }
 
     public void generateXPDrops() {
-        Material[] itemTypes = {
-            Material.EMERALD,
-            Material.FISHING_ROD,
-            Material.WHEAT,
-            Material.FURNACE,
-            Material.GRINDSTONE,
-        };
-
         activitiesXPDropRates = new HashMap<>();
 
-        for (Material itemType : itemTypes) {
+        for (Material itemType : HightableUtility.xpDropActivities) {
             double multiplier = dropRates.next();
             activitiesXPDropRates.put(itemType, multiplier);
         }

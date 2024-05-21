@@ -13,6 +13,7 @@ import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 import org.ovclub.crews.utilities.ChatUtilities;
 import org.ovclub.crews.utilities.SoundUtilities;
+import org.ovclub.crews.utilities.UnicodeCharacters;
 
 public class CreateCommand implements SubCommand {
 
@@ -41,7 +42,7 @@ public class CreateCommand implements SubCommand {
             return;
         }
         if (args.length != 1) {
-            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            p.sendMessage(UnicodeCharacters.CorrectUsage(getSyntax()));
             return;
         }
         String proposedCrewName = args[0];

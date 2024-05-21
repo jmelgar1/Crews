@@ -9,8 +9,10 @@ import org.bukkit.inventory.Inventory;
 import org.ovclub.crews.exceptions.NotInCrew;
 import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.hightable.MultiplierItem;
+import org.ovclub.crews.object.hightable.VoteItem;
 import org.ovclub.crews.utilities.GeneralUtilities;
 
+import java.sql.Array;
 import java.util.*;
 
 public class PlayerData {
@@ -25,6 +27,7 @@ public class PlayerData {
         selectedForQueue = new HashMap<>();
         multipliers = new ArrayList<>();
         hightableCrews = new ArrayList<>();
+        activeMultipliers = new ArrayList<>();
 
         // In case of server /reload
         for(Player p : Bukkit.getOnlinePlayers()){
@@ -68,6 +71,11 @@ public class PlayerData {
         }
         return null;
     }
+
+
+    private final ArrayList<VoteItem> activeMultipliers;
+    public ArrayList<VoteItem> getActiveMultipliers() { return activeMultipliers; }
+    public void addActiveMultipliers(VoteItem item) {this.activeMultipliers.add(item);}
 
     /*
     Hightable Crews

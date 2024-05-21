@@ -7,8 +7,8 @@ import org.ovclub.crews.exceptions.NotInCrew;
 import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
-import org.ovclub.crews.utilities.ChatUtilities;
-import org.ovclub.crews.utilities.GUICreator;
+import org.ovclub.crews.utilities.GUI.GUICreator;
+import org.ovclub.crews.utilities.UnicodeCharacters;
 
 public class VoteCommand implements SubCommand {
 
@@ -32,7 +32,7 @@ public class VoteCommand implements SubCommand {
         PlayerData data = plugin.getData();
         Crew crew = data.getCrew(p);
         if (args.length != 0) {
-            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            p.sendMessage(UnicodeCharacters.CorrectUsage(getSyntax()));
             return;
         }
         if(crew == null) {

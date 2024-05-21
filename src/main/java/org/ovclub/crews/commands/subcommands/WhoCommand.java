@@ -10,6 +10,7 @@ import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 import org.ovclub.crews.utilities.ChatUtilities;
+import org.ovclub.crews.utilities.UnicodeCharacters;
 
 public class WhoCommand implements SubCommand {
 
@@ -34,7 +35,7 @@ public class WhoCommand implements SubCommand {
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
         PlayerData data = plugin.getData();
         if (args.length != 1) {
-            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            p.sendMessage(UnicodeCharacters.CorrectUsage(getSyntax()));
             return;
         }
         OfflinePlayer tPlayer = Bukkit.getServer().getOfflinePlayer(args[0]);

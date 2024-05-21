@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.ovclub.crews.Crews;
 import org.ovclub.crews.object.hightable.MultiplierItem;
+import org.ovclub.crews.object.hightable.VoteItem;
 
 import java.io.File;
 import java.util.LinkedHashMap;
@@ -25,6 +26,7 @@ public class HightableFile {
         configData = YamlConfiguration.loadConfiguration(configFile);
         loadMultipliers();
         loadHighTableCrews();
+        loadActiveMultipliers();
     }
 
     private void loadMultipliers() {
@@ -50,6 +52,21 @@ public class HightableFile {
         if (highTableSection != null) {
             highTableSection.getKeys(false).forEach(key -> {
                 plugin.getData().addHightableCrew(key);
+            });
+        }
+    }
+
+    private void loadActiveMultipliers() {
+        ConfigurationSection activeSection = configData.getConfigurationSection("active-multipliers.top-votes");
+        if (activeSection != null) {
+            activeSection.getKeys(false).forEach(key -> {
+                String path = "active-multipliers.top-votes." + key;
+                String section = configData.getString(path + ".section");
+                String item = configData.getString(path + ".item");
+                String multiplier = configData.getString(path + ".multiplier");
+
+                VoteItem voteItem = new VoteItem(section, item, multiplier);
+                plugin.getData().addActiveMultipliers(voteItem);
             });
         }
     }

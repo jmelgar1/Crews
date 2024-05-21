@@ -5,7 +5,10 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+
+import javax.inject.Named;
 
 public class UnicodeCharacters {
 
@@ -17,7 +20,7 @@ public class UnicodeCharacters {
     public static String founded_emoji = "📖 ";
     public static String description_emoji = "📰 ";
     public static String level_emoji = "🥃 ";
-    public static String vault_emoji = "🏛 ";
+    public static String hightable_icon = "🏛 ";
     public static String influence_emoji = "🌍 " ;
     public static String enforcers_emoji = "⛑ ";
     public static String members_emoji = "⚔ ";
@@ -31,6 +34,7 @@ public class UnicodeCharacters {
     public static String crew_chat_emoji = "💬 ";
     public static String discord_emoji = "🔊 ";
     public static String siren_emoji = "🚨 ";
+    public static String vault_emoji = "🏦 ";
     public static String upgrade_icon = "\uD83E\uDC81 ";
     public static String mail_emoji = "\uD83D\uDCEA ";
     public static String vault = "\uD83C\uDFE6";
@@ -80,6 +84,11 @@ public class UnicodeCharacters {
     public static TextColor teamA_color = TextColor.fromHexString("#90CAF9");
     public static TextColor teamB_color = TextColor.fromHexString("#EF9A9A");
     public static TextColor hightable_color = TextColor.fromHexString("#9575CD");
+    public static TextColor oreDrops_color = TextColor.fromHexString("#8D6E63");
+    public static TextColor mobDrops_color = TextColor.fromHexString("#F44336");
+    public static TextColor mobDifficulty_color = TextColor.fromHexString("#3F51B5");
+    public static TextColor xpDrops_color =TextColor.fromHexString("#4CAF50");
+    public static TextColor discounts_color =TextColor.fromHexString("#FFEB3B");
 
     /* Create Message Icon Headers */
     public static TextComponent createAlertIcon(TextColor color) {
@@ -124,7 +133,8 @@ public class UnicodeCharacters {
     public static TextComponent createRatingIcon(TextColor color) {return Component.text("[🎖] ").color(color);}
     public static TextComponent createUpgradeIcon(TextColor color) {return Component.text("[🢁] ").color(color);}
     public static TextComponent createVoteIcon(TextColor color) {return Component.text("[🧻] ").color(color);}
-
+    public static TextComponent createUsageIcon(TextColor color) {return Component.text("[⚒] ").color(color);}
+    public static TextComponent createHightableIcon(TextColor color) {return Component.text("{🏛} ").color(color);}
 
     public static void sendInfoMessage(Player p, String prefixEmoji, String prefix, String text, TextColor color) {
         p.sendMessage(Component.text("│ ").color(UnicodeCharacters.logo_color)
@@ -189,4 +199,35 @@ public class UnicodeCharacters {
             .build());
     }
 
+    public static TextComponent CorrectUsage(String syntax) {
+        return createUsageIcon(TextColor.color(255,0,0))
+            .append(Component.text("Correct Usage: ").color(NamedTextColor.GRAY))
+            .append(Component.text("\"" + "/" + syntax + "\"").color(NamedTextColor.DARK_GRAY));
+    }
+
+    public static String formatString(String input) {
+        input = input.replace('_', ' ');
+
+        String[] words = input.split(" ");
+
+        StringBuilder formattedString = new StringBuilder();
+
+        for (String word : words) {
+            String capitalizedWord = word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
+            formattedString.append(capitalizedWord).append(" ");
+        }
+
+        return formattedString.toString().trim();
+    }
+
+    public static String convertDoubleToPercent(String multiplier) {
+        double dMultiplier = Double.parseDouble(multiplier);
+        int value = (int) ((dMultiplier - 1) * 100);
+        return value + "%";
+    }
+
+    public static String convertToPercentAndFindDifference(String multiplier) {
+        int value = (int) ((1 - Double.parseDouble(multiplier)) * 100);
+        return value + "%";
+    }
 }

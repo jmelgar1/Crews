@@ -2,9 +2,20 @@ package org.ovclub.crews.utilities;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.entity.Player;
+import org.jline.utils.Log;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static net.kyori.adventure.text.format.TextColor.color;
 
 public class ComponentUtilities {
     public static TextComponent createEmojiComponent(String emoji, String titleLabel, TextColor labelColor, String titleText, TextColor titleColor) {
@@ -48,5 +59,81 @@ public class ComponentUtilities {
     public static TextComponent createComponentWithPlaceHolder(String text, TextColor color, String placeholder, TextColor placeholderColor) {
         return Component.text(text).color(color).append(Component.text(placeholder).color(placeholderColor))
             .decoration(TextDecoration.ITALIC, false);
+    }
+    public static TextComponent[] splitVoteString(TextComponent voteString) {
+        String voteStringContent = getContent(voteString);
+        int midpoint = voteStringContent.length() / 2;
+        int splitIndex = voteStringContent.lastIndexOf(' ', midpoint);
+        if (splitIndex == -1) {
+            splitIndex = voteStringContent.indexOf(' ', midpoint);
+        }
+        if (splitIndex == -1) {
+            splitIndex = midpoint;
+        }
+        String firstPart = voteStringContent.substring(0, splitIndex).trim();
+        String secondPart = voteStringContent.substring(splitIndex).trim();
+        TextComponent firstLine = buildTextComponent(voteString, firstPart);
+        TextComponent secondLine = buildTextComponent(voteString, secondPart);
+
+        return new TextComponent[]{firstLine, secondLine};
+    }
+    private static String getContent(Component component) {
+        if (component instanceof TextComponent textComponent) {
+            StringBuilder content = new StringBuilder(textComponent.content());
+            for (Component child : textComponent.children()) {
+                content.append(getContent(child));
+            }
+            return content.toString();
+        }
+        return "";
+    }
+    private static TextComponent buildTextComponent(TextComponent original, String content) {
+        List<Component> children = new ArrayList<>();
+        int length = 0;
+        for (Component child : original.children()) {
+            String childContent = getContent(child);
+            if (length + childContent.length() <= content.length()) {
+                children.add(child);
+                length += childContent.length();
+            } else {
+                break;
+            }
+        }
+        return Component.text(content, original.style()).children(children);
+    }
+    public static void sendHighTableVoteMessage(Player player) {
+        Component message = UnicodeCharacters.createHightableIcon(NamedTextColor.DARK_PURPLE).append(Component.text("You have not used your high table vote! ")
+            .append(Component.text("VOTE HERE")
+                .color(NamedTextColor.LIGHT_PURPLE)
+                .decorate(TextDecoration.BOLD)
+                .clickEvent(ClickEvent.runCommand("/crews vote"))
+                .hoverEvent(HoverEvent.showText(Component.text("Click to vote").color(NamedTextColor.YELLOW))))
+            .color(UnicodeCharacters.hightable_color));
+
+        player.sendMessage(message);
+    }
+
+    public static TextComponent toTitleCaseComponent(String section) {
+        String formatted = section.replaceAll("([a-z])([A-Z])", "$1 $2");
+        String[] words = formatted.split(" ");
+        StringBuilder titleCase = new StringBuilder();
+        for (String word : words) {
+            if (word.length() > 0) {
+                titleCase.append(Character.toUpperCase(word.charAt(0)))
+                    .append(word.substring(1).toLowerCase())
+                    .append(" ");
+            }
+        }
+        String titleCaseString = titleCase.toString().trim();
+        TextColor color = switch (section) {
+            case "oreDrops" -> UnicodeCharacters.oreDrops_color;
+            case "mobDrops" -> UnicodeCharacters.mobDrops_color;
+            case "mobDifficulty" -> UnicodeCharacters.mobDifficulty_color;
+            case "xpDrops" -> UnicodeCharacters.xpDrops_color;
+            case "discounts" -> UnicodeCharacters.discounts_color;
+            default -> NamedTextColor.WHITE;
+        };
+
+        return Component.text(titleCaseString, color).decorate(TextDecoration.BOLD);
     }
 }

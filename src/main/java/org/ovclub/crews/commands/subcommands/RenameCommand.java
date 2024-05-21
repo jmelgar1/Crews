@@ -9,6 +9,7 @@ import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 import org.ovclub.crews.utilities.ChatUtilities;
+import org.ovclub.crews.utilities.UnicodeCharacters;
 
 public class RenameCommand implements SubCommand {
 
@@ -34,7 +35,7 @@ public class RenameCommand implements SubCommand {
         PlayerData data = plugin.getData();
         Crew pCrew = data.getCrew(p);
         if (args.length != 1) {
-            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            p.sendMessage(UnicodeCharacters.CorrectUsage(getSyntax()));
             return;
         }
         if (pCrew == null) {

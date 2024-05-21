@@ -7,8 +7,8 @@ import org.ovclub.crews.exceptions.NotInCrew;
 import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
-import org.ovclub.crews.utilities.ChatUtilities;
-import org.ovclub.crews.utilities.GUICreator;
+import org.ovclub.crews.utilities.GUI.GUICreator;
+import org.ovclub.crews.utilities.UnicodeCharacters;
 
 public class ShopCommand implements SubCommand {
 
@@ -40,7 +40,7 @@ public class ShopCommand implements SubCommand {
             return;
         }
         if (args.length != 0) {
-            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            p.sendMessage(UnicodeCharacters.CorrectUsage(getSyntax()));
             return;
         }
         GUICreator.createCrewShopGUI(data, p, pCrew);

@@ -9,6 +9,7 @@ import org.ovclub.crews.exceptions.NotInCrew;
 import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.utilities.ChatUtilities;
+import org.ovclub.crews.utilities.UnicodeCharacters;
 
 public class CompoundCommand implements SubCommand {
 
@@ -37,7 +38,7 @@ public class CompoundCommand implements SubCommand {
             return;
         }
         if (args.length != 0) {
-            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            p.sendMessage(UnicodeCharacters.CorrectUsage(getSyntax()));
             return;
         }
         if (playerCrew.getVault() < ConfigManager.WARP_COST) {

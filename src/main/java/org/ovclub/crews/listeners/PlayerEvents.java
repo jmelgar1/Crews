@@ -1,11 +1,12 @@
 package org.ovclub.crews.listeners;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -13,7 +14,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.ovclub.crews.Crews;
 import org.ovclub.crews.commands.subcommands.ShopCommand;
 import org.ovclub.crews.object.Crew;
-import org.ovclub.crews.utilities.GUICreator;
+import org.ovclub.crews.object.hightable.VoteItem;
+import org.ovclub.crews.utilities.ComponentUtilities;
+import org.ovclub.crews.utilities.GUI.GUICreator;
+import org.ovclub.crews.utilities.HightableUtility;
 
 import java.util.*;
 
@@ -83,49 +87,26 @@ public class PlayerEvents implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
+        Player p = e.getPlayer();
+
         for (Crew c : plugin.getData().getCrews()) {
-            if (c.hasMember(e.getPlayer())) {
-                plugin.getData().addCPlayer(e.getPlayer(), c);
-                if(c.isInHighTable()) {
-                    GUICreator.createHighTableVoteGUI(plugin.getData(), e.getPlayer());
-                }
+            if (c.hasMember(p)) {
+                plugin.getData().addCPlayer(p, c);
                 break;
             }
         }
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                ArrayList<VoteItem> activeMultipliers = plugin.getData().getActiveMultipliers();
+                GUICreator.createActiveMultipliers(activeMultipliers, plugin.getData(), p);
+                if(plugin.getData().getCrew(p).isInHighTable()) {
+                    ComponentUtilities.sendHighTableVoteMessage(p);
+                }
+            }
+        }.runTaskLater(plugin, 40);
     }
-//        Player p = event.getPlayer();
-//        UUID uuid = p.getUniqueId();
-//
-//        Crew targetCrew = plugin.getData().getCrew(p);
-//        JsonObject crewsJson = plugin.getcrewsJson();
-//
-//        if(targetCrew == null) {
-//            return;
-//        }
-//
-//        JsonObject crewsObject = crewsJson.getAsJsonObject(targetCrew.getName().toLowerCase());
-//        if(crewsObject != null){
-//            if(crewsObject.getAsJsonObject("mailMessages") == null){
-//                JsonObject mailMessages = new JsonObject();
-//                crewsObject.add("mailMessages", mailMessages);
-//                plugin.savecrewsFileJson();
-//            }
-//
-//            JsonObject mailMessages = crewsObject.getAsJsonObject("mailMessages");
-//            if(!mailMessages.keySet().isEmpty()){
-//                for(String message : mailMessages.keySet()) {
-//                    JsonUtilities json = new JsonUtilities();
-//                    List<String> membersUUIDList = json.JsonArrayToStringList(mailMessages.get(message).getAsJsonArray());
-//                    if(membersUUIDList.contains(uuid.toString())){
-//                        UnicodeCharacters unicode = new UnicodeCharacters();
-//                        p.sendMessage(ChatColor.AQUA + "[" + UnicodeCharacters.mail + "]" + " You have unopened crew mail! Use /crews mail open");
-//                        break;
-//                    }
-//                }
-//            }
-//        }
-
-
 
     @EventHandler
     private void onLeave(PlayerQuitEvent e) {

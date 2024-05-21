@@ -12,6 +12,7 @@ import org.ovclub.crews.commands.SubCommand;
 import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.utilities.ChatUtilities;
+import org.ovclub.crews.utilities.UnicodeCharacters;
 
 public class InviteCommand implements SubCommand {
 
@@ -37,7 +38,7 @@ public class InviteCommand implements SubCommand {
         if (args[0] != null) {
             Player target = Bukkit.getPlayer(args[0]);
             if (args.length != 1) {
-                p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+                p.sendMessage(UnicodeCharacters.CorrectUsage(getSyntax()));
                 return;
             }
             if (Bukkit.getServer().getPlayer(target.getName()) == null) {
@@ -105,7 +106,7 @@ public class InviteCommand implements SubCommand {
                 }
             }.runTaskLaterAsynchronously(plugin, 3600);
         } else {
-            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            p.sendMessage(UnicodeCharacters.CorrectUsage(getSyntax()));
         }
     }
 }

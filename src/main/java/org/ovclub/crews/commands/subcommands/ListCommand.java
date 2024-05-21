@@ -48,7 +48,7 @@ public class ListCommand implements SubCommand {
                 try {
                     pageNum = Integer.parseInt(args[0]);
                 } catch (NumberFormatException e) {
-                    p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+                    p.sendMessage(UnicodeCharacters.CorrectUsage(getSyntax()));
                     return;
                 }
             } else {

@@ -1,4 +1,4 @@
-package org.ovclub.crews.utilities;
+package org.ovclub.crews.utilities.GUI;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import net.kyori.adventure.text.Component;
@@ -9,6 +9,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Skull;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -20,6 +21,10 @@ import org.ovclub.crews.Crews;
 import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
+import org.ovclub.crews.object.hightable.VoteItem;
+import org.ovclub.crews.utilities.ComponentUtilities;
+import org.ovclub.crews.utilities.HightableUtility;
+import org.ovclub.crews.utilities.UnicodeCharacters;
 import org.ovclub.crews.utilities.skull.CustomHead;
 import org.ovclub.crews.utilities.skull.SkullCreator;
 
@@ -247,27 +252,27 @@ public class GUICreator {
         data.replaceInventory(p.getUniqueId(), inv);
 
         inv.setItem(0, createGuiItem(Material.NETHERITE_PICKAXE,
-            ComponentUtilities.createComponent("⛏ Ore Drop Rates", TextColor.fromHexString("#8D6E63")),
+            ComponentUtilities.createComponent("⛏ Ore Drop Rates", UnicodeCharacters.oreDrops_color),
             Component.text(""),
             ComponentUtilities.createComponent("Click to view options.", NamedTextColor.DARK_GRAY)));
 
         inv.setItem(2, createGuiItem(Material.DIAMOND_SWORD,
-            ComponentUtilities.createComponent("🗡 Mob Drop Rates", TextColor.fromHexString("#F44336")),
+            ComponentUtilities.createComponent("🗡 Mob Drop Rates", UnicodeCharacters.mobDrops_color),
             Component.text(""),
             ComponentUtilities.createComponent("Click to view options.", NamedTextColor.DARK_GRAY)));
 
         inv.setItem(4, createGuiItem(Material.NETHERITE_CHESTPLATE,
-            ComponentUtilities.createComponent("☠ Mob Difficulty", TextColor.fromHexString("#3F51B5")),
+            ComponentUtilities.createComponent("☠ Mob Difficulty", UnicodeCharacters.mobDifficulty_color),
             Component.text(""),
             ComponentUtilities.createComponent("Click to view options.", NamedTextColor.DARK_GRAY)));
 
         inv.setItem(6, createGuiItem(Material.EXPERIENCE_BOTTLE,
-            ComponentUtilities.createComponent("🔮 XP Drop Rates", TextColor.fromHexString("#4CAF50")),
+            ComponentUtilities.createComponent("🔮 XP Drop Rates", UnicodeCharacters.xpDrops_color),
             Component.text(""),
             ComponentUtilities.createComponent("Click to view options.", NamedTextColor.DARK_GRAY)));
 
         inv.setItem(8, createGuiItem(Material.ANVIL,
-            ComponentUtilities.createComponent("🧰 Discounts", TextColor.fromHexString("#FFEB3B")),
+            ComponentUtilities.createComponent("🧰 Discounts", UnicodeCharacters.discounts_color),
             Component.text(""),
             ComponentUtilities.createComponent("Click to view options.", NamedTextColor.DARK_GRAY)));
 
@@ -568,6 +573,43 @@ public class GUICreator {
         inv.setItem(26, createGuiItem(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE,
             ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
             ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
+
+        GUICreator.openInventory(p, inv);
+    }
+    public static void createActiveMultipliers(ArrayList<VoteItem> activeMultipliers, PlayerData data, Player p) {
+        Inventory inv = Bukkit.createInventory(null, 9, Component.text("Active Multipliers"));
+        data.replaceInventory(p.getUniqueId(), inv);
+
+        int slotIndex = 0;
+        for(VoteItem item : activeMultipliers) {
+            ItemStack material = null;
+            if(HightableUtility.isValidMaterial(item.getItem())) {
+                material = new ItemStack(Material.valueOf(item.getItem()));
+            } else if (Arrays.stream(HightableUtility.xpDropMobTypes).toList().contains(item.getItem())) {
+                switch (item.getItem()) {
+                    case "PASSIVE" -> material = SkullCreator.getCustomHead(CustomHead.COW);
+                    case "NEUTRAL" -> material = SkullCreator.getCustomHead(CustomHead.IRON_GOLEM);
+                    case "HOSTILE" -> material = SkullCreator.getCustomHead(CustomHead.CREEPER);
+                }
+            } else {
+                material = SkullCreator.getCustomHead(CustomHead.valueOf(item.getItem()));
+            }
+
+            if(material == null) {
+                material = new ItemStack(Material.DIRT);
+            }
+
+            List<TextComponent> voteStrings = HightableUtility.generateMultiplierString(item);
+
+            inv.setItem(slotIndex, createGuiItem(material,
+                ComponentUtilities.toTitleCaseComponent(item.getSection()),
+                Component.text(""),
+                ComponentUtilities.createComponent("• Multiplier Info: ", NamedTextColor.GRAY).decorate(TextDecoration.UNDERLINED),
+                voteStrings.get(0),
+                voteStrings.get(1)));
+
+            slotIndex += 2;
+        }
 
         GUICreator.openInventory(p, inv);
     }

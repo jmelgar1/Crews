@@ -8,8 +8,8 @@ import org.ovclub.crews.exceptions.NotInCrew;
 import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
-import org.ovclub.crews.utilities.ChatUtilities;
-import org.ovclub.crews.utilities.GUICreator;
+import org.ovclub.crews.utilities.GUI.GUICreator;
+import org.ovclub.crews.utilities.UnicodeCharacters;
 
 public class InfoCommand implements SubCommand {
 
@@ -34,7 +34,7 @@ public class InfoCommand implements SubCommand {
         PlayerData data = plugin.getData();
         Crew pCrew = data.getCrew(p);
         if(args.length >= 2) {
-            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            p.sendMessage(UnicodeCharacters.CorrectUsage(getSyntax()));
             return;
         }
         if (args.length == 0) {

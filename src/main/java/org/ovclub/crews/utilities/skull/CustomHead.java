@@ -86,6 +86,6 @@ public enum CustomHead {
     }
 
     public enum Category {
-        PASSIVE, NEUTRAL, HOSTILE
+        PASSIVE, NEUTRAL, HOSTILE, BLOCK
     }
 }

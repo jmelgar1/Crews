@@ -10,6 +10,7 @@ import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 import org.ovclub.crews.utilities.ChatUtilities;
+import org.ovclub.crews.utilities.UnicodeCharacters;
 
 public class DemoteCommand implements SubCommand {
 
@@ -39,7 +40,7 @@ public class DemoteCommand implements SubCommand {
             return;
         }
         if (args.length != 1) {
-            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            p.sendMessage(UnicodeCharacters.CorrectUsage(getSyntax()));
             return;
         }
         Player demotedPlayer = Bukkit.getServer().getPlayer(args[0]);

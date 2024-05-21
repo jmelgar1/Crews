@@ -12,6 +12,7 @@ import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 import org.ovclub.crews.utilities.ChatUtilities;
 import org.ovclub.crews.utilities.GeneralUtilities;
+import org.ovclub.crews.utilities.UnicodeCharacters;
 
 public class WithdrawCommand implements SubCommand {
 
@@ -41,7 +42,7 @@ public class WithdrawCommand implements SubCommand {
             return;
         }
         if (args.length != 1) {
-            p.sendMessage(ChatUtilities.CorrectUsage(getSyntax()));
+            p.sendMessage(UnicodeCharacters.CorrectUsage(getSyntax()));
             return;
         }
         if (!pCrew.isHigherup(p)) {
