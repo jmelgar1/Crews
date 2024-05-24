@@ -25,17 +25,17 @@ public class Arena {
         Component.text(UnicodeCharacters.crews).color(UnicodeCharacters.logo_color)
             .append(Component.text("SKIRMISH ").color(UnicodeCharacters.description_color).decorate(TextDecoration.BOLD)
                 .append(Component.text(UnicodeCharacters.crews).color(UnicodeCharacters.logo_color))));
-    private Location center;
+    private final Location center;
     private final int radius;
-    private World world;
-    private Skirmish skirmish;
+    private final World world;
+    private final Skirmish skirmish;
     private boolean hasBeenTeleported;
     private boolean isInCountdown;
     //private int gameTime = 600;
     private int gameTime = 180;
     private final HashMap<UUID, Location> playerReturnPoints = new HashMap<>();
 
-    private Map<Integer, Integer> kFactors;
+    private final Map<Integer, Integer> kFactors;
 
     public Arena(World world, Location center, int radius, Skirmish skirmish, boolean isInCountdown) {
         this.arenaId = UUID.randomUUID();

@@ -18,6 +18,7 @@ import org.ovclub.crews.object.hightable.VoteItem;
 import org.ovclub.crews.utilities.ComponentUtilities;
 import org.ovclub.crews.utilities.GUI.GUICreator;
 import org.ovclub.crews.utilities.HightableUtility;
+import org.ovclub.crews.utilities.SoundUtilities;
 
 import java.util.*;
 
@@ -100,9 +101,15 @@ public class PlayerEvents implements Listener {
             @Override
             public void run() {
                 ArrayList<VoteItem> activeMultipliers = plugin.getData().getActiveMultipliers();
-                GUICreator.createActiveMultipliers(activeMultipliers, plugin.getData(), p);
+                if(!plugin.getData().getSeenMultipliers().contains(p.getUniqueId())) {
+                    GUICreator.createActiveMultipliers(activeMultipliers, plugin.getData(), p);
+                    plugin.getData().addSeenMultipliers(p.getUniqueId());
+                }
                 if(plugin.getData().getCrew(p).isInHighTable()) {
-                    ComponentUtilities.sendHighTableVoteMessage(p);
+                    if(!HightableUtility.hasPlayerVoted(p)) {
+                        SoundUtilities.playPingSound(p);
+                        ComponentUtilities.sendHighTableVoteMessage(p);
+                    }
                 }
             }
         }.runTaskLater(plugin, 40);

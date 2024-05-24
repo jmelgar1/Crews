@@ -13,6 +13,7 @@ import org.ovclub.crews.Crews;
 import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
+import org.ovclub.crews.utilities.SoundUtilities;
 
 import java.util.UUID;
 
@@ -28,7 +29,6 @@ public class CrewShopListener implements Listener {
         final Player p = (Player) event.getWhoClicked();
         UUID playerUUID = p.getUniqueId();
         if (!event.getInventory().equals(data.getInventories().get(playerUUID))) return;
-
         event.setCancelled(true);
 
         final ItemStack clickedItem = event.getCurrentItem();
@@ -72,11 +72,10 @@ public class CrewShopListener implements Listener {
             }
             pCrew.addUpgrade("chat");
             pCrew.removeFromVault(ConfigManager.UPGRADE_CHAT_COST, p, false);
-            //success message here
+            SoundUtilities.playPurchaseSound(p);
+            p.sendMessage(ConfigManager.PURCHASE_SUCCESSFUL);
             p.closeInventory();
         }
-
-        //NEED TO TAKE MONEY FROM crew WHEN BUYING UPGRADES!!!!!!!!!!!!!!!!!!!!!!!!
 
         if (clickedItem.getType() == Material.FILLED_MAP) {
             Crew pCrew = data.getCrew(p);
@@ -94,7 +93,8 @@ public class CrewShopListener implements Listener {
             }
             pCrew.addUpgrade("mail");
             pCrew.removeFromVault(ConfigManager.UPGRADE_MAIL_COST, p, false);
-            //success message here
+            SoundUtilities.playPurchaseSound(p);
+            p.sendMessage(ConfigManager.PURCHASE_SUCCESSFUL);
             p.closeInventory();
         }
     }
@@ -105,11 +105,5 @@ public class CrewShopListener implements Listener {
         if(event.getInventory().equals(data.getInventories().get(event.getWhoClicked().getUniqueId()))) {
             event.setCancelled(true);
         }
-    }
-
-    @EventHandler
-    public void onInventoryClose(final InventoryCloseEvent e) {
-        Player p = (Player) e.getPlayer();
-        plugin.getData().getInventories().remove(p.getUniqueId());
     }
 }

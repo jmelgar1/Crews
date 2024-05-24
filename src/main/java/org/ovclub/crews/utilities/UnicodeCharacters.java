@@ -5,10 +5,8 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
-
-import javax.inject.Named;
 
 public class UnicodeCharacters {
 
@@ -135,6 +133,8 @@ public class UnicodeCharacters {
     public static TextComponent createVoteIcon(TextColor color) {return Component.text("[🧻] ").color(color);}
     public static TextComponent createUsageIcon(TextColor color) {return Component.text("[⚒] ").color(color);}
     public static TextComponent createHightableIcon(TextColor color) {return Component.text("{🏛} ").color(color);}
+    public static TextComponent createMultiplierIcon(TextColor color) {return Component.text("[💠] ").color(color);}
+
 
     public static void sendInfoMessage(Player p, String prefixEmoji, String prefix, String text, TextColor color) {
         p.sendMessage(Component.text("│ ").color(UnicodeCharacters.logo_color)
@@ -202,7 +202,42 @@ public class UnicodeCharacters {
     public static TextComponent CorrectUsage(String syntax) {
         return createUsageIcon(TextColor.color(255,0,0))
             .append(Component.text("Correct Usage: ").color(NamedTextColor.GRAY))
-            .append(Component.text("\"" + "/" + syntax + "\"").color(NamedTextColor.DARK_GRAY));
+            .append(Component.text("\"" + syntax + "\"").color(NamedTextColor.DARK_GRAY));
+    }
+
+    public static TextComponent extraItemDrop(int amount, Material item) {
+        return createMultiplierIcon(NamedTextColor.AQUA)
+            .append(Component.text("You received ").color(NamedTextColor.GRAY))
+            .append(Component.text("+" + amount + " " + formatString(String.valueOf(item)))).color(NamedTextColor.BLUE)
+            .append(Component.text(" from the active multiplier!").color(NamedTextColor.GRAY));
+    }
+
+    public static TextComponent extraXPBonus() {
+        return createMultiplierIcon(NamedTextColor.AQUA)
+            .append(Component.text("You received ").color(NamedTextColor.GRAY))
+            .append(Component.text("extra XP").color(NamedTextColor.BLUE)
+            .append(Component.text(" from the active multiplier!").color(NamedTextColor.GRAY)));
+    }
+
+    public static TextComponent discountedEnchanting(String discount) {
+        return createMultiplierIcon(NamedTextColor.AQUA)
+            .append(Component.text("This enchantment was discounted ").color(NamedTextColor.GRAY))
+            .append(Component.text(convertToPercentAndFindDifference(discount)).color(NamedTextColor.BLUE)
+            .append(Component.text(" from the active multiplier!").color(NamedTextColor.GRAY)));
+    }
+
+    public static TextComponent discountedAnvil(String discount) {
+        return createMultiplierIcon(NamedTextColor.AQUA)
+            .append(Component.text("This anvil use is discounted ").color(NamedTextColor.GRAY))
+            .append(Component.text(convertToPercentAndFindDifference(discount)).color(NamedTextColor.BLUE)
+            .append(Component.text(" from the active multiplier!").color(NamedTextColor.GRAY)));
+    }
+
+    public static TextComponent discountedTrading(String discount) {
+        return createMultiplierIcon(NamedTextColor.AQUA)
+            .append(Component.text("This trade was discounted at ").color(NamedTextColor.GRAY))
+            .append(Component.text(convertToPercentAndFindDifference(discount)).color(NamedTextColor.BLUE)
+                .append(Component.text(" from the active multiplier!").color(NamedTextColor.GRAY)));
     }
 
     public static String formatString(String input) {

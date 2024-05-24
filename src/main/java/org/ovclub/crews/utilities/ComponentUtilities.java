@@ -8,14 +8,9 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.entity.Player;
-import org.jline.utils.Log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static net.kyori.adventure.text.format.TextColor.color;
 
 public class ComponentUtilities {
     public static TextComponent createEmojiComponent(String emoji, String titleLabel, TextColor labelColor, String titleText, TextColor titleColor) {
@@ -30,12 +25,12 @@ public class ComponentUtilities {
                 .append(Component.text("[").color(UnicodeCharacters.influence_outline_color))
                 .append(Component.text(influence).color(UnicodeCharacters.influence_color))
                 .append(Component.text("]").color(UnicodeCharacters.influence_outline_color)))
-            .decoration(TextDecoration.ITALIC, false);
+            .decoration(TextDecoration.BOLD, true);
     }
-    public static TextComponent createDoubleEmojiComponent(String emoji, TextColor emojiColor, String titleLabel, TextColor labelColor, String unlockEmoji, TextColor unlockColor) {
+    public static TextComponent createDoubleEmojiComponent(String emoji, TextColor emojiColor, String titleLabel, TextColor labelColor, TextComponent unlockedIcon) {
         return Component.text(emoji).color(emojiColor)
             .append(Component.text(titleLabel).color(labelColor)
-                .append(Component.text(unlockEmoji).color(unlockColor)))
+                .append(unlockedIcon))
             .decoration(TextDecoration.ITALIC, false);
     }
     public static TextComponent createWinLossRatio(String emoji, TextColor emojiColor, String titleLabel, TextColor labelColor, String wins, String draws, String losses) {

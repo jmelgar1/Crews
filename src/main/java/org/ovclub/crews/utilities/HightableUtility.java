@@ -8,14 +8,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.jline.utils.Log;
 import org.ovclub.crews.Crews;
 import org.ovclub.crews.managers.file.HighTableConfigManager;
 import org.ovclub.crews.managers.hightable.DailyMultiplierManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.hightable.MultiplierItem;
 import org.ovclub.crews.object.hightable.VoteItem;
-import org.w3c.dom.Text;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -123,6 +121,25 @@ public class HightableUtility{
         return result;
     }
 
+    public static boolean hasPlayerVoted(Player p) {
+        boolean hasPlayerVoted = false;
+        FileConfiguration config = HighTableConfigManager.getHighTableConfig();
+        ConfigurationSection crewsSection = config.getConfigurationSection("high-table.crews");
+        for (String crewUuid : crewsSection.getKeys(false)) {
+            String votesPath = "high-table.crews." + crewUuid + ".votes";
+            ConfigurationSection votesSection = config.getConfigurationSection(votesPath);
+            if (votesSection != null) {
+                for (String playerUuid : votesSection.getKeys(false)) {
+                    if (playerUuid.equals(p.getUniqueId().toString())) {
+                        hasPlayerVoted = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return hasPlayerVoted;
+    }
+
     public static TextComponent isSelected(Player p, String section, String material) {
         FileConfiguration config = HighTableConfigManager.getHighTableConfig();
         ConfigurationSection crewsSection = config.getConfigurationSection("high-table.crews");
@@ -172,7 +189,7 @@ public class HightableUtility{
                     if (playerVotes != null) {
                         for (String voteKey : playerVotes.getKeys(false)) {
                             String voteValue = playerVotes.getString(voteKey);
-                            String fullVote = voteKey + ": " + voteValue;  // This maintains the section information
+                            String fullVote = voteKey + ": " + voteValue;
                             voteCounts.put(fullVote, voteCounts.getOrDefault(fullVote, 0) + 1);
                         }
                     }
@@ -358,6 +375,15 @@ public class HightableUtility{
         }
     }
 
+    public static boolean isValidEntity(String item) {
+        try {
+            EntityType.valueOf(item);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
     public static EntityType[] passiveMobs = {
         EntityType.CAT,
         EntityType.CHICKEN,
@@ -441,6 +467,22 @@ public class HightableUtility{
         Material.ANCIENT_DEBRIS,
         Material.SPAWNER,
         Material.SCULK,
+    };
+
+    public static Material[] overworldOres = {
+        Material.COAL_ORE,
+        Material.IRON_ORE,
+        Material.COPPER_ORE,
+        Material.REDSTONE_ORE,
+        Material.GOLD_ORE,
+        Material.LAPIS_ORE,
+        Material.EMERALD_ORE,
+        Material.DIAMOND_ORE,
+    };
+
+    public static Material[] netherOres = {
+        Material.NETHER_GOLD_ORE,
+        Material.NETHER_QUARTZ_ORE
     };
 
     public static Material[] xpDropActivities = {

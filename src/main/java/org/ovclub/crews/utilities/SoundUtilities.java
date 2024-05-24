@@ -16,6 +16,7 @@ public class SoundUtilities {
     public static Sound skirmishVictorySound = Sound.ENTITY_VILLAGER_CELEBRATE;
     public static Sound skirmishDefeatSound = Sound.ENTITY_VILLAGER_NO;
     public static Sound skirmishDrawSound = Sound.BLOCK_NOTE_BLOCK_BASS;
+    public static Sound crewShopPurchaseSound = Sound.BLOCK_GLASS_BREAK;
     /*Skirmish*/
     public static Sound skirmishBeginSound = Sound.ENTITY_ILLUSIONER_CAST_SPELL;
     public static Sound skirmishDeathSound = Sound.BLOCK_BEACON_DEACTIVATE;
@@ -34,6 +35,10 @@ public class SoundUtilities {
 
     public static void playDeathSound(Player p) {
         p.playSound(p.getLocation(), skirmishDeathSound, 0.5F, 1.0F);
+    }
+
+    public static void playPurchaseSound(Player p) {
+        p.playSound(p.getLocation(), crewShopPurchaseSound, 0.5F, 1.3F);
     }
 
     public static void playSoundToAllPlayers(Sound sound, float volume, float pitch) {

@@ -44,7 +44,6 @@ public class ChatCommand implements SubCommand {
         if(!plugin.getData().isInCrewChat(p.getUniqueId())) {
             p.sendMessage(ConfigManager.CREW_CHAT_ENABLED);
             plugin.getData().enableCrewChat(p.getUniqueId());
-            return;
         }
     }
 }

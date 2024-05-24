@@ -40,7 +40,8 @@ public class CrewGUIListener implements Listener {
         PlayerData data = plugin.getData();
         final Player p = (Player) e.getWhoClicked();
         UUID playerUUID = p.getUniqueId();
-        //System.out.println("ON CLICK: " + e.getInventory().equals(data.getInventories().get(playerUUID)));
+        Log.info(e.getInventory());
+        Log.info(data.getInventories().get(playerUUID));
         if(!e.getInventory().equals(data.getInventories().get(playerUUID))) return;
         e.setCancelled(true);
 
@@ -293,12 +294,6 @@ public class CrewGUIListener implements Listener {
         }
     }
 
-//    @EventHandler
-//    public void onInventoryClose(final InventoryCloseEvent e) {
-//        Player p = (Player) e.getPlayer();
-//        plugin.getData().getInventories().remove(p.getUniqueId());
-//    }
-
     private String getHeadName(ItemStack item) {
         if(item != null) {
             ItemMeta meta = item.getItemMeta();
@@ -356,7 +351,6 @@ public class CrewGUIListener implements Listener {
         FileConfiguration config = HighTableConfigManager.getHighTableConfig();
         String crewBasePath = "high-table.crews." + crew.getUuid();
         String basePath = "high-table.crews." + crew.getUuid() + ".votes." + p.getUniqueId();
-        //if(config.getConfigurationSection(basePath) == null) {
         if (config.getConfigurationSection(crewBasePath) == null) {
             config.createSection(crewBasePath);
         }
@@ -367,8 +361,5 @@ public class CrewGUIListener implements Listener {
         HighTableConfigManager.saveHighTableConfig();
         p.closeInventory();
         p.sendMessage(ConfigManager.VOTE_SET);
-//        } else {
-//            p.closeInventory();
-//        }
     }
 }

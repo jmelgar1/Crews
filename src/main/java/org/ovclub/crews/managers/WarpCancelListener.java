@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.ovclub.crews.utilities.ChatUtilities;
+import org.ovclub.crews.utilities.UnicodeCharacters;
 
 public class WarpCancelListener implements Listener {
     private final Player player;
@@ -39,7 +40,7 @@ public class WarpCancelListener implements Listener {
             }
 
             // Player has moved their body, cancel the warp
-            player.sendMessage(chatUtil.errorIcon + ChatColor.RED + "Warp cancelled... please stand still when warping!");
+            player.sendMessage(UnicodeCharacters.x_emoji + ChatColor.RED + " Warp cancelled... please stand still when warping!");
             inWarp.remove(player);
             warpTask.cancel();
             HandlerList.unregisterAll(this);

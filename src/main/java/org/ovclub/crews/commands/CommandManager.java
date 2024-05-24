@@ -106,7 +106,8 @@ public class CommandManager implements CommandExecutor {
 		subCommands.put("decline", new DeclineCommand());
 		subCommands.put("leave", new LeaveCommand());
         subCommands.put("chat", new ChatCommand());
-		subCommands.put("mail", new MailCommand());
+        subCommands.put("description", new DescriptionCommand());
+		//subCommands.put("mail", new MailCommand());
         subCommands.put("deposit", new DepositCommand());
 		subCommands.put("boss", new BossCommand());
 		subCommands.put("enforcer", new EnforcerCommand());

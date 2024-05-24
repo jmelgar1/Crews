@@ -5,7 +5,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.ovclub.crews.commands.CommandManager;
 import org.ovclub.crews.file.CrewsFile;
 import org.ovclub.crews.listeners.CrewGUIListener;
+import org.ovclub.crews.listeners.CrewShopListener;
 import org.ovclub.crews.listeners.PlayerEvents;
+import org.ovclub.crews.listeners.hightable.ActiveMultiplierListener;
 import org.ovclub.crews.listeners.skirmish.ArenaListener;
 import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.managers.file.HighTableConfigManager;
@@ -22,11 +24,10 @@ import org.ovclub.crews.runnables.UpdateScoreboard;
 public final class Crews extends JavaPlugin implements Listener {
     /* New Stuff  */
     private PlayerData playerData;
-    public PlayerData getData(){
-        return this.playerData;
-    }
+    public PlayerData getData(){return this.playerData;}
 
     private CrewsFile crewsFile;
+    public CrewsFile getCrewsFile(){return this.crewsFile;}
 
     private HightableFile hightableFile;
     public HightableFile getHightableFile() { return hightableFile;}
@@ -67,7 +68,9 @@ public final class Crews extends JavaPlugin implements Listener {
 
         getServer().getPluginManager().registerEvents(new PlayerEvents(this), this);
         getServer().getPluginManager().registerEvents(new CrewGUIListener(this), this);
+        getServer().getPluginManager().registerEvents(new CrewShopListener(this), this);
         getServer().getPluginManager().registerEvents(new ArenaListener(this), this);
+        getServer().getPluginManager().registerEvents(new ActiveMultiplierListener(this), this);
 
         matchSearchTask.runTaskTimer(this, 0L, 20L * 60);
         resetHighTableVote.run();

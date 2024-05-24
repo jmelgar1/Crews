@@ -45,6 +45,7 @@ public class GUICreator {
         int skirmishWins = crew.getSkirmishWins();
         int skirmishLosses = crew.getSkirmishLosses();
         int skirmishDraws = crew.getSkirmishDraws();
+        List<String> upgrades = crew.getUnlockedUpgrades();
         ItemStack banner = Optional.ofNullable(crew.getBanner()).orElse(new ItemStack(Material.WHITE_BANNER));
         //OfflinePlayer chief = Bukkit.getServer().getOfflinePlayer(crewManager.getChief(crew));
 
@@ -75,13 +76,11 @@ public class GUICreator {
             vaultComponent,
             xpComponent,
             Component.text(""),
-            Component.text("Ranking: "),
+            Component.text("Server Ranking: ").append(Component.text("#" + crew.getRank()).color(NamedTextColor.GOLD)),
+            ComponentUtilities.createInfluenceComponent(influence),
             Component.text(""),
             ComponentUtilities.createComponentWithDecoration("Crew influence is the sum of the crew's", NamedTextColor.GRAY, TextDecoration.ITALIC),
-            ComponentUtilities.createComponentWithDecoration("rating, vault balance, and player power.", NamedTextColor.GRAY, TextDecoration.ITALIC),
-            ComponentUtilities.createComponentWithDecoration("(100 Influence per player)", NamedTextColor.GRAY, TextDecoration.ITALIC),
-            Component.text(""),
-            ComponentUtilities.createInfluenceComponent(influence)));
+            ComponentUtilities.createComponentWithDecoration("rating and vault balance.", NamedTextColor.GRAY, TextDecoration.ITALIC)));
 
         inv.setItem(19, createGuiItem(banner,
             ComponentUtilities.createComponentWithDecoration("CREW BANNER", NamedTextColor.LIGHT_PURPLE, TextDecoration.BOLD),
@@ -103,8 +102,12 @@ public class GUICreator {
             ComponentUtilities.createComponentWithDecoration("CREW SKIRMISHES", NamedTextColor.GRAY, TextDecoration.BOLD),
             ComponentUtilities.createEmojiComponent(UnicodeCharacters.rating_emoji, "Rating: ", UnicodeCharacters.info_text_color, String.valueOf(rating), UnicodeCharacters.rating_color),
             ComponentUtilities.createWinLossRatio(UnicodeCharacters.skirmish_emoji, UnicodeCharacters.emoji_text_color, "W/L Record: ", UnicodeCharacters.info_text_color, String.valueOf(skirmishWins), String.valueOf(skirmishDraws), String.valueOf(skirmishLosses))));
-        List<String> unlockedUpgrades = crew.getUnlockedUpgrades();
-        //can have nothing or ["discord", "chat", "mail"]
+
+        boolean hasMail = upgrades.contains("mail");
+        boolean hasChat = upgrades.contains("chat");
+
+        TextComponent crewMail = createStatusComponent(hasMail);
+        TextComponent crewChat = createStatusComponent(hasChat);
 
         inv.setItem(25, createGuiItem(Material.SPONGE,
             Component.text(UnicodeCharacters.shop_emoji).color(UnicodeCharacters.sponge_color).decorate(TextDecoration.BOLD)
@@ -112,9 +115,8 @@ public class GUICreator {
                     .append(Component.text(UnicodeCharacters.shop_emoji).color(UnicodeCharacters.sponge_color).decorate(TextDecoration.BOLD))),
             Component.text(""),
             ComponentUtilities.createComponent("Upgrades", NamedTextColor.WHITE),
-            ComponentUtilities.createDoubleEmojiComponent(UnicodeCharacters.crew_chat_emoji, NamedTextColor.DARK_GREEN, "Private Chat", NamedTextColor.DARK_GREEN, "icon here", NamedTextColor.DARK_GREEN),
-            ComponentUtilities.createDoubleEmojiComponent(UnicodeCharacters.discord_emoji, NamedTextColor.BLUE, "Private Discord", NamedTextColor.BLUE, "icon here", NamedTextColor.DARK_GREEN),
-            ComponentUtilities.createDoubleEmojiComponent(UnicodeCharacters.mail_emoji, NamedTextColor.AQUA, "Crew Mail", NamedTextColor.AQUA, "icon here", NamedTextColor.DARK_GREEN)));
+            ComponentUtilities.createDoubleEmojiComponent(UnicodeCharacters.crew_chat_emoji, NamedTextColor.DARK_GREEN, "Private Chat ", NamedTextColor.DARK_GREEN, crewChat),
+            ComponentUtilities.createDoubleEmojiComponent(UnicodeCharacters.mail_emoji, NamedTextColor.AQUA, "Crew Mail ", NamedTextColor.AQUA, crewMail)));
 
         inv.setItem(8, createGuiItem(Material.BARRIER,
             ComponentUtilities.createComponentWithDecoration("EXIT", NamedTextColor.RED, TextDecoration.BOLD),
@@ -164,14 +166,14 @@ public class GUICreator {
             Component.text(""),
             ComponentUtilities.createComponentWithPlaceHolder("Purchased: ", NamedTextColor.GRAY, crew.getUnlockedUpgrades().contains("chat") ? "True" : "False", crew.getUnlockedUpgrades().contains("chat") ? NamedTextColor.GREEN : NamedTextColor.RED)));
 
-        inv.setItem(16, createGuiItem(Material.LAPIS_BLOCK,
-            ComponentUtilities.createComponent("Discord (Voice & Text) Channels", NamedTextColor.BLUE),
-            ComponentUtilities.createComponent("Two private crew channels on the discord server.", NamedTextColor.GRAY),
-            ComponentUtilities.createComponent("Useful to have a place of gathering outside the server.", NamedTextColor.GRAY),
-            Component.text(""),
-            ComponentUtilities.createComponentWithPlaceHolder("Cost: ", NamedTextColor.GRAY, UnicodeCharacters.sponge_icon + ConfigManager.UPGRADE_DISCORD_COST, UnicodeCharacters.sponge_color),
-            Component.text(""),
-            ComponentUtilities.createComponentWithPlaceHolder("Purchased: ", NamedTextColor.GRAY, crew.getUnlockedUpgrades().contains("discord") ? "True" : "False", crew.getUnlockedUpgrades().contains("discord") ? NamedTextColor.GREEN : NamedTextColor.RED)));
+//        inv.setItem(16, createGuiItem(Material.LAPIS_BLOCK,
+//            ComponentUtilities.createComponent("Discord (Voice & Text) Channels", NamedTextColor.BLUE),
+//            ComponentUtilities.createComponent("Two private crew channels on the discord server.", NamedTextColor.GRAY),
+//            ComponentUtilities.createComponent("Useful to have a place of gathering outside the server.", NamedTextColor.GRAY),
+//            Component.text(""),
+//            ComponentUtilities.createComponentWithPlaceHolder("Cost: ", NamedTextColor.GRAY, UnicodeCharacters.sponge_icon + ConfigManager.UPGRADE_DISCORD_COST, UnicodeCharacters.sponge_color),
+//            Component.text(""),
+//            ComponentUtilities.createComponentWithPlaceHolder("Purchased: ", NamedTextColor.GRAY, crew.getUnlockedUpgrades().contains("discord") ? "True" : "False", crew.getUnlockedUpgrades().contains("discord") ? NamedTextColor.GREEN : NamedTextColor.RED)));
 
         inv.setItem(12, createGuiItem(Material.FILLED_MAP,
             ComponentUtilities.createComponent("Crew Mail", NamedTextColor.YELLOW),
@@ -249,7 +251,6 @@ public class GUICreator {
 
     public static void createHighTableVoteGUI(PlayerData data, Player p) {
         Inventory inv = Bukkit.createInventory(null, 9, Component.text("Crew High Table Vote"));
-        data.replaceInventory(p.getUniqueId(), inv);
 
         inv.setItem(0, createGuiItem(Material.NETHERITE_PICKAXE,
             ComponentUtilities.createComponent("⛏ Ore Drop Rates", UnicodeCharacters.oreDrops_color),
@@ -276,13 +277,12 @@ public class GUICreator {
             Component.text(""),
             ComponentUtilities.createComponent("Click to view options.", NamedTextColor.DARK_GRAY)));
 
+        data.replaceInventory(p.getUniqueId(), inv);
         GUICreator.openInventory(p, inv);
     }
 
     public static void createHighTableMobDropSelectionGUI(PlayerData data, Player p) {
         Inventory inv = Bukkit.createInventory(null, 9, Component.text("Mob Drop Rates"));
-        data.replaceInventory(p.getUniqueId(), inv);
-
         inv.setItem(2, createGuiItem(SkullCreator.getCustomHead(CustomHead.COW),
             ComponentUtilities.createComponent("☆ Passive Mobs ☆", NamedTextColor.DARK_GREEN),
             Component.text(""),
@@ -302,12 +302,12 @@ public class GUICreator {
             ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
             ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
 
+        data.replaceInventory(p.getUniqueId(), inv);
         GUICreator.openInventory(p, inv);
     }
     public static void createHighTableXPDropSelectionGUI(Crews plugin, Map<String, Double> difficultyMultipliers, Player p) {
         PlayerData data = plugin.getData();
         Inventory inv = Bukkit.createInventory(null, 27, Component.text("XP Drop Rates"));
-        data.replaceInventory(p.getUniqueId(), inv);
 
         inv.setItem(1, createGuiItem(Material.GOLDEN_SWORD,
             ComponentUtilities.createComponent("☆ XP from Mobs ☆", NamedTextColor.DARK_GREEN),
@@ -359,12 +359,12 @@ public class GUICreator {
             ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
             ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
 
+        data.replaceInventory(p.getUniqueId(), inv);
         GUICreator.openInventory(p, inv);
     }
     public static void createHighTableMobXPDropSelectionGUI(Crews plugin, Map<String, Double> multipliers, Player p) {
         PlayerData data = plugin.getData();
         Inventory inv = Bukkit.createInventory(null, 9, Component.text("Mob XP Drop Rates"));
-        data.replaceInventory(p.getUniqueId(), inv);
 
         inv.setItem(2, createGuiItem(SkullCreator.getCustomHead(CustomHead.COW),
             ComponentUtilities.createComponent("☆ Passive Mobs ☆", NamedTextColor.DARK_GREEN),
@@ -393,12 +393,12 @@ public class GUICreator {
             ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
             ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
 
+        data.replaceInventory(p.getUniqueId(), inv);
         GUICreator.openInventory(p, inv);
     }
     public static void createBlockXPDropVoteGUI(Crews plugin, Map<String, Double> multipliers, Player p) {
         PlayerData data = plugin.getData();
         Inventory inv = Bukkit.createInventory(null, 27, Component.text("Ores & Blocks XP Drop Rates"));
-        data.replaceInventory(p.getUniqueId(), inv);
 
         int slotIndex = 0;
         for(Map.Entry<String, Double> entry : multipliers.entrySet()) {
@@ -424,6 +424,7 @@ public class GUICreator {
             ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
             ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
 
+        data.replaceInventory(p.getUniqueId(), inv);
         GUICreator.openInventory(p, inv);
     }
     public static void createHighTableDiscountsDropSelectionGUI(Crews plugin, Map<String, Double> discounts, Player p) {
@@ -459,7 +460,6 @@ public class GUICreator {
     }
     public static void createPassiveMobDropVoteGUI(Map<String, Double> passiveMultipliers, PlayerData data, Player p) {
         Inventory inv = Bukkit.createInventory(null, 54, Component.text("Passive Mob Drop Rates"));
-        data.replaceInventory(p.getUniqueId(), inv);
 
         int slotIndex = 0;
         for (CustomHead head : CustomHead.values()) {
@@ -479,11 +479,11 @@ public class GUICreator {
             ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
             ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
 
+        data.replaceInventory(p.getUniqueId(), inv);
         GUICreator.openInventory(p, inv);
     }
     public static void createNeutralMobDropVoteGUI(Map<String, Double> neutralMultipliers, PlayerData data, Player p) {
         Inventory inv = Bukkit.createInventory(null, 54, Component.text("Neutral Mob Drop Rates"));
-        data.replaceInventory(p.getUniqueId(), inv);
 
         int slotIndex = 0;
         for (CustomHead head : CustomHead.values()) {
@@ -503,11 +503,11 @@ public class GUICreator {
             ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
             ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
 
+        data.replaceInventory(p.getUniqueId(), inv);
         GUICreator.openInventory(p, inv);
     }
     public static void createHostileMobDropVoteGUI(Map<String, Double> hostileMultipliers, PlayerData data, Player p) {
         Inventory inv = Bukkit.createInventory(null, 54, Component.text("Hostile Mob Drop Rates"));
-        data.replaceInventory(p.getUniqueId(), inv);
 
         int slotIndex = 0;
         for (CustomHead head : CustomHead.values()) {
@@ -528,12 +528,11 @@ public class GUICreator {
             ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
             ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
 
+        data.replaceInventory(p.getUniqueId(), inv);
         GUICreator.openInventory(p, inv);
     }
     public static void createMobDifficultyDropVoteGUI(Map<String, Double> difficultyMultipliers, PlayerData data, Player p) {
         Inventory inv = Bukkit.createInventory(null, 54, Component.text("Mob Difficulty Rates"));
-        data.replaceInventory(p.getUniqueId(), inv);
-
         int slotIndex = 0;
         for (CustomHead head : CustomHead.values()) {
             if(head.getCategory().equals(CustomHead.Category.HOSTILE)) {
@@ -552,12 +551,11 @@ public class GUICreator {
             ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
             ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
 
+        data.replaceInventory(p.getUniqueId(), inv);
         GUICreator.openInventory(p, inv);
     }
     public static void createOreDropVoteGUI(Map<String, Double> oreDropMultipliers, PlayerData data, Player p) {
         Inventory inv = Bukkit.createInventory(null, 27, Component.text("Ore Drop Rates"));
-        data.replaceInventory(p.getUniqueId(), inv);
-
         int slotIndex = 0;
             for(Map.Entry<String, Double> entry : oreDropMultipliers.entrySet()) {
                 inv.setItem(slotIndex, createGuiItem(Material.valueOf(entry.getKey()),
@@ -574,11 +572,11 @@ public class GUICreator {
             ComponentUtilities.createComponentWithDecoration("GO BACK", NamedTextColor.GREEN, TextDecoration.BOLD),
             ComponentUtilities.createComponent("Click to go back.", NamedTextColor.GRAY)));
 
+        data.replaceInventory(p.getUniqueId(), inv);
         GUICreator.openInventory(p, inv);
     }
     public static void createActiveMultipliers(ArrayList<VoteItem> activeMultipliers, PlayerData data, Player p) {
         Inventory inv = Bukkit.createInventory(null, 9, Component.text("Active Multipliers"));
-        data.replaceInventory(p.getUniqueId(), inv);
 
         int slotIndex = 0;
         for(VoteItem item : activeMultipliers) {
@@ -611,6 +609,15 @@ public class GUICreator {
             slotIndex += 2;
         }
 
+        while (slotIndex < 9) {
+            ItemStack placeholder = new ItemStack(Material.GRAY_DYE);
+            inv.setItem(slotIndex, createGuiItem(placeholder,
+                Component.text("Vote not placed."),
+                Component.text("No active multiplier in this slot.")));
+            slotIndex += 2;
+        }
+
+        data.replaceInventory(p.getUniqueId(), inv);
         GUICreator.openInventory(p, inv);
     }
     protected static ItemStack createGuiItem(final Material material, final TextComponent name, final TextComponent... lore) {
@@ -650,6 +657,13 @@ public class GUICreator {
         }
 
         inventory.setItem(slot, skull);
+    }
+    private static TextComponent createStatusComponent(boolean isEnabled) {
+        if (isEnabled) {
+            return Component.text(UnicodeCharacters.checkmark_emoji).color(NamedTextColor.GREEN);
+        } else {
+            return Component.text(UnicodeCharacters.x_emoji).color(NamedTextColor.RED);
+        }
     }
     public static void openInventory(final HumanEntity ent, Inventory inv) {
         ent.openInventory(inv);

@@ -30,17 +30,12 @@
 //        PlayerData data = plugin.getData();
 //        Crew pCrew = data.getCrew(p);
 //        CrewsFile crewsFile = plugin.getCrewsFile();
-//        //JsonObject crewsData = crewsFile.getCrewsData();
+//        ArrayList<String> crewMail = pCrew.getSentMail();
 //
-//        JsonObject crewsObject = crewsData.getAsJsonObject(pCrew.getName());
-//
-//        if(crewsObject.getAsJsonObject("mailMessages") == null){
-//            JsonObject mailMessages = new JsonObject();
-//            crewsObject.add("mailMessages", mailMessages);
-//            crewsFile.saveCrews();
+//        if(crewMail.isEmpty()){
+//            p.sendMessage("You have no mail");
 //        }
 //
-//        JsonObject mailMessages = crewsObject.getAsJsonObject("mailMessages");
 //        if(!mailMessages.keySet().isEmpty()){
 //            JsonUtilities json = new JsonUtilities();
 //            Gson gson = new Gson();

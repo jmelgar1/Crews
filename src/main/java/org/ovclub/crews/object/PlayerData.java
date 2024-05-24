@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.jline.utils.Log;
 import org.ovclub.crews.exceptions.NotInCrew;
 import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.hightable.MultiplierItem;
@@ -28,6 +29,7 @@ public class PlayerData {
         multipliers = new ArrayList<>();
         hightableCrews = new ArrayList<>();
         activeMultipliers = new ArrayList<>();
+        seenMultipliers = new ArrayList<>();
 
         // In case of server /reload
         for(Player p : Bukkit.getOnlinePlayers()){
@@ -72,6 +74,10 @@ public class PlayerData {
         return null;
     }
 
+    private final ArrayList<UUID> seenMultipliers;
+    public ArrayList<UUID> getSeenMultipliers() { return seenMultipliers; }
+    public void addSeenMultipliers(UUID uuid) {this.seenMultipliers.add(uuid);}
+    public void clearSeenMultipliers() { this.seenMultipliers.clear(); };
 
     private final ArrayList<VoteItem> activeMultipliers;
     public ArrayList<VoteItem> getActiveMultipliers() { return activeMultipliers; }

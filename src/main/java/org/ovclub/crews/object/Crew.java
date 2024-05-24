@@ -563,86 +563,109 @@ public class Crew {
         this.enforcerLimit = 1;
         this.memberLimit = 3;
         this.unlockedUpgrades = new ArrayList<>();
+        this.sentMail = new ArrayList<>();
     }
 
     //Constructor for loaded crew
     public Crew(String uuid, Map<String, Object> map, final Crews data) {
         this.uuid = uuid;
         this.plugin = data;
-        this.name = (String) map.get("name");
-        if (map.get("boss") != null) {
-            this.boss = (String) map.get("boss");
-//            if (Bukkit.getOfflinePlayer(UUID.fromString(this.boss)).isOnline()) {
-//                Player player = Bukkit.getPlayer(UUID.fromString(this.boss));
-//                if (player != null) {
-//                    data.getData().addCPlayer(player, this);
-//                }
-//            }
+        this.name = getStringFromMap(map, "name", "Unknown Name");
+        this.boss = getStringFromMap(map, "boss", null);
+        initializePlayers("members", map);
+        initializePlayers("enforcers", map);
+        initializeMail("sentMail", map);
+        this.dateFounded = getStringFromMap(map, "dateFounded", "Unknown Date");
+        this.description = getStringFromMap(map, "description", "No description set.");
+        this.kills = getIntFromMap(map, "kills", 0);
+        this.vault = getIntFromMap(map, "vault", 0);
+        this.influence = getIntFromMap(map, "influence", ConfigManager.DEFAULT_RATING);
+        this.level = getIntFromMap(map, "level", 1);
+        this.levelUpCost = getIntFromMap(map, "levelUpCost", 25);
+        this.rating = getIntFromMap(map, "rating", ConfigManager.DEFAULT_RATING);
+        this.enforcerLimit = getIntFromMap(map, "enforcerLimit", 1);
+        this.memberLimit = getIntFromMap(map, "memberLimit", 3);
+        this.skirmishWins = getIntFromMap(map, "skirmishWins", 0);
+        this.skirmishDraws = getIntFromMap(map, "skirmishDraws", 0);
+        this.skirmishLosses = getIntFromMap(map, "skirmishLosses", 0);
+        this.banner = getBannerFromMap(map);
+        this.compound = getLocationFromMap(map);
+    }
+
+    private void initializePlayers(String key, Map<String, Object> map) {
+        List<String> players = getListFromMap(map, key);
+        for (String playerId : players) {
+            addPlayerToCrew(playerId);
         }
-        Object membersObj = map.get("members");
-        if (membersObj instanceof ArrayList<?> membersList) {
-            for (Object mObj : membersList) {
-                if (mObj instanceof String m) {
-                    try {
-                        this.members.add(m);
-                        if (Bukkit.getOfflinePlayer(m).isOnline()) {
-                            Player player = Bukkit.getPlayer(m);
-                            if (player != null) {
-                                data.getData().addCPlayer(player, this);
-                            }
-                        }
-                    } catch (IllegalArgumentException iae) {
-                        System.err.println("Invalid UUID found: " + m);
-                    }
-                }
+    }
+
+    private void initializeMail(String key, Map<String, Object> map) {
+        List<String> messages = getListFromMap(map, key);
+        for (String m : messages) {
+            addToMail(m);
+        }
+    }
+
+    private List<String> getListFromMap(Map<String, Object> map, String key) {
+        Object obj = map.get(key);
+        if (obj instanceof ArrayList) {
+            return (ArrayList<String>) obj;
+        }
+        System.err.println(key + " is not an ArrayList or is null.");
+        return new ArrayList<>();
+    }
+
+    private void addPlayerToCrew(String uuid) {
+        if (Bukkit.getOfflinePlayer(UUID.fromString(uuid)).isOnline()) {
+            Player player = Bukkit.getPlayer(UUID.fromString(uuid));
+            if (player != null) {
+                this.plugin.getData().addCPlayer(player, this);
             }
-        } else {
-            // Handle case where 'members' is not an ArrayList or is null
-            System.err.println("'members' is not an ArrayList or is null.");
         }
-        Object enforcersObj = map.get("enforcers");
-        if (enforcersObj instanceof ArrayList<?> enforcersList) {
-            for (Object eObj : enforcersList) {
-                if (eObj instanceof String e) {
-                    try {
-                        this.enforcers.add(e);
-                        if (Bukkit.getOfflinePlayer(e).isOnline()) {
-                            Player player = Bukkit.getPlayer(e);
-                            if (player != null) {data.getData().addCPlayer(player, this);}
-                        }
-                    } catch (IllegalArgumentException iae) {
-                        System.err.println("Invalid UUID found: " + e);
-                    }
-                }
-            }
-        } else {
-            // Handle case where 'enforcers' is not an ArrayList or is null
-            System.err.println("'enforcers' is not an ArrayList or is null.");
+    }
+    private String getStringFromMap(Map<String, Object> map, String key, String defaultValue) {
+        Object value = map.get(key);
+        return value instanceof String ? (String) value : defaultValue;
+    }
+
+    private int getIntFromMap(Map<String, Object> map, String key, int defaultValue) {
+        Object value = map.get(key);
+        if (value instanceof Double) {
+            return (int) (double) value;
+        } else if (value instanceof Integer) {
+            return (Integer) value;
         }
-        this.dateFounded = (String) map.get("dateFounded");
-        if(map.get("description") == null) this.description = "No description set."; else this.description = (String) map.get("description");
-        if (map.get("kills") == null) this.kills = 0; else this.kills = (int) ((double) map.get("kills"));
-        if (map.get("compound") != null) {
-            Map<String, Object> compoundMap = (Map<String, Object>) map.get("compound");
+        return defaultValue;
+    }
+
+    private ItemStack getBannerFromMap(Map<String, Object> map) {
+        Object value = map.get("banner");
+        return value instanceof ItemStack ? (ItemStack) value : new ItemStack(Material.WHITE_BANNER);
+    }
+
+    private Location getLocationFromMap(Map<String, Object> map) {
+        Map<String, Object> compoundMap = (Map<String, Object>) map.get("compound");
+        if (compoundMap != null) {
             World world = Bukkit.getWorld((String) compoundMap.get("world"));
             double x = (double) compoundMap.get("x");
             double y = (double) compoundMap.get("y");
             double z = (double) compoundMap.get("z");
             float yaw = (float) ((double) compoundMap.get("yaw"));
             float pitch = (float) ((double) compoundMap.get("pitch"));
-
-            this.compound = new Location(world, x, y, z, yaw, pitch);
+            return new Location(world, x, y, z, yaw, pitch);
         }
-        if(map.get("vault") == null) this.vault = 0; else this.vault = (int) ((double) map.get("vault"));
-        if(map.get("influence") == null) this.influence = ConfigManager.DEFAULT_RATING; else this.influence = (int) ((double) map.get("influence"));
-        if(map.get("level") == null) this.level = 1; else this.level = (int) ((double) map.get("level"));
-        if(map.get("levelUpCost") == null) this.levelUpCost = 25; else this.levelUpCost = (int) ((double) map.get("levelUpCost"));
-        if(map.get("rating") == null) this.rating = ConfigManager.DEFAULT_RATING; else this.rating = (int) ((double) map.get("rating"));
-        if(map.get("enforcerLimit") == null) this.enforcerLimit = 1; else this.enforcerLimit = (int) ((double) map.get("enforcerLimit"));
-        if(map.get("memberLimit") == null) this.memberLimit = 3; else this.memberLimit = (int)  ((double) map.get("memberLimit"));
-        if(map.get("skirmishWins") == null) this.skirmishWins = 0; else this.skirmishWins = (int) ((double) map.get("skirmishWins"));
-        if(map.get("skirmishDraws") == null) this.skirmishDraws = 0; else this.skirmishDraws = (int) ((double) map.get("skirmishDraws"));
-        if(map.get("skirmishLosses") == null) this.skirmishLosses = 0; else this.skirmishLosses = (int) ((double) map.get("skirmishLosses"));
-        if(map.get("banner") == null) this.banner = new ItemStack(Material.WHITE_BANNER); else this.banner = (ItemStack) map.get("banner");
+        return null;
+    }
+
+    public int getRank() {
+        Map<Crew, Integer> sortedList =this.plugin.getData().generateLeaderboardJson();
+        int rank = 1;
+        for (Map.Entry<Crew, Integer> entry : sortedList.entrySet()) {
+            if (entry.getKey().equals(this)) {
+                return rank;
+            }
+            rank++;
+        }
+        return -1;
     }
 }

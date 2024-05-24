@@ -49,6 +49,8 @@ public class ConfigManager {
         COMPOUND_REMOVED = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("compound-removed")))));
         COMPOUND_EXISTS = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("compound-exists")))));
         COMPOUND_SET = UnicodeCharacters.createSuccessIcon(TextColor.color(46,125,50)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("compound-set")))));
+        DESCRIPTION_SET = UnicodeCharacters.createSuccessIcon(TextColor.color(46,125,50)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("description-set")))));
+        PURCHASE_SUCCESSFUL = UnicodeCharacters.createSuccessIcon(TextColor.color(46,125,50)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("purchase-successful")))));
         FULL_INVENTORY = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("full-inventory")))));
         INCORRECT_CREW = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("incorrect-crew")))));
         JOINED_QUEUE = UnicodeCharacters.createQueueIcon(TextColor.color(46,125,50)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("joined-queue")))));
@@ -198,6 +200,8 @@ public class ConfigManager {
     public static TextComponent COMPOUND_REMOVED;
     public static TextComponent COMPOUND_EXISTS;
     public static TextComponent COMPOUND_SET;
+    public static TextComponent PURCHASE_SUCCESSFUL;
+    public static TextComponent DESCRIPTION_SET;
     public static TextComponent FULL_INVENTORY;
     public static TextComponent INCORRECT_CREW;
     public static TextComponent INVALID_AMOUNT;

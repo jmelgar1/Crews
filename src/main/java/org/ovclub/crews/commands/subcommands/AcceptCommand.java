@@ -6,13 +6,11 @@ import org.ovclub.crews.commands.SubCommand;
 
 import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.Crew;
-import org.ovclub.crews.utilities.ChatUtilities;
 import org.ovclub.crews.utilities.UnicodeCharacters;
 
 public class AcceptCommand implements SubCommand {
 	@Override
 	public String getDescription() {
-		// TODO Auto-generated method stub
 		return "Accept a crew invite.";
 	}
 
