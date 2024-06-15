@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.jline.utils.Log;
 import org.ovclub.crews.exceptions.NotInCrew;
 import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.hightable.MultiplierItem;
@@ -82,6 +81,7 @@ public class PlayerData {
     private final ArrayList<VoteItem> activeMultipliers;
     public ArrayList<VoteItem> getActiveMultipliers() { return activeMultipliers; }
     public void addActiveMultipliers(VoteItem item) {this.activeMultipliers.add(item);}
+    public void clearActiveMultipliers() {this.activeMultipliers.clear();}
 
     /*
     Hightable Crews
@@ -271,10 +271,8 @@ public class PlayerData {
 
     public void calculateInfluence(Crew crew) {
         int vault = crew.getVault();
-        int totalPlayers = crew.getMembers().size() + crew.getEnforcers().size() + 1;
-        int playerPower = totalPlayers * ConfigManager.INFLUENCE_PER_PLAYER;
         int rating = crew.getRating();
-        int influence = vault + playerPower + rating;
+        int influence = vault + rating;
         crew.setInfluence(influence);
     }
 

@@ -19,7 +19,7 @@ public class VoteCommand implements SubCommand {
 
 	@Override
 	public String getSyntax() {
-		return "/crews vote";
+		return "/c vote";
 	}
 
     @Override

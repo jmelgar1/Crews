@@ -21,7 +21,7 @@ public class InfoCommand implements SubCommand {
 
     @Override
     public String getSyntax() {
-        return "/crew info";
+        return "/c info";
     }
 
     @Override

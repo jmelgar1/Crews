@@ -17,7 +17,7 @@ public class ChatCommand implements SubCommand {
     @Override
     public String getSyntax() {
         // TODO Auto-generated method stub
-        return "/crews chat";
+        return "/c chat";
     }
 
     @Override
@@ -32,10 +32,10 @@ public class ChatCommand implements SubCommand {
             p.sendMessage(ConfigManager.NOT_IN_CREW);
             return;
         }
-        if(!playerCrew.getUnlockedUpgrades().contains("chat")) {
-            p.sendMessage(ConfigManager.UPGRADE_NOT_UNLOCKED.replaceText(builder -> builder.matchLiteral("{upgrade}").replacement("chat")));
-            return;
-        }
+//        if(!playerCrew.getUnlockedUpgrades().contains("chat")) {
+//            p.sendMessage(ConfigManager.UPGRADE_NOT_UNLOCKED.replaceText(builder -> builder.matchLiteral("{upgrade}").replacement("chat")));
+//            return;
+//        }
         if(plugin.getData().isInCrewChat(p.getUniqueId())) {
             p.sendMessage(ConfigManager.CREW_CHAT_DISABLED);
             plugin.getData().disableCrewChat(p.getUniqueId());

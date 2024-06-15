@@ -143,6 +143,19 @@ public class UnicodeCharacters {
             .append(Component.text(text).color(color)));
     }
 
+    public static void sendVaultMessage(Player p, String prefixEmoji, String prefix, String text, TextColor color, TextComponent component, boolean isInCrew) {
+        TextComponent message = Component.text("│ ").color(UnicodeCharacters.logo_color)
+            .append(Component.text(prefixEmoji).color(UnicodeCharacters.emoji_text_color))
+            .append(Component.text(prefix).color(UnicodeCharacters.info_text_color))
+            .append(Component.text(text).color(color));
+
+        if(isInCrew) {
+            message = message.append(component);
+        }
+
+        p.sendMessage(message);
+    }
+
     public static  void sendInfluenceMessage(Player p, String prefixEmoji, String influence) {
         p.sendMessage(Component.text("│ ").color(UnicodeCharacters.logo_color)
             .append(Component.text(prefixEmoji).color(UnicodeCharacters.emoji_text_color))

@@ -15,7 +15,6 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.jline.utils.Log;
 import org.ovclub.crews.Crews;
 import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.managers.file.HighTableConfigManager;
@@ -24,6 +23,7 @@ import org.ovclub.crews.object.PlayerData;
 import org.ovclub.crews.object.hightable.MultiplierItem;
 import org.ovclub.crews.object.skirmish.SkirmishTeam;
 import org.ovclub.crews.utilities.GUI.GUICreator;
+import org.ovclub.crews.utilities.SoundUtilities;
 import org.ovclub.crews.utilities.skull.CustomHead;
 
 import java.util.*;
@@ -40,8 +40,6 @@ public class CrewGUIListener implements Listener {
         PlayerData data = plugin.getData();
         final Player p = (Player) e.getWhoClicked();
         UUID playerUUID = p.getUniqueId();
-        Log.info(e.getInventory());
-        Log.info(data.getInventories().get(playerUUID));
         if(!e.getInventory().equals(data.getInventories().get(playerUUID))) return;
         e.setCancelled(true);
 
@@ -58,11 +56,11 @@ public class CrewGUIListener implements Listener {
             p.closeInventory();
         }
 
-        //crews shop item
-        if(clickedItem.getType() == Material.SPONGE) {
-            p.closeInventory();
-            p.performCommand("crews shop");
-        }
+//        //crews shop item
+//        if(clickedItem.getType() == Material.SPONGE) {
+//            p.closeInventory();
+//            p.performCommand("crews shop");
+//        }
 
         if(clickedItem.getType() == Material.DIAMOND_SWORD && e.getView().title().equals(Component.text("Crew Skirmishes"))) {
             p.closeInventory();
@@ -200,7 +198,6 @@ public class CrewGUIListener implements Listener {
         }
         if(isMultiplier(clickedItem)) {
             if(e.getView().title().equals(Component.text("Ore Drop Rates"))) {
-                Log.info(plugin.getData().getMultipliers());
                 recordVote(p, pCrew, "oreDrops", clickedItem.getType().name());
                 return;
             }
@@ -360,6 +357,7 @@ public class CrewGUIListener implements Listener {
 
         HighTableConfigManager.saveHighTableConfig();
         p.closeInventory();
+        SoundUtilities.playPingSound(p);
         p.sendMessage(ConfigManager.VOTE_SET);
     }
 }

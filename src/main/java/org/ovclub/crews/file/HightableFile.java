@@ -1,4 +1,4 @@
-package org.ovclub.crews.managers.file;
+package org.ovclub.crews.file;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -8,6 +8,7 @@ import org.ovclub.crews.object.hightable.MultiplierItem;
 import org.ovclub.crews.object.hightable.VoteItem;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 
 public class HightableFile {
@@ -57,6 +58,7 @@ public class HightableFile {
     }
 
     private void loadActiveMultipliers() {
+        plugin.getData().clearActiveMultipliers();
         ConfigurationSection activeSection = configData.getConfigurationSection("active-multipliers.top-votes");
         if (activeSection != null) {
             activeSection.getKeys(false).forEach(key -> {
@@ -64,10 +66,31 @@ public class HightableFile {
                 String section = configData.getString(path + ".section");
                 String item = configData.getString(path + ".item");
                 String multiplier = configData.getString(path + ".multiplier");
-
                 VoteItem voteItem = new VoteItem(section, item, multiplier);
                 plugin.getData().addActiveMultipliers(voteItem);
             });
+        }
+    }
+//
+//    //NEED TO SAVE THE HIGHTABLE CREWS OR SOMESHIT
+//    public void saveHightableCrews() {
+//        ConfigurationSection highTableSection = configData.createSection("high-table.crews");
+//        ArrayList<String> hightableCrews = plugin.getData().getHightableCrews();
+//
+//        for (String crew : hightableCrews) {
+//            highTableSection.set(crew, null);
+//        }
+//
+//        saveConfig();
+//    }
+
+    private void saveConfig() {
+        File configFile = new File(plugin.getDataFolder(), "hightable.yml");
+        try {
+            configData.save(configFile);
+        } catch (IOException e) {
+            plugin.getLogger().severe("Could not save the hightable.yml file!");
+            e.printStackTrace();
         }
     }
 }

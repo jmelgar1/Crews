@@ -2,15 +2,21 @@ package org.ovclub.crews.listeners.hightable;
 
 import io.papermc.paper.event.player.PlayerTradeEvent;
 import org.bukkit.*;
+import org.bukkit.attribute.Attributable;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
+import org.bukkit.block.CreatureSpawner;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentOffer;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.*;
@@ -18,8 +24,8 @@ import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataType;
-import org.jline.utils.Log;
 import org.ovclub.crews.Crews;
 import org.ovclub.crews.object.PlayerData;
 import org.ovclub.crews.object.hightable.VoteItem;
@@ -45,6 +51,11 @@ public class ActiveMultiplierListener implements Listener {
         Player p = e.getPlayer();
         Block b = e.getBlock();
         Material m = b.getType();
+
+        if (b.hasMetadata("playerPlaced")) {
+            return;
+        }
+
         ArrayList<VoteItem> topVotes = data.getActiveMultipliers();
         for (VoteItem voteItem : topVotes) {
             if (voteItem.getSection().equals("oreDrops")) {
@@ -249,7 +260,6 @@ public class ActiveMultiplierListener implements Listener {
                 for (VoteItem item : topVotes) {
                     if (item.getSection().equals("xpDrops") && item.getItem().equals("GRINDSTONE")) {
                         double multiplier = Double.parseDouble(item.getMultiplier());
-                        Log.info(totalXP);
                         int finalXP = (int) (totalXP * multiplier);
 
                         removeNearbyExperienceOrbs(p.getLocation());
@@ -285,18 +295,37 @@ public class ActiveMultiplierListener implements Listener {
     }
 
     @EventHandler
+    public void onCreatureSpawn(CreatureSpawnEvent e) {
+        LivingEntity entity = e.getEntity();
+        PlayerData data = plugin.getData();
+        ArrayList<VoteItem> topVotes = data.getActiveMultipliers();
+        for (VoteItem item : topVotes) {
+            if (item.getSection().equals("mobDifficulty") && item.getItem().equals(entity.getType().toString())) {
+                double multiplier = Double.parseDouble(item.getMultiplier());
+                double newHealth = entity.getHealth() * multiplier;
+                AttributeInstance maxHealth = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                if(maxHealth != null) {maxHealth.setBaseValue(newHealth);}
+                entity.setHealth(newHealth);
+            }
+        }
+    }
+
+    @EventHandler
     public void onInventoryOpen(InventoryOpenEvent event) {
         if (event.getInventory() instanceof MerchantInventory merchantInventory) {
             Merchant merchant = merchantInventory.getMerchant();
             if (!originalRecipes.containsKey(merchant)) {
                 originalRecipes.put(merchant, new ArrayList<>(merchant.getRecipes()));
             }
+
             double discountMultiplier = getDiscountMultiplierForPlayer();
-            List<MerchantRecipe> discountedRecipes = new ArrayList<>();
-            for (MerchantRecipe recipe : merchant.getRecipes()) {
-                discountedRecipes.add(applyDiscountToRecipe(recipe, discountMultiplier));
+            if(discountMultiplier != 1.0) {
+                List<MerchantRecipe> discountedRecipes = new ArrayList<>();
+                for (MerchantRecipe recipe : merchant.getRecipes()) {
+                    discountedRecipes.add(applyDiscountToRecipe(recipe, discountMultiplier));
+                }
+                merchant.setRecipes(discountedRecipes);
             }
-            merchant.setRecipes(discountedRecipes);
         }
     }
 
@@ -410,5 +439,11 @@ public class ActiveMultiplierListener implements Listener {
             xpDropped = xpDropped + (int) Math.floor(xpDropped * multiplier);
         }
         return xpDropped;
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent e) {
+        Block block = e.getBlock();
+        block.setMetadata("playerPlaced", new FixedMetadataValue(plugin, true));
     }
 }

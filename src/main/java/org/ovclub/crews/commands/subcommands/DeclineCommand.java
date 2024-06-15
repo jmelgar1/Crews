@@ -21,7 +21,7 @@ public class DeclineCommand implements SubCommand {
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/crews decline [crew]";
+		return "/c decline [crew]";
 	}
 
     @Override

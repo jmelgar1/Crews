@@ -17,7 +17,7 @@ public class EnforcerCommand implements SubCommand {
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/crews enforcer";
+		return "/c enforcer";
 	}
 
     @Override

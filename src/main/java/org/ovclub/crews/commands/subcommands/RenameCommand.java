@@ -22,7 +22,7 @@ public class RenameCommand implements SubCommand {
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/crews rename [new name]";
+		return "/c rename [new name]";
 	}
 
     @Override

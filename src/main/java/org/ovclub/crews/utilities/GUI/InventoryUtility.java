@@ -5,7 +5,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.ovclub.crews.managers.file.ConfigManager;
+import org.ovclub.crews.object.Crew;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class InventoryUtility {
@@ -42,29 +45,41 @@ public class InventoryUtility {
         }
     }
 
-//    public static double getDropMultiplier(ItemStack item) {
-//        if (item != null && item.hasItemMeta()) {
-//            ItemMeta meta = item.getItemMeta();
-//            if (meta.hasLore()) {
-//                List<String> lore = meta.getLore();
-//                for (String line : lore) {
-//                    if (line.contains("Drop Multiplier:")) {
-//                        String[] parts = line.split(" ");
-//                        for (String part : parts) {
-//                            if (part.endsWith("x")) {
-//                                String number = part.substring(0, part.length() - 1); // Remove the 'x' character
-//                                try {
-//                                    return Double.parseDouble(number);
-//                                } catch (NumberFormatException e) {
-//                                    // Handle the case where the number is not valid
-//                                    System.out.println("Failed to parse multiplier: " + part);
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        return 1.0;
-//    }
+    public static int calculateTotalSpace(Player player, Material material) {
+        int maxStackSize = material.getMaxStackSize();
+        int totalSpace = 0;
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item == null) {
+                totalSpace += maxStackSize;
+            } else if (item.getType() == material && item.getAmount() < maxStackSize) {
+                totalSpace += maxStackSize - item.getAmount();
+            }
+        }
+        return totalSpace;
+    }
+
+    public static int distributeItems(Player player, Material material, int amount) {
+        int maxStackSize = material.getMaxStackSize();
+        int amountToGive = amount;
+        while (amountToGive > 0) {
+            int stackAmount = Math.min(maxStackSize, amountToGive);
+            ItemStack itemStack = new ItemStack(material, stackAmount);
+            HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(itemStack);
+
+            if (!leftover.isEmpty()) {
+                // Could not add any more items, inventory is full
+                player.sendMessage(ConfigManager.FULL_INVENTORY);
+                break;
+            }
+            amountToGive -= stackAmount;
+        }
+        return amount - amountToGive; // Return the amount successfully given
+    }
+
+    public static void updateVaultAndNotify(Player player, Crew pCrew, int givenAmount) {
+        if (givenAmount > 0) {
+            pCrew.removeFromVault(givenAmount, player, true);
+            player.sendMessage(ConfigManager.SPONGE_WITHDRAW.replaceText(builder -> builder.matchLiteral("{amount}").replacement(String.valueOf(givenAmount))));
+        }
+    }
 }

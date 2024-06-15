@@ -25,7 +25,7 @@ public class DepositCommand implements SubCommand {
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/crews deposit [amount]/all";
+		return "/c deposit [amount]/all";
 	}
 
     @Override

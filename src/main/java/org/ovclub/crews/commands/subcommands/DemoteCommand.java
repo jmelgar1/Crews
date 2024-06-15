@@ -23,7 +23,7 @@ public class DemoteCommand implements SubCommand {
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/crews demote [player]";
+		return "/c demote [player]";
 	}
 
     @Override

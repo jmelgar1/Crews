@@ -22,7 +22,7 @@ public class UpgradeCommand implements SubCommand {
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/crews upgrade";
+		return "/c upgrade";
 	}
 
     @Override

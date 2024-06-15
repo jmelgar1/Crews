@@ -63,6 +63,7 @@ public class ConfigManager {
         NOT_IN_CREW = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("must-be-in-crew")))));
         NOT_YOUR_CREW = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("not-your-crew")))));
         NOT_ENOUGH_IN_VAULT = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("not-enough-in-vault")))));
+        NOT_ENOUGH_DEPOSIT = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("not-enough-deposit")))));
         ONE_PLAYER_REQUIRED_FOR_QUEUE = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("one-player-required-for-queue")))));
         PLAYER_NOT_FOUND = UnicodeCharacters.createXIcon(TextColor.color(255,0,0)).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("player-not-found")))));
         PLAYER_NOT_ENFORCER = UnicodeCharacters.createXIcon(TextColor.color(255,0,0  )).append(LegacyComponentSerializer.legacyAmpersand().deserialize(translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("player-not-enforcer")))));
@@ -211,6 +212,7 @@ public class ConfigManager {
     public static TextComponent NAME_TAKEN;
     public static TextComponent NEED_MORE_SPONGE;
     public static TextComponent NOT_ENOUGH_IN_VAULT;
+    public static TextComponent NOT_ENOUGH_DEPOSIT;
     public static TextComponent NOT_IN_CREW;
     public static TextComponent NOT_YOUR_CREW;
     public static TextComponent NO_INVITE;

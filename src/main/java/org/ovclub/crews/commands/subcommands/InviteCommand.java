@@ -24,7 +24,7 @@ public class InviteCommand implements SubCommand {
 
     @Override
     public String getSyntax() {
-        return "/crew invite [player]";
+        return "/c invite [player]";
     }
 
     @Override

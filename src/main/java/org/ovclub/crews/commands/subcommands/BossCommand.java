@@ -17,7 +17,7 @@ public class BossCommand implements SubCommand {
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/crews boss";
+		return "/c boss";
 	}
 
     @Override

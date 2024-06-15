@@ -39,6 +39,7 @@ public class GUICreator {
         String dateCreated = crew.getDateFounded();
         int level = crew.getLevel();
         int vault = crew.getVault();
+        int vaultDeposit = crew.getVaultDeposit(p);
         int requiredSponges = crew.getLevelUpCost();
         int influence = crew.getInfluence();
         int rating = crew.getRating();
@@ -65,6 +66,11 @@ public class GUICreator {
         TextComponent foundedComponent = ComponentUtilities.createEmojiComponent(UnicodeCharacters.founded_emoji, "Date Founded: ", UnicodeCharacters.info_text_color, dateCreated, UnicodeCharacters.founded_color);
         TextComponent levelComponent = ComponentUtilities.createEmojiComponent(UnicodeCharacters.level_emoji, "Level: ", UnicodeCharacters.info_text_color, String.valueOf(level), UnicodeCharacters.level_color);
         TextComponent vaultComponent = ComponentUtilities.createEmojiComponent(UnicodeCharacters.vault_emoji, "Vault: ", UnicodeCharacters.info_text_color, UnicodeCharacters.sponge_icon + vault, UnicodeCharacters.sponge_color);
+        TextComponent vaultDepositComponent = Component.text().append(Component.text(" | ").color(NamedTextColor.GRAY)
+            .append(Component.text("(").color(NamedTextColor.GRAY)
+                .append(Component.text(vaultDeposit).color(NamedTextColor.DARK_GRAY)
+                    .append(Component.text(")").color(NamedTextColor.GRAY)))))
+            .build();
 
         String xpText = requiredSponges != -1 ? UnicodeCharacters.sponge_icon + requiredSponges : "MAX LEVEL";
         TextColor xpColor = requiredSponges != -1 ? requiredColor : UnicodeCharacters.sponge_color;
@@ -73,7 +79,7 @@ public class GUICreator {
         inv.setItem(4, createGuiItem(levelItems[level-1], crewNameComponent,
             foundedComponent,
             levelComponent,
-            vaultComponent,
+            vaultComponent.append(vaultDepositComponent),
             xpComponent,
             Component.text(""),
             Component.text("Server Ranking: ").append(Component.text("#" + crew.getRank()).color(NamedTextColor.GOLD)),
@@ -82,41 +88,34 @@ public class GUICreator {
             ComponentUtilities.createComponentWithDecoration("Crew influence is the sum of the crew's", NamedTextColor.GRAY, TextDecoration.ITALIC),
             ComponentUtilities.createComponentWithDecoration("rating and vault balance.", NamedTextColor.GRAY, TextDecoration.ITALIC)));
 
-        inv.setItem(19, createGuiItem(banner,
+        inv.setItem(20, createGuiItem(banner,
             ComponentUtilities.createComponentWithDecoration("CREW BANNER", NamedTextColor.LIGHT_PURPLE, TextDecoration.BOLD),
             ComponentUtilities.createComponent("Click to change the crew's banner.", NamedTextColor.GRAY)));
 
-        inv.setItem(21, createGuiItem(Material.DIAMOND_HELMET,
+        inv.setItem(22, createGuiItem(Material.DIAMOND_HELMET,
             ComponentUtilities.createComponentWithDecoration("CREW LEADERSHIP", NamedTextColor.GOLD, TextDecoration.BOLD),
             ComponentUtilities.createEmojiComponent(UnicodeCharacters.boss_emoji, "Boss: ", UnicodeCharacters.info_text_color, boss, UnicodeCharacters.boss_color),
             ComponentUtilities.createEmojiComponent(UnicodeCharacters.enforcers_emoji, "Enforcers: ", UnicodeCharacters.info_text_color, "", UnicodeCharacters.enforcers_color)));
 
-        if(crew.getEnforcers() != null) {
-            for (String enforcer : crew.getEnforcers()) {
-                String pName = Bukkit.getServer().getOfflinePlayer(UUID.fromString(enforcer)).getName();
-                ComponentUtilities.createComponent("- " + pName, UnicodeCharacters.enforcers_color);
-            }
-        }
-
-		inv.setItem(23, createGuiItem(Material.GOLDEN_SWORD,
+		inv.setItem(24, createGuiItem(Material.GOLDEN_SWORD,
             ComponentUtilities.createComponentWithDecoration("CREW SKIRMISHES", NamedTextColor.GRAY, TextDecoration.BOLD),
             ComponentUtilities.createEmojiComponent(UnicodeCharacters.rating_emoji, "Rating: ", UnicodeCharacters.info_text_color, String.valueOf(rating), UnicodeCharacters.rating_color),
             ComponentUtilities.createWinLossRatio(UnicodeCharacters.skirmish_emoji, UnicodeCharacters.emoji_text_color, "W/L Record: ", UnicodeCharacters.info_text_color, String.valueOf(skirmishWins), String.valueOf(skirmishDraws), String.valueOf(skirmishLosses))));
 
-        boolean hasMail = upgrades.contains("mail");
-        boolean hasChat = upgrades.contains("chat");
+//        boolean hasMail = upgrades.contains("mail");
+//        boolean hasChat = upgrades.contains("chat");
+//
+//        TextComponent crewMail = createStatusComponent(hasMail);
+//        TextComponent crewChat = createStatusComponent(hasChat);
 
-        TextComponent crewMail = createStatusComponent(hasMail);
-        TextComponent crewChat = createStatusComponent(hasChat);
-
-        inv.setItem(25, createGuiItem(Material.SPONGE,
-            Component.text(UnicodeCharacters.shop_emoji).color(UnicodeCharacters.sponge_color).decorate(TextDecoration.BOLD)
-                .append(Component.text(" CREW UPGRADE SHOP ").color(UnicodeCharacters.sponge_color).decorate(TextDecoration.BOLD)
-                    .append(Component.text(UnicodeCharacters.shop_emoji).color(UnicodeCharacters.sponge_color).decorate(TextDecoration.BOLD))),
-            Component.text(""),
-            ComponentUtilities.createComponent("Upgrades", NamedTextColor.WHITE),
-            ComponentUtilities.createDoubleEmojiComponent(UnicodeCharacters.crew_chat_emoji, NamedTextColor.DARK_GREEN, "Private Chat ", NamedTextColor.DARK_GREEN, crewChat),
-            ComponentUtilities.createDoubleEmojiComponent(UnicodeCharacters.mail_emoji, NamedTextColor.AQUA, "Crew Mail ", NamedTextColor.AQUA, crewMail)));
+//        inv.setItem(25, createGuiItem(Material.SPONGE,
+//            Component.text(UnicodeCharacters.shop_emoji).color(UnicodeCharacters.sponge_color).decorate(TextDecoration.BOLD)
+//                .append(Component.text(" CREW UPGRADE SHOP ").color(UnicodeCharacters.sponge_color).decorate(TextDecoration.BOLD)
+//                    .append(Component.text(UnicodeCharacters.shop_emoji).color(UnicodeCharacters.sponge_color).decorate(TextDecoration.BOLD))),
+//            Component.text(""),
+//            ComponentUtilities.createComponent("Upgrades", NamedTextColor.WHITE),
+//            ComponentUtilities.createDoubleEmojiComponent(UnicodeCharacters.crew_chat_emoji, NamedTextColor.DARK_GREEN, "Private Chat ", NamedTextColor.DARK_GREEN, crewChat),
+//            ComponentUtilities.createDoubleEmojiComponent(UnicodeCharacters.mail_emoji, NamedTextColor.AQUA, "Crew Mail ", NamedTextColor.AQUA, crewMail)));
 
         inv.setItem(8, createGuiItem(Material.BARRIER,
             ComponentUtilities.createComponentWithDecoration("EXIT", NamedTextColor.RED, TextDecoration.BOLD),
@@ -124,6 +123,13 @@ public class GUICreator {
 
         List<String> crewMembers = crew.getMembers();
         String[] memberArray = crewMembers.toArray(new String[0]);
+
+        if(crew.getEnforcers() != null) {
+            for (String enforcer : crew.getEnforcers()) {
+                String pName = Bukkit.getServer().getOfflinePlayer(UUID.fromString(enforcer)).getName();
+                ComponentUtilities.createComponent("- " + pName, UnicodeCharacters.enforcers_color);
+            }
+        }
 
         Component bossName = Component.text(boss, NamedTextColor.GOLD);
         getPlayerHead(38, UUID.fromString(crew.getBoss()), bossName, inv);

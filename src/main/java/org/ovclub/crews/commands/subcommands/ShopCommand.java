@@ -23,7 +23,7 @@ public class ShopCommand implements SubCommand {
 
     @Override
     public String getSyntax() {
-        return "/crews shop";
+        return "/c shop";
     }
 
     @Override

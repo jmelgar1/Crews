@@ -16,7 +16,6 @@ import org.ovclub.crews.exceptions.NotInCrew;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
 
-import org.ovclub.crews.utilities.ChatUtilities;
 import org.ovclub.crews.utilities.UnicodeCharacters;
 
 public class ListCommand implements SubCommand {
@@ -30,7 +29,7 @@ public class ListCommand implements SubCommand {
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/crews list [page #]";
+		return "/c list [page #]";
 	}
 
     @Override
@@ -41,7 +40,6 @@ public class ListCommand implements SubCommand {
     @Override
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
         PlayerData data = plugin.getData();
-
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             int pageNum;
             if (args.length == 1) {

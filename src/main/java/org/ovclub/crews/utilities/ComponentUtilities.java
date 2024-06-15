@@ -96,18 +96,104 @@ public class ComponentUtilities {
         }
         return Component.text(content, original.style()).children(children);
     }
-    public static void sendHighTableVoteMessage(Player player) {
-        Component message = UnicodeCharacters.createHightableIcon(NamedTextColor.DARK_PURPLE).append(Component.text("You have not used your high table vote! ")
-            .append(Component.text("VOTE HERE")
-                .color(NamedTextColor.LIGHT_PURPLE)
-                .decorate(TextDecoration.BOLD)
-                .clickEvent(ClickEvent.runCommand("/crews vote"))
-                .hoverEvent(HoverEvent.showText(Component.text("Click to vote").color(NamedTextColor.YELLOW))))
-            .color(UnicodeCharacters.hightable_color));
+
+    public static void sendCrewMessage(Player player, int rank, boolean isHighTable, boolean hasVoted) {
+        Component message = Component.empty()
+            .append(Component.newline());
+
+        if (isHighTable) {
+            message = message
+                .append(Component.text("┌─────[").color(NamedTextColor.GRAY).decorate(TextDecoration.BOLD))
+                .append(Component.text("The High Table").color(UnicodeCharacters.hightable_color).decorate(TextDecoration.BOLD))
+                .append(Component.text(" ]──────◓").color(NamedTextColor.GRAY).decorate(TextDecoration.BOLD))
+                .append(Component.newline());
+
+            if (!hasVoted) {
+                message = message
+                    .append(Component.text("│ ").color(NamedTextColor.GRAY).decorate(TextDecoration.BOLD))
+                    .append(Component.text("You have not voted yet! ")
+                        .append(Component.text("VOTE HERE")
+                            .color(NamedTextColor.LIGHT_PURPLE)
+                            .decorate(TextDecoration.BOLD)
+                            .clickEvent(ClickEvent.runCommand("/c vote"))
+                            .hoverEvent(HoverEvent.showText(Component.text("Click to vote").color(NamedTextColor.YELLOW))))
+                        .color(UnicodeCharacters.hightable_color))
+                    .append(Component.newline());
+            } else {
+                message = message
+                    .append(Component.text("│ ").color(NamedTextColor.GRAY).decorate(TextDecoration.BOLD))
+                    .append(Component.text("You have already voted! ")
+                        .append(Component.text("CHANGE VOTE")
+                            .color(NamedTextColor.AQUA)
+                            .decorate(TextDecoration.BOLD)
+                            .clickEvent(ClickEvent.runCommand("/c vote"))
+                            .hoverEvent(HoverEvent.showText(Component.text("Click to change vote").color(NamedTextColor.YELLOW))))
+                        .color(NamedTextColor.DARK_AQUA))
+                    .append(Component.newline());
+            }
+        } else {
+            message = message
+                .append(Component.text("┌─────[ ").color(NamedTextColor.GRAY).decorate(TextDecoration.BOLD))
+                .append(Component.text("Crew Ranking").color(UnicodeCharacters.plugin_color).decorate(TextDecoration.BOLD))
+                .append(Component.text(" ]──────◓").color(NamedTextColor.GRAY).decorate(TextDecoration.BOLD))
+                .append(Component.newline());
+        }
+
+        // Rank line (common for both cases
+        message = message
+            .append(Component.text("│ ").color(NamedTextColor.GRAY).decorate(TextDecoration.BOLD))
+            .append(Component.text("Your crew is currently ranked ")
+                .append(Component.text("#" + rank)
+                    .color(NamedTextColor.GOLD))
+                .color(NamedTextColor.YELLOW))
+            .append(Component.newline())
+            .append(Component.text("│ ").color(NamedTextColor.GRAY).decorate(TextDecoration.BOLD))
+            .append(Component.text("View daily multipliers ")
+                .append(Component.text("HERE")
+                    .color(NamedTextColor.DARK_PURPLE)
+                    .decorate(TextDecoration.BOLD)
+                    .clickEvent(ClickEvent.runCommand("/c multipliers"))
+                    .hoverEvent(HoverEvent.showText(Component.text("Click to view").color(NamedTextColor.YELLOW))))
+                .color(NamedTextColor.LIGHT_PURPLE))
+            .append(Component.newline())
+            .append(Component.text("└─────────────────────◓").color(NamedTextColor.GRAY).decorate(TextDecoration.BOLD))
+            .append(Component.newline()).append(Component.empty());
 
         player.sendMessage(message);
     }
 
+    public static void joinCrewMessage(Player player) {
+        Component message = Component.empty()
+            .append(Component.newline());
+
+        message = message
+            .append(Component.text("┌───────[ ").color(NamedTextColor.GRAY).decorate(TextDecoration.BOLD))
+            .append(Component.text("Crews").color(UnicodeCharacters.plugin_color).decorate(TextDecoration.BOLD))
+            .append(Component.text(" ]────────◓").color(NamedTextColor.GRAY).decorate(TextDecoration.BOLD))
+            .append(Component.newline())
+            .append(Component.text("│ ").color(NamedTextColor.GRAY).decorate(TextDecoration.BOLD))
+            .append(Component.text("You are not part of a crew! ")
+                .append(Component.text("CREATE ONE")
+                    .color(NamedTextColor.AQUA)
+                    .decorate(TextDecoration.BOLD)
+                    .clickEvent(ClickEvent.suggestCommand("/crews create"))
+                    .hoverEvent(HoverEvent.showText(Component.text("Click to create a crew").color(NamedTextColor.YELLOW))))
+                .color(NamedTextColor.DARK_AQUA))
+            .append(Component.newline())
+            .append(Component.text("│ ").color(NamedTextColor.GRAY).decorate(TextDecoration.BOLD))
+            .append(Component.text("View daily multipliers ")
+                .append(Component.text("HERE")
+                    .color(NamedTextColor.DARK_PURPLE)
+                    .decorate(TextDecoration.BOLD)
+                    .clickEvent(ClickEvent.runCommand("/c multipliers"))
+                    .hoverEvent(HoverEvent.showText(Component.text("Click to view").color(NamedTextColor.YELLOW))))
+                .color(NamedTextColor.LIGHT_PURPLE))
+            .append(Component.newline())
+            .append(Component.text("└────────────────────◓").color(NamedTextColor.GRAY).decorate(TextDecoration.BOLD))
+            .append(Component.newline()).append(Component.empty());
+
+        player.sendMessage(message);;
+    }
     public static TextComponent toTitleCaseComponent(String section) {
         String formatted = section.replaceAll("([a-z])([A-Z])", "$1 $2");
         String[] words = formatted.split(" ");

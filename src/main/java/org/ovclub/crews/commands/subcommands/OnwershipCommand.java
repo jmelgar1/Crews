@@ -23,7 +23,7 @@ public class OnwershipCommand implements SubCommand {
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/crews ownership [player]";
+		return "/c ownership [player]";
 	}
 
     @Override

@@ -56,7 +56,6 @@ public class CrewsFile {
         }
     }
 
-
     public void saveCrews() {
         Gson gson = new GsonBuilder()
             .registerTypeAdapter(Crew.class, new CrewTypeAdapter())

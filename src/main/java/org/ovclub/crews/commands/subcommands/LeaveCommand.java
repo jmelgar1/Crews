@@ -22,7 +22,7 @@ public class LeaveCommand implements SubCommand {
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/crews leave [crew]";
+		return "/c leave [crew]";
 	}
 
     @Override

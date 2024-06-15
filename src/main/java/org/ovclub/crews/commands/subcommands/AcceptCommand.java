@@ -16,7 +16,7 @@ public class AcceptCommand implements SubCommand {
 
     @Override
     public String getSyntax() {
-        return "/crew accept [crew name]";
+        return "/c accept [crew name]";
     }
 
     @Override

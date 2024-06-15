@@ -8,7 +8,6 @@ import org.ovclub.crews.exceptions.NotInCrew;
 import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
-import org.ovclub.crews.utilities.ChatUtilities;
 import org.ovclub.crews.utilities.UnicodeCharacters;
 
 public class DisbandCommand implements SubCommand {
@@ -22,7 +21,7 @@ public class DisbandCommand implements SubCommand {
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/crews disband [crew]";
+		return "/c disband [crew]";
 	}
 
     @Override

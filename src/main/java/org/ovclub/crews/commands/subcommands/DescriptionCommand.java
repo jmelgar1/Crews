@@ -22,7 +22,7 @@ public class DescriptionCommand implements SubCommand {
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/crews description [new desc]";
+		return "/c description [new desc]";
 	}
 
     @Override
@@ -34,7 +34,7 @@ public class DescriptionCommand implements SubCommand {
     public void perform(Player p, String[] args, Crews plugin) throws NotInCrew {
         PlayerData data = plugin.getData();
         Crew pCrew = data.getCrew(p);
-        if (args.length != 1) {
+        if (args.length < 1) {
             p.sendMessage(UnicodeCharacters.CorrectUsage(getSyntax()));
             return;
         }
@@ -46,7 +46,7 @@ public class DescriptionCommand implements SubCommand {
             p.sendMessage(ConfigManager.MUST_BE_HIGHERUP);
             return;
         }
-        String description = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+        String description = String.join(" ", Arrays.copyOfRange(args, 0, args.length));
         pCrew.setDescription(description);
         p.sendMessage(ConfigManager.DESCRIPTION_SET);
     }

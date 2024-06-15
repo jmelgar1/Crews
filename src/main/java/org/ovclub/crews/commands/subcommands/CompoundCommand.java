@@ -22,7 +22,7 @@ public class CompoundCommand implements SubCommand {
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/crews compound";
+		return "/c compound";
 	}
 
     @Override

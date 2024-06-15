@@ -23,7 +23,7 @@ public class KickCommand implements SubCommand {
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/crews kick [player]";
+		return "/c kick [player]";
 	}
 
     @Override

@@ -25,7 +25,7 @@ public class CreateCommand implements SubCommand {
 
     @Override
     public String getSyntax() {
-        return "/crews create [name]";
+        return "/c create [name]";
     }
 
     @Override

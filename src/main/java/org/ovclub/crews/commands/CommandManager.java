@@ -12,22 +12,25 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.ovclub.crews.Crews;
 import org.ovclub.crews.commands.subcommands.*;
 
+import org.ovclub.crews.commands.subcommands.admin.ResetCommand;
 import org.ovclub.crews.commands.subcommands.skirmish.*;
 import org.ovclub.crews.exceptions.NotInCrew;
 import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.utilities.UnicodeCharacters;
 
-public class CommandManager implements CommandExecutor {
+public class CommandManager implements CommandExecutor, TabCompleter {
 
     private final Map<String, SubCommand> subCommands = new LinkedHashMap<>();
     private final Map<String, SubCommand> enforcerCommands = new LinkedHashMap<>();
     private final Map<String, SubCommand> bossCommands = new LinkedHashMap<>();
     private final Map<String, SubCommand> allCommands = new LinkedHashMap<>();
     private final Map<String, SubCommand> skirmishCommands = new LinkedHashMap<>();
+    private final Map<String, SubCommand> adminCommands = new LinkedHashMap<>();
 
     private void sendHelp(Player p, String icon, String helpTitle, TextColor titleColor, Map<String, SubCommand> commandListType, String[] args) {
         int commandsPerPage = ConfigManager.COMMANDS_PER_PAGE;
@@ -100,7 +103,9 @@ public class CommandManager implements CommandExecutor {
 		subCommands.put("info", new InfoCommand());
         subCommands.put("who", new WhoCommand());
         subCommands.put("skirmish", new SkirmishCommand());
-		subCommands.put("shop", new ShopCommand());
+        subCommands.put("deposit", new DepositCommand());
+        subCommands.put("withdraw", new WithdrawCommand());
+		//subCommands.put("shop", new ShopCommand());
 		subCommands.put("compound", new CompoundCommand());
 		subCommands.put("accept", new AcceptCommand());
 		subCommands.put("decline", new DeclineCommand());
@@ -108,11 +113,10 @@ public class CommandManager implements CommandExecutor {
         subCommands.put("chat", new ChatCommand());
         subCommands.put("description", new DescriptionCommand());
 		//subCommands.put("mail", new MailCommand());
-        subCommands.put("deposit", new DepositCommand());
 		subCommands.put("boss", new BossCommand());
 		subCommands.put("enforcer", new EnforcerCommand());
+        subCommands.put("multipliers", new MultipliersCommand());
         subCommands.put("vote", new VoteCommand());
-		enforcerCommands.put("withdraw", new WithdrawCommand());
 		enforcerCommands.put("invite", new InviteCommand());
 		enforcerCommands.put("kick", new KickCommand());
 		enforcerCommands.put("setcompound", new SetCompoundCommand());
@@ -130,6 +134,8 @@ public class CommandManager implements CommandExecutor {
         allCommands.putAll(subCommands);
         allCommands.putAll(enforcerCommands);
         allCommands.putAll(bossCommands);
+
+        adminCommands.put("reset", new ResetCommand());
 	}
 
     @Override
@@ -141,6 +147,16 @@ public class CommandManager implements CommandExecutor {
         }
         String argument = args[0].toLowerCase();
         String[] pass = Arrays.copyOfRange(args, 1, args.length);
+        if(adminCommands.containsKey(argument)) {
+            if (p.hasPermission("crews.admin.*")) {
+                SubCommand subCmd = adminCommands.get(argument);
+                try {
+                    subCmd.perform(p, pass, plugin);
+                } catch (NotInCrew e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
         if (!allCommands.containsKey(argument)) {
             sendHelp(p, UnicodeCharacters.crews,"Crews Guide", UnicodeCharacters.plugin_color, subCommands, args);
             return true;
@@ -172,6 +188,26 @@ public class CommandManager implements CommandExecutor {
         } catch (NotInCrew ignored) {
         }
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        List<String> completions = new ArrayList<>();
+        if (args.length == 1) {
+            allCommands.keySet().forEach(cmd -> {
+                if (sender.hasPermission("crews.player." + cmd)) {
+                    completions.add(cmd);
+                }
+            });
+            return completions;
+        } else if (args.length > 1) {
+            String subCmdKey = args[0].toLowerCase();
+            SubCommand subCmd = allCommands.get(subCmdKey);
+            if (subCmd instanceof TabCompleter) {
+                return ((TabCompleter) subCmd).onTabComplete(sender, command, alias, Arrays.copyOfRange(args, 1, args.length));
+            }
+        }
+        return null;
     }
 
     public void sendCrewsGuideMessage(Player p, String icon, String guideTitle, TextColor titleColor, int page, int lastPage) {

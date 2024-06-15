@@ -21,7 +21,7 @@ public class DelCompoundCommand implements SubCommand {
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/crews delcompound";
+		return "/c delcompound";
 	}
 
     @Override
@@ -36,7 +36,7 @@ public class DelCompoundCommand implements SubCommand {
             p.sendMessage(ConfigManager.NOT_IN_CREW);
             return;
         }
-        if (args.length != 1) {
+        if (args.length != 0) {
             p.sendMessage(UnicodeCharacters.CorrectUsage(getSyntax()));
             return;
         }

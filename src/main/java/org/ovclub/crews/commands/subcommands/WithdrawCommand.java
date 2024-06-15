@@ -2,7 +2,6 @@ package org.ovclub.crews.commands.subcommands;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.ovclub.crews.Crews;
 import org.ovclub.crews.commands.SubCommand;
 
@@ -10,7 +9,7 @@ import org.ovclub.crews.exceptions.NotInCrew;
 import org.ovclub.crews.managers.file.ConfigManager;
 import org.ovclub.crews.object.Crew;
 import org.ovclub.crews.object.PlayerData;
-import org.ovclub.crews.utilities.ChatUtilities;
+import org.ovclub.crews.utilities.GUI.InventoryUtility;
 import org.ovclub.crews.utilities.GeneralUtilities;
 import org.ovclub.crews.utilities.UnicodeCharacters;
 
@@ -25,7 +24,7 @@ public class WithdrawCommand implements SubCommand {
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/crews withdraw [amount]/all";
+		return "/c withdraw [amount]/all";
 	}
 
     @Override
@@ -45,47 +44,46 @@ public class WithdrawCommand implements SubCommand {
             p.sendMessage(UnicodeCharacters.CorrectUsage(getSyntax()));
             return;
         }
-        if (!pCrew.isHigherup(p)) {
-            p.sendMessage(ConfigManager.MUST_BE_HIGHERUP);
-            return;
-        }
+//        if (!pCrew.isHigherup(p)) {
+//            p.sendMessage(ConfigManager.MUST_BE_HIGHERUP);
+//            return;
+//        }
         String amount = args[0];
         int vaultAmount = pCrew.getVault();
+        int vaultDepositAmount = pCrew.getVaultDeposit(p);
         if (vaultAmount == 0) {
             p.sendMessage(ConfigManager.NOT_ENOUGH_IN_VAULT);
             return;
         }
         if (amount.equalsIgnoreCase("all")) {
-            int maxStackSize = Material.SPONGE.getMaxStackSize();
-            int maxAmount = p.getInventory().firstEmpty() == -1 ? 0 : (p.getInventory().firstEmpty() + 1) * maxStackSize;
-            int amountToGive = Math.min(maxAmount, vaultAmount);
-            ItemStack sponges = new ItemStack(Material.SPONGE, amountToGive);
+            int totalSpace = InventoryUtility.calculateTotalSpace(p, Material.SPONGE);
+            int amountToGive = Math.min(totalSpace, vaultDepositAmount);
 
-            if (amountToGive > 0) {
-                p.getInventory().addItem(sponges);
-                pCrew.removeFromVault(amountToGive, p, true);
-                p.sendMessage(ConfigManager.SPONGE_WITHDRAW.replaceText(builder -> builder.matchLiteral("{amount}").replacement(String.valueOf(amountToGive))));
-            } else {
-                p.sendMessage(ConfigManager.FULL_INVENTORY);
+            if (vaultDepositAmount == 0) {
+                p.sendMessage(ConfigManager.NOT_ENOUGH_DEPOSIT);
+                return;
             }
+
+            int amountGiven = InventoryUtility.distributeItems(p, Material.SPONGE, amountToGive);
+            InventoryUtility.updateVaultAndNotify(p, pCrew, amountGiven);
         } else if (GeneralUtilities.isNumeric(amount)) {
             int intAmount = Integer.parseInt(amount);
-            ItemStack sponges = new ItemStack(Material.SPONGE, intAmount);
-            int maxStackSize = Material.SPONGE.getMaxStackSize();
-            int maxAmount = p.getInventory().firstEmpty() == -1 ? 0 : (p.getInventory().firstEmpty() + 1) * maxStackSize;
-            int amountToGive = Math.min(maxAmount, intAmount);
+
             if (intAmount > pCrew.getVault()) {
                 p.sendMessage(ConfigManager.NOT_ENOUGH_IN_VAULT);
                 return;
             }
-            if (amountToGive > 0) {
-                sponges.setAmount(amountToGive);
-                pCrew.removeFromVault(intAmount, p, true);
-                p.getInventory().addItem(sponges);
-                p.sendMessage(ConfigManager.SPONGE_WITHDRAW.replaceText(builder -> builder.matchLiteral("{amount}").replacement(String.valueOf(amountToGive))));
-            } else {
-                p.sendMessage(ConfigManager.FULL_INVENTORY);
+
+            if (intAmount > vaultDepositAmount) {
+                p.sendMessage(ConfigManager.NOT_ENOUGH_DEPOSIT);
+                return;
             }
+
+            int totalSpace = InventoryUtility.calculateTotalSpace(p, Material.SPONGE);
+            int amountToGive = Math.min(totalSpace, intAmount);
+            int amountGiven = InventoryUtility.distributeItems(p, Material.SPONGE, amountToGive);
+
+            InventoryUtility.updateVaultAndNotify(p, pCrew, amountGiven);
         } else {
             p.sendMessage(ConfigManager.INVALID_AMOUNT);
         }

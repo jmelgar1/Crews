@@ -1,9 +1,12 @@
 package org.ovclub.crews.object;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.md_5.bungee.api.ChatColor;
+import org.antlr.v4.tool.Grammar;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -113,6 +116,10 @@ public class Crew {
     public int getKills() {
         return this.kills;
     }
+
+    //vault deposits
+    private HashMap<String, Integer> vaultDeposits;
+    public HashMap<String, Integer> getVaultDeposits() {return vaultDeposits;}
 
     //mail
     private ArrayList<String> sentMail = new ArrayList<>();
@@ -239,6 +246,15 @@ public class Crew {
         }
     }
 
+    private void editVaultDeposits(int amount, Player p) {
+        String pUUID = p.getUniqueId().toString();
+        vaultDeposits.merge(pUUID, amount, Integer::sum);
+
+        if(vaultDeposits.get(pUUID) == 0) {
+            vaultDeposits.remove(pUUID);
+        }
+    }
+
     //fix this redundant code
     public void addToVault(int amount, Player p, boolean showTransactionMessage){
         if(showTransactionMessage) {
@@ -251,7 +267,9 @@ public class Crew {
         }
         this.vault+=amount;
 
-        calculateInfluence();
+        editVaultDeposits(amount, p);
+
+        calculateVaultAndInfluence();
     }
     public void removeFromVault(int amount, Player p, boolean showTransactionMessage){
         if(showTransactionMessage) {
@@ -264,12 +282,19 @@ public class Crew {
         }
         this.vault-=amount;
 
-        calculateInfluence();
+        editVaultDeposits(-amount, p);
+
+        calculateVaultAndInfluence();
     }
 
     public void calculateInfluence() {
         int influence = this.rating + this.vault;
         setInfluence(influence);
+    }
+
+    public int getVaultDeposit(Player p) {
+        String pUUID = String.valueOf(p.getUniqueId());
+        return vaultDeposits.getOrDefault(pUUID, 0);
     }
 
     //Set new crew leader & add old one to members.
@@ -353,13 +378,16 @@ public class Crew {
 
     public void showInfo(final Player p, boolean inCrew) {
         UnicodeCharacters.sendMessageWithHeader(p, "┌──────[ ", this.name, " ]───────◓");
-        if(this.description == null) {
-            this.description = "No description set";
-        }
+        TextComponent vaultDepositComponent = Component.text().append(Component.text(" | ").color(NamedTextColor.GRAY)
+                .append(Component.text("(").color(NamedTextColor.GRAY)
+                    .append(Component.text(this.getVaultDeposit(p)).color(NamedTextColor.DARK_GRAY)
+                        .append(Component.text(")").color(NamedTextColor.GRAY)))))
+            .build();
         UnicodeCharacters.sendInfoMessage(p, UnicodeCharacters.founded_emoji, "Founded: ", this.dateFounded, UnicodeCharacters.founded_color);
         UnicodeCharacters.sendInfoMessage(p, UnicodeCharacters.description_emoji, "Description: ", this.description, UnicodeCharacters.description_color);
         UnicodeCharacters.sendInfoMessage(p, UnicodeCharacters.level_emoji, "Level: ", String.valueOf(this.level), UnicodeCharacters.level_color);
-        UnicodeCharacters.sendInfoMessage(p, UnicodeCharacters.vault_emoji, "Vault: ", UnicodeCharacters.sponge_icon + this.vault, UnicodeCharacters.sponge_color);
+        UnicodeCharacters.sendVaultMessage(p, UnicodeCharacters.vault_emoji, "Vault: ", UnicodeCharacters.sponge_icon + this.vault, UnicodeCharacters.sponge_color, vaultDepositComponent, inCrew);
+        UnicodeCharacters.sendInfoMessage(p, UnicodeCharacters.rating_emoji, "Rating: ", String.valueOf(this.rating), UnicodeCharacters.rating_color);
         UnicodeCharacters.sendInfluenceMessage(p, UnicodeCharacters.influence_emoji, String.valueOf(this.influence));
         UnicodeCharacters.sendInfoMessage(p, UnicodeCharacters.boss_emoji, "Boss: ", getPlayerName(UUID.fromString(this.boss)), UnicodeCharacters.boss_color);
 
@@ -399,6 +427,9 @@ public class Crew {
             UnicodeCharacters.sendInfoMessage(p, UnicodeCharacters.compound_emoji, "Compound: ", statusText, statusColor);
         }
         p.sendMessage(Component.text("└────────────────────◒").color(UnicodeCharacters.logo_color));
+
+        //get latest vault amount
+        calculateVaultAndInfluence();
     }
 
     /* CREW LEVEL */
@@ -411,7 +442,12 @@ public class Crew {
         plugin.getData().removeCPlayer(Bukkit.getPlayer(UUID.fromString(this.boss)));
         for (String members : this.getMembers()) {
             UUID pUUID = UUID.fromString(members);
-            plugin.getData().removeCPlayer(Bukkit.getPlayer(pUUID));
+            Player p = Bukkit.getPlayer(pUUID);
+            plugin.getData().removeCPlayer(p);
+
+            if(p != null) {
+                removeDepositAndSendBackToPlayer(p);
+            }
         }
         Bukkit.broadcast(ConfigManager.CREW_DISBAND
             .replaceText(builder -> builder.matchLiteral("{crew}").replacement(Component.text(this.name).decorate(TextDecoration.BOLD))));
@@ -432,13 +468,23 @@ public class Crew {
             Player p = Bukkit.getPlayer(pUUID);
             if(p != null && p.isOnline()) {
                 if (wasKicked) {
+                    removeDepositAndSendBackToPlayer(p);
                     this.broadcast(ConfigManager.KICKED_FROM_CREW.replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName())));
                 } else {
+                    removeDepositAndSendBackToPlayer(p);
                     p.sendMessage(ConfigManager.YOU_LEFT_CREW);
                     this.broadcast(ConfigManager.LEAVE_CREW.replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName())));
                 }
             }
         }
+        calculateVaultAndInfluence();
+    }
+
+    private void removeDepositAndSendBackToPlayer(Player p) {
+        int deposit = getVaultDeposit(p);
+        plugin.getEconomy().depositPlayer(p, deposit);
+        vaultDeposits.remove(String.valueOf(p.getUniqueId()));
+        vault -= deposit;
     }
 
     //Add player to crew, player must be online to join we use Player
@@ -446,6 +492,7 @@ public class Crew {
         this.members.add(p.getUniqueId().toString());
         plugin.getData().addCPlayer(p, this);
         this.broadcast(ConfigManager.JOIN_CREW.replaceText(builder -> builder.matchLiteral("{player}").replacement(p.getName())));;
+        calculateVaultAndInfluence();
     }
 
     public boolean isBoss(Player p) {
@@ -456,6 +503,15 @@ public class Crew {
     public boolean isEnforcer(Player p) {
         String pUUID = p.getUniqueId().toString();
         return this.enforcers.contains(pUUID);
+    }
+
+    public void calculateVaultAndInfluence() {
+        for(String uuid : members) {
+            OfflinePlayer p = Bukkit.getOfflinePlayer(uuid);
+            double pVault = plugin.getEconomy().getBalance(p);
+            this.vault += (int) pVault;
+        }
+        calculateInfluence();
     }
 
     public boolean isHigherup(Player p) {
@@ -552,7 +608,7 @@ public class Crew {
         this.dateFounded = currentDate.format(formatter);
         this.description = "No description set.";
         this.kills = 0;
-        this.vault = 0;
+        this.vault = (int) plugin.getEconomy().getBalance(Bukkit.getOfflinePlayer(String.valueOf(p.getUniqueId())));
         this.level = 1;
         this.skirmishWins = 0;
         this.skirmishLosses = 0;
@@ -563,7 +619,8 @@ public class Crew {
         this.enforcerLimit = 1;
         this.memberLimit = 3;
         this.unlockedUpgrades = new ArrayList<>();
-        this.sentMail = new ArrayList<>();
+        this.vaultDeposits = new HashMap<>();
+        //this.sentMail = new ArrayList<>();
     }
 
     //Constructor for loaded crew
@@ -572,9 +629,62 @@ public class Crew {
         this.plugin = data;
         this.name = getStringFromMap(map, "name", "Unknown Name");
         this.boss = getStringFromMap(map, "boss", null);
-        initializePlayers("members", map);
-        initializePlayers("enforcers", map);
-        initializeMail("sentMail", map);
+        Object membersObj = map.get("members");
+        if (membersObj instanceof ArrayList<?> membersList) {
+            for (Object mObj : membersList) {
+                if (mObj instanceof String m) {
+                    try {
+                        this.members.add(m);
+                        if (Bukkit.getOfflinePlayer(m).isOnline()) {
+                            Player player = Bukkit.getPlayer(m);
+                            if (player != null) {
+                                data.getData().addCPlayer(player, this);
+                            }
+                        }
+                    } catch (IllegalArgumentException iae) {
+                        System.err.println("Invalid UUID found: " + m);
+                    }
+                }
+            }
+        } else {
+            // Handle case where 'members' is not an ArrayList or is null
+            System.err.println("'members' is not an ArrayList or is null.");
+        }
+
+        Object enforcersObj = map.get("enforcers");
+        if (enforcersObj instanceof ArrayList<?> enforcersList) {
+            for (Object eObj : enforcersList) {
+                if (eObj instanceof String e) {
+                    try {
+                        this.enforcers.add(e);
+                        if (Bukkit.getOfflinePlayer(e).isOnline()) {
+                            Player player = Bukkit.getPlayer(e);
+                            if (player != null) {
+                                data.getData().addCPlayer(player, this);
+                            }
+                        }
+                    } catch (IllegalArgumentException iae) {
+                        System.err.println("Invalid UUID found: " + e);
+                    }
+                }
+            }
+        }
+
+        Object upgradesObj = map.get("unlockedUpgrades");
+        if (upgradesObj instanceof ArrayList<?> upgradesList) {
+            for (Object uObj : upgradesList) {
+                if (uObj instanceof String u) {
+                    try {
+                        this.unlockedUpgrades.add(u);
+                    } catch (IllegalArgumentException iae) {
+                        System.err.println("Invalid upgrade found: " + u);
+                    }
+                }
+            }
+        }
+//        initializePlayers("members", map);
+//        initializePlayers("enforcers", map);
+        //initializeMail("sentMail", map);
         this.dateFounded = getStringFromMap(map, "dateFounded", "Unknown Date");
         this.description = getStringFromMap(map, "description", "No description set.");
         this.kills = getIntFromMap(map, "kills", 0);
@@ -590,6 +700,7 @@ public class Crew {
         this.skirmishLosses = getIntFromMap(map, "skirmishLosses", 0);
         this.banner = getBannerFromMap(map);
         this.compound = getLocationFromMap(map);
+        this.vaultDeposits = getVaultDepositsFromMap(map, "vaultDeposits");
     }
 
     private void initializePlayers(String key, Map<String, Object> map) {
@@ -599,11 +710,27 @@ public class Crew {
         }
     }
 
-    private void initializeMail(String key, Map<String, Object> map) {
-        List<String> messages = getListFromMap(map, key);
-        for (String m : messages) {
-            addToMail(m);
+    private HashMap<String, Integer> getVaultDepositsFromMap(Map<String, Object> map, String key) {
+        HashMap<String, Integer> deposits = new HashMap<>();
+        Object obj = map.get(key);
+        if (obj instanceof Map<?, ?> depositsMap) {
+            for (Map.Entry<?, ?> entry : depositsMap.entrySet()) {
+                if (entry.getKey() instanceof String && entry.getValue() instanceof Number) {
+                    try {
+                        UUID uuid = UUID.fromString((String) entry.getKey());
+                        Integer amount = ((Number) entry.getValue()).intValue();
+                        deposits.put(uuid.toString(), amount);
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("Invalid UUID or amount in vaultDeposits: " + entry.getKey());
+                    }
+                } else {
+                    System.err.println("Key or value type mismatch: Key should be String, value should be Number.");
+                }
+            }
+        } else {
+            System.err.println(key + " is not a Map or is null.");
         }
+        return deposits;
     }
 
     private List<String> getListFromMap(Map<String, Object> map, String key) {
@@ -613,6 +740,13 @@ public class Crew {
         }
         System.err.println(key + " is not an ArrayList or is null.");
         return new ArrayList<>();
+    }
+
+    private void initializeMail(String key, Map<String, Object> map) {
+        List<String> messages = getListFromMap(map, key);
+        for (String m : messages) {
+            addToMail(m);
+        }
     }
 
     private void addPlayerToCrew(String uuid) {

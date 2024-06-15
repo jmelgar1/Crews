@@ -25,8 +25,11 @@ public class ArenaManager {
         int x, z;
         boolean isOcean;
         do {
-            x = random.nextInt(3001) - 1500;
-            z = random.nextInt(3001) - 1500;
+            do {
+                x = random.nextInt(3001) - 1500;
+                z = random.nextInt(3001) - 1500;
+            } while (!(Math.abs(x) > 500 && Math.abs(z) > 500));
+
             assert world != null;
             location = new Location(world, x, world.getHighestBlockYAt(x, z), z);
             Biome biome = world.getBiome(x, world.getHighestBlockYAt(x, z), z);
@@ -72,18 +75,13 @@ public class ArenaManager {
             Player p = Bukkit.getPlayer(UUID.fromString(playerUUID));
             if (p != null) {
                 arena.addPlayerReturnPoint(p.getUniqueId(), p.getLocation());
-
                 Location safeLocation = getSafeLocation(location);
                 float yaw = getYaw(safeLocation, arena.getCenter());
                 safeLocation.setYaw(yaw);
                 p.teleport(safeLocation);
                 SoundUtilities.playTeleportSound(p);
-
-                // Set team color based on whether it's Team One or not
                 ChatColor color = isTeamOne ? ChatColor.BLUE : ChatColor.RED;
                 arena.setTeamColor(p, color);
-
-                // Apply the glowing effect
                 PotionEffect glowingEffect = new PotionEffect(PotionEffectType.GLOWING, 200, 0, false, false, true);
                 p.addPotionEffect(glowingEffect);
             }

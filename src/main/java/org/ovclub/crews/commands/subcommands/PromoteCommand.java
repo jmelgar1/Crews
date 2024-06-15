@@ -22,7 +22,7 @@ public class PromoteCommand implements SubCommand {
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/crews promote [player]";
+		return "/c promote [player]";
 	}
 
     @Override

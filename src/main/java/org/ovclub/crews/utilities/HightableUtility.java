@@ -3,6 +3,8 @@ package org.ovclub.crews.utilities;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -12,6 +14,7 @@ import org.ovclub.crews.Crews;
 import org.ovclub.crews.managers.file.HighTableConfigManager;
 import org.ovclub.crews.managers.hightable.DailyMultiplierManager;
 import org.ovclub.crews.object.Crew;
+import org.ovclub.crews.object.PlayerData;
 import org.ovclub.crews.object.hightable.MultiplierItem;
 import org.ovclub.crews.object.hightable.VoteItem;
 
@@ -392,7 +395,7 @@ public class HightableUtility{
         EntityType.DONKEY,
         EntityType.GLOW_SQUID,
         EntityType.HORSE,
-        EntityType.MUSHROOM_COW,
+        EntityType.MOOSHROOM,
         EntityType.MULE,
         EntityType.OCELOT,
         EntityType.PARROT,
@@ -402,7 +405,7 @@ public class HightableUtility{
         EntityType.SALMON,
         EntityType.SHEEP,
         EntityType.SKELETON_HORSE,
-        EntityType.SNOWMAN,
+        EntityType.SNOW_GOLEM,
         EntityType.SQUID,
         EntityType.STRIDER,
         EntityType.TROPICAL_FISH,
@@ -504,4 +507,29 @@ public class HightableUtility{
         Material.ANVIL,
         Material.EMERALD
     };
+
+    public static void executeMidnightTasks(Crews plugin) {
+        PlayerData data = plugin.getData();
+        HightableUtility.updateActiveMultipliers(HightableUtility.getTopVotedItems(plugin));
+        data.calculateInfluenceForAllCrews();
+        HightableUtility.updateHighTable(data.generateLeaderboardJson());
+        data.clearSeenMultipliers();
+
+        DailyMultiplierManager manager = new DailyMultiplierManager();
+        HightableUtility.saveMultipliers(manager);
+
+        plugin.getHightableFile().loadHightable();
+
+        Component message = UnicodeCharacters.createHightableIcon(NamedTextColor.LIGHT_PURPLE).append(Component.text("Daily multipliers have been ")
+                .append(Component.text("RESET")
+                    .color(NamedTextColor.DARK_PURPLE)
+                    .decorate(TextDecoration.BOLD)))
+            .color(UnicodeCharacters.hightable_color);
+        Bukkit.broadcast(message);
+
+        System.out.println("ResetHighTableVote HAS BEEN RUN AT MIDNIGHT!!!!!!");
+
+        plugin.getCrewsFile().saveCrews();
+        HighTableConfigManager.saveHighTableConfig();
+    }
 }

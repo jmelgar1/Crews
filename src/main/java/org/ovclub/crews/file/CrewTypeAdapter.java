@@ -40,7 +40,8 @@ class CrewTypeAdapter extends TypeAdapter<Crew> {
         out.name("skirmishLosses").value(crew.getSkirmishLosses());
         out.name("influence").value(crew.getInfluence());
         writeComplexObject(out, "unlockedUpgrades", crew.getUnlockedUpgrades());
-        writeComplexObject(out, "sentMail", crew.getSentMail());
+        writeComplexObject(out, "vaultDeposits", crew.getVaultDeposits());
+        //writeComplexObject(out, "sentMail", crew.getSentMail());
         out.endObject();
     }
 
