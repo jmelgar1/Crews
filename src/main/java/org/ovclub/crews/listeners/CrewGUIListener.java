@@ -232,7 +232,7 @@ public class CrewGUIListener implements Listener {
                 return;
             }
             if(e.getView().title().equals(Component.text("Discounts"))) {
-                recordVote(p, pCrew, "xpDrops", clickedItem.getType().name());
+                recordVote(p, pCrew, "discounts", clickedItem.getType().name());
                 return;
             }
         }
@@ -285,8 +285,9 @@ public class CrewGUIListener implements Listener {
     @EventHandler
     public void onInventoryClick(final InventoryDragEvent event) {
         PlayerData data = plugin.getData();
-        if(event.getInventory().equals(data.getInventories().get(event.getWhoClicked().getUniqueId()))) {
-            System.out.println("data: " + data.getInventories().get(event.getWhoClicked().getUniqueId()));
+        UUID pUUID = event.getWhoClicked().getUniqueId();
+        if(event.getInventory().equals(data.getInventories().get(pUUID))) {
+            System.out.println("data: " + data.getInventories().get(pUUID));
             event.setCancelled(true);
         }
     }

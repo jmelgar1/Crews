@@ -6,7 +6,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.md_5.bungee.api.ChatColor;
-import org.antlr.v4.tool.Grammar;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
